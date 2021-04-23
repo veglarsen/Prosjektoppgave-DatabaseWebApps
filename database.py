@@ -18,3 +18,12 @@ class myDB:
         self.conn.commit()
         self.cursor.close()
         self.conn.close
+
+    def selectBlogg(self):
+        try:
+            self.cursor.execute("""SELECT blogg_navn as tittel FROM stud_v21_larsen.blogg""")
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+                print(err)
+        return result
+
