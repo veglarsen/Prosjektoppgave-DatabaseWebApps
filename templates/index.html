@@ -7,7 +7,11 @@
                 <th>Blogg tittel</th>
         </thead>
         <tbody>
-            {{ blogg }}
+            { % for blogg in bloggObjektene % }
+            <tr>
+                <td>{{ blogg.blogg_navn }}</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 {% endblock %}
