@@ -10,8 +10,9 @@ def forside() -> 'html':
     with myDB() as db:
         result = db.selectBlogg()
     bloggObjektene = [Blogg(*x) for x in result]
+    print(bloggObjektene)
 
-    return render_template('index.html', blogg=bloggObjektene)
+    return render_template('index.html', bloggObjektene=bloggObjektene)
 
 
 if __name__ == '__main__':

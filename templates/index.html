@@ -1,4 +1,4 @@
-{% extends'base.html' %}
+{% extends 'base.html' %}
 {% block body %}
     <header><h1>Blogg oversikt</h1></header>
     <table>
@@ -7,11 +7,11 @@
                 <th>Blogg tittel</th>
         </thead>
         <tbody>
-            { % for blogg in bloggObjektene % }
+            {% for blogg in bloggObjektene %}
             <tr>
                 <td>{{ blogg.blogg_navn }}</td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </tbody>
     </table>
 {% endblock %}
