@@ -26,4 +26,3 @@ class myDB:
         except mysql.connector.Error as err:
                 print(err)
         return result
-

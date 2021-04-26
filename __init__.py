@@ -11,7 +11,6 @@ def forside() -> 'html':
         result = db.selectBlogg()
     bloggObjektene = [Blogg(*x) for x in result]
     print(bloggObjektene)
-
     return render_template('index.html', bloggObjektene=bloggObjektene)
 
 
