@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block body %}
+    <header><h1>Blogg</h1></header>
+    <table>
+        <thead>
+            <tr>
+                <th>{{ blogg.blogg_navn }}</th>
+        </thead>
+        <tbody>
+            {% for blogg in bloggObjektene %}
+            <tr>
+                <td>{{ blogg.blogg_navn }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
