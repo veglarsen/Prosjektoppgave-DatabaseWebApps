@@ -9,9 +9,13 @@ app = Flask(__name__, template_folder='templates')
 def forside() -> 'html':
     with myDB() as db:
         result = db.selectBlogg()
-    bloggObjektene = [Blogg(*x) for x in result]
-    print(bloggObjektene)
-    return render_template('index.html', bloggObjektene=bloggObjektene)
+        if result is None:
+            return render_template('error.html',
+                                   msg='Invalid parameter')
+        else:
+            bloggObjektene = [Blogg(*x) for x in result]
+            print(bloggObjektene)
+            return render_template('index.html', bloggObjektene=bloggObjektene)
 
 
 if __name__ == '__main__':
