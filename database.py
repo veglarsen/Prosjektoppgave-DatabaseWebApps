@@ -26,3 +26,11 @@ class myDB:
         except mysql.connector.Error as err:
                 print(err)
         return result
+
+    def newBlogg(self, bruker_navn, blogg_navn):
+        try:
+            self.cursor.execute("""INSERT INTO blogg (blogg_ID, eier, blogg_navn) VALUES (NULL, %s, %s);""")
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
