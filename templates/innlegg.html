@@ -8,24 +8,24 @@
             </tr>
         </thead>
         <tbody>
-            {% for innlegg in innleggData %}
             <tr>
-                <td>
-                    <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
-                        <h3>{{ innlegg.tittel }}</h3>
-                        <h3>{{ innlegg.ingress }}</h3>
-                        <p>{{ innlegg.innlegg }}</p>
-                        <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p>
-                    </a>
-                </td>
-            {% endfor %}
-                <td>
-                    {% for kommentar in kommentarData %}
+                {% for innlegg in innleggData %}
+                    <td>
+                        <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
+                            <h3>{{ innlegg.tittel }}</h3>
+                            <h3>{{ innlegg.ingress }}</h3>
+                            <p>{{ innlegg.innlegg }}</p>
+                            <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p>
+                        </a>
+                    </td>
+                {% endfor %}
+                {% for kommentar in kommentarData %}
+                    <td>
                         <h3>{{ kommentar.bruker }}</h3>
                         <h3>{{ kommentar.kommentar }}</h3>
                         <p>{{ kommentar.dato }}</p>
-                    {% endfor %}
-                </td>
+                    </td>
+                {% endfor %}
             </tr>
 
         </tbody>
