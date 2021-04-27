@@ -12,7 +12,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     user_dict = session['user']
-    user = Bruker(user_dict['id'], user_dict['passwordHash'], user_dict['firstname'], user_dict['lastname'], user_dict['username'])
+    user = Bruker(user_dict['bruker'], user_dict['passord'], user_dict['fornavn'], user_dict['etternavn'], user_dict['bruker'])
     user.isauthenticated = user_dict['is_authenticated']
 
 @app.route('hemmelig')
@@ -22,6 +22,8 @@ def hemmelig() -> 'html':
 
 @app.route('/')
 def forside() -> 'html':
+    print("Forside")
+    redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()
         if result is None:
@@ -64,11 +66,14 @@ def innlegg() -> 'html':
 def login() -> 'html':
     if request.method == "POST":
 
-        bruker_navn = request.form['username']
-        password = request.form['password']
+        # bruker_navn = request.form['username']
+        # password = request.form['password']
+        bruker_navn = "bruker_en"
+        password = "passord"
         with Bruker() as bruker:
             aktuellBruker = Bruker(*bruker.selectBruker(bruker_navn))
             if bruker.check_password(password):
+                print("Passordet er korrekt")
                 aktuellBruker.is_authenticated = True
                 login_user(aktuellBruker)
                 session['user'] = aktuellBruker.__dict__
