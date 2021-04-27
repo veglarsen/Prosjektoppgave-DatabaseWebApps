@@ -1,15 +1,21 @@
 {% extends 'base.html' %}
 {% block body %}
-    <header><h1>Blogg</h1></header>
+    <header><h1>{{ innleggData.blogg_navn }}</h1></header>
     <table>
         <thead>
             <tr>
-                <th>{{ blogg.blogg_navn }}</th>
+                <th>{{ innleggData.blogg_navn }}</th>
+            </tr>
         </thead>
         <tbody>
-            {% for blogg in bloggObjektene %}
+            {% for innlegg in innleggData %}
             <tr>
-                <td>{{ blogg.blogg_navn }}</td>
+                <td>
+                    <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
+                        <h3>{{ innlegg.innlegg }}</h3>
+                        <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p><!-- Innlegg tittel/Ingress? -->
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

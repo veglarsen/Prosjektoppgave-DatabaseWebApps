@@ -9,7 +9,11 @@
         <tbody>
             {% for blogg in bloggObjektene %}
             <tr>
-                <td>{{ blogg.blogg_navn }}</td>
+                <td>
+                    <a href="{{ url_for('blogg') }}?id={{ blogg.blogg_ID }}">
+                        {{ blogg.blogg_navn }}
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
