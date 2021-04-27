@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, redirect
 from database import myDB
-from blogg import Blogg, Innlegg
+from blogg import Blogg, Innlegg, Kommentar
 
 app = Flask(__name__, template_folder='templates')
-
 
 @app.route('/')
 def forside() -> 'html':
@@ -40,7 +39,9 @@ def innlegg() -> 'html':
                                    msg='Invalid parameter')
         else:
             innleggData = [Innlegg(*x) for x in result]
-            return render_template('blogg.html', innleggData=innleggData)
+            kommentar = db.kommentarer(id)
+            kommentarData = [Kommentar(*x) for x in kommentar]
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData)
 
 
 if __name__ == '__main__':
