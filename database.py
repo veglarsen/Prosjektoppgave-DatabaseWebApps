@@ -62,6 +62,7 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
     def kommentarer(self, id):
         try:
             self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s)" , (id,))
