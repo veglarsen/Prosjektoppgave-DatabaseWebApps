@@ -70,3 +70,20 @@ class myDB:
         except mysql.connector.Error as err:
                 print(err)
         return result
+
+    def selectBruker(self, bruker_navn):
+        try:
+            self.cursor.execute("SELECT * FROM bruker where bruker = (%s)" , (bruker_navn,))
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+                print(err)
+        return result
+
+    def addBruker(self, brukernavn, etternavn, fornavn, passord, eMail):
+        try:
+            self.cursor.execute("""INSERT INTO bruker('bruker', 'etternavn', 'fornavn', 'passord', 'eMail')
+                                VALUES ((%s), (%s), (%s), (%s), (%s));""", (brukernavn, etternavn, fornavn, passord, eMail ))
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+                print(err)
+        return result
