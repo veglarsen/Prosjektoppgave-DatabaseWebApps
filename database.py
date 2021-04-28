@@ -87,3 +87,23 @@ class myDB:
         except mysql.connector.Error as err:
                 print(err)
         return result
+
+    def selectAllVedlegg(self):
+        try:
+            self.cursor.execute("SELECT * from vedlegg")
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
+    def addVedlegg(self, attachment):
+        try:
+            sql = '''INSERT
+            INTO
+                vedlegg(vedlegg_ID, fil_navn, fil_type, fil_data, size, innlegg_ID)
+            VALUES
+                (NULL, %s, %s, %s, %s, %s)'''
+            self.cursor.execute(sql, attachment)
+
+        except mysql.connector.Error as err:
+            print(err)

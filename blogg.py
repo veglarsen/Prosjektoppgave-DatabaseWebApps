@@ -30,4 +30,13 @@ class Kommentar:
         self.kommentar = kommentar
         self.dato = dato
 
+class Vedlegg:
 
+    # construct / attributes
+    def __init__(self, vedlegg_ID, fil_navn, fil_type, fil_data, size, innlegg_ID):
+        self.vedlegg_ID = vedlegg_ID
+        self.fil_navn = fil_navn
+        self.fil_type = fil_type
+        self.fil_data = fil_data
+        self.size = size
+        self.innlegg_ID = innlegg_ID
