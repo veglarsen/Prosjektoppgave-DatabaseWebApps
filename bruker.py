@@ -6,23 +6,14 @@ class Bruker():
     # construct / attributes
     def __init__(self,id, bruker, etternavn, fornavn, passord, eMail):
         self.id = id
-        self.bruker = bruker                                        #"bruker_en"
-        self.etternavn = etternavn                                  #"johansen"
-        self.fornavn = fornavn                                      #"ole"
+        self.bruker = bruker
+        self.etternavn = etternavn
+        self.fornavn = fornavn
         self.passwordHash = passord.replace("\'", "")
-        self.eMail = eMail                                          #"ole@ole.no"
+        self.eMail = eMail
         self.is_authenticated = False
         self.is_active = True
         self.is_anonymous = False
-
-    @staticmethod
-    def login(bruker, password):
-        with myDB() as db:
-            bruker = Bruker(*db.selectBruker(bruker))
-            if check_password_hash(bruker.passwordHash, password):
-                return True
-            else:
-                return False
 
     def set_password(self, passord):
         self.passwordHash = generate_password_hash(passord)
