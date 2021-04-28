@@ -1,8 +1,9 @@
 import secrets
 
 from flask import Flask, render_template, request, redirect,session
+from bruker import Bruker
 from database import myDB
-from blogg import Blogg, Innlegg, Kommentar, Bruker
+from blogg import Blogg, Innlegg, Kommentar
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 app = Flask(__name__, template_folder='templates')
@@ -12,13 +13,9 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     user_dict = session['user']
-    user = Bruker(user_dict['bruker'], user_dict['passord'], user_dict['fornavn'], user_dict['etternavn'], user_dict['bruker'])
+    user = Bruker(user_dict['bruker'], user_dict['fornavn'], user_dict['passord'], user_dict['eMail'])
     user.isauthenticated = user_dict['is_authenticated']
 
-@app.route('hemmelig')
-@login_required
-def hemmelig() -> 'html':
-    return render_template('hemmelig.html', the_title="Bestkyttet side")
 
 @app.route('/')
 def forside() -> 'html':
@@ -33,6 +30,11 @@ def forside() -> 'html':
             bloggObjektene = [Blogg(*x) for x in result]
             print(bloggObjektene)
             return render_template('index.html', bloggObjektene=bloggObjektene)
+
+@app.route('/hemmelig')
+@login_required
+def hemmelig() -> 'html':
+    return render_template('hemmelig.html', the_title="Bestkyttet side")
 
 @app.route('/blogg')
 def blogg() -> 'html':
@@ -64,19 +66,25 @@ def innlegg() -> 'html':
 @app.route('/login', methods=["GET", "POST"])
 
 def login() -> 'html':
-    if request.method == "POST":
-
+    if request.method == "GET":                 #POST
         # bruker_navn = request.form['username']
         # password = request.form['password']
         bruker_navn = "bruker_en"
-        password = "passord"
-        with Bruker() as bruker:
-            aktuellBruker = Bruker(*bruker.selectBruker(bruker_navn))
-            if bruker.check_password(password):
+        passord = "passord"
+        with myDB() as db:
+
+            aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
+            if Bruker.check_password(passord):
                 print("Passordet er korrekt")
                 aktuellBruker.is_authenticated = True
                 login_user(aktuellBruker)
                 session['user'] = aktuellBruker.__dict__
+
+            # if Bruker.check_password(password):
+            #     print("Passordet er korrekt")
+            #     aktuellBruker.is_authenticated = True
+            #     login_user(aktuellBruker)
+            #     session['user'] = aktuellBruker.__dict__
 
         return redirect('/')
 

@@ -30,12 +30,4 @@ class Kommentar:
         self.kommentar = kommentar
         self.dato = dato
 
-class Bruker:
 
-    # construct / attributes
-    def __init__(self, bruker, etternavn, fornavn, passord, eMail):
-        self.bruker = bruker
-        self.etternavn = etternavn
-        self.fornavn = fornavn
-        self.passord = passord
-        self.eMail = eMail
