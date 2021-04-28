@@ -24,22 +24,17 @@ def load_user(user_id):
 
 @app.route('/')
 def forside() -> 'html':
+    print("Forside")
+    redirect('/login')
     with myDB() as db:
-        result = db.selectAllVedlegg()
-        alleVedlegg = [Vedlegg(*x) for x in result]
-        return render_template('upload.html', attachments=alleVedlegg)
-
-    # print("Forside")
-    # redirect('/login')
-    # with myDB() as db:
-    #     result = db.selectBlogg()
-    #     if result is None:
-    #         return render_template('error.html',
-    #                                msg='Invalid parameter')
-    #     else:
-    #         bloggObjektene = [Blogg(*x) for x in result]
-    #         print(bloggObjektene)
-    #         return render_template('index.html', bloggObjektene=bloggObjektene)
+        result = db.selectBlogg()
+        if result is None:
+            return render_template('error.html',
+                                   msg='Invalid parameter')
+        else:
+            bloggObjektene = [Blogg(*x) for x in result]
+            print(bloggObjektene)
+            return render_template('index.html', bloggObjektene=bloggObjektene)
 
 @app.route('/hemmelig')
 @login_required
@@ -106,6 +101,13 @@ def logout() -> 'html':
 
 app.secret_key = secrets.token_urlsafe(16)
 
+@app.route('/upload_page', methods=["GET", "POST"])
+def upload_page() -> 'html':
+    with myDB() as db:
+        result = db.selectAllVedlegg()
+        alleVedlegg = [Vedlegg(*x) for x in result]
+        return render_template('upload.html', attachments=alleVedlegg)
+
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -134,6 +136,20 @@ def upload_file():
         return redirect(url_for('show_all_files', _external=True))
     else:
         return redirect(url_for('show_all_files', _external=True))
+
+@app.route('/download/<id>')
+def download_file(id):
+    with myDB() as db:
+        attachment = Vedlegg(*db.get(id))
+    if attachment is None:
+            pass
+    else:
+        response = make_response(attachment.code)
+        response.headers.set('Content-Type', attachment.mimetype)
+        response.headers.set('Content-Length', attachment.size)
+        response.headers.set(
+        'Content-Disposition', 'inline', filename = attachment.filename)
+        return response
 
 if __name__ == '__main__':
     app.run(debug=True)
