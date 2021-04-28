@@ -24,7 +24,7 @@ class myDB:
             self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel FROM blogg""")
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
-                print(err)
+            print(err)
         return result
 
     def selectAlleInnlegg(self, id):
@@ -34,17 +34,17 @@ class myDB:
                                 on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s)""", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
-                print(err)
+            print(err)
         return result
 
     def selectEtInnlegg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, tag, treff, ingress, 
                                 tittel FROM innlegg inner join blogg 
-                                on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""" , (id,))
+                                on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
-                print(err)
+            print(err)
         return result
 
     def newBlogg(self, bruker_navn, blogg_navn):
@@ -65,10 +65,10 @@ class myDB:
 
     def kommentarer(self, id):
         try:
-            self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s)" , (id,))
+            self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s)", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
-                print(err)
+            print(err)
         return result
 
     def selectBruker(self, bruker_navn):
@@ -88,3 +88,16 @@ class myDB:
                 print(err)
         return result
 
+
+
+    def brukerEndre(self, bruker):  # kanskje tillate å endre brukernavn
+        try:
+            sql1 = '''UPDATE 
+                bruker 
+            SET 
+                fornavn = %s, etternavn = %s, eMail = %s, passord = %s
+            WHERE
+                bruker = %s'''
+            self.cursor.execute(sql1, bruker)
+        except mysql.connector.Error as err:
+            print(err)

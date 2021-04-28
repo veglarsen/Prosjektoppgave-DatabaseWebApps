@@ -2,6 +2,9 @@ import secrets
 from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash
 from bruker import Bruker
+from flask import Flask, render_template, request, redirect
+
+from brukerSkjema import BrukerSkjema
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -97,6 +100,22 @@ def logout() -> 'html':
     return redirect('/')
 
 app.secret_key = secrets.token_urlsafe(16)
+@app.route('/brukerEndre', methods=["GET", "POST"])
+def brukerEndre() -> 'html':
+    form = BrukerSkjema(request.form)
+    if request.method == "POST" and form.validate():
+
+        brukernavn = request.form['brukernavn']
+        fornavn = form.fornavn.data
+        etternavn = form.etternavn.data
+        eMail = form.eMail.data
+        bruker = (fornavn, etternavn, eMail, brukernavn)
+        with myDB() as db:
+            result = db.brukerEndre(bruker)
+        return redirect('/')
+    else:
+        return render_template('brukerEndre.html',
+                               form=form)
 
 if __name__ == '__main__':
     app.run()
