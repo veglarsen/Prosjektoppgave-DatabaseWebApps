@@ -122,3 +122,11 @@ class myDB:
 
         except mysql.connector.Error as err:
             print(err)
+
+    def getVedlegg(self, id):
+        try:
+           self.cursor.execute("SELECT * FROM vedlegg WHERE vedlegg_ID=(%s)", (id,))
+           result = self.cursor.fetchone()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
