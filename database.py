@@ -11,7 +11,7 @@ class myDB:
 
     def __enter__(self) -> 'cursor':
         self.conn = mysql.connector.connect(**self.configuration)
-        self.cursor = self.conn.cursor(prepared=True)
+        self.cursor = self.conn.cursor(buffered=True)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -90,7 +90,7 @@ class myDB:
 
     def selectAllVedlegg(self):
         try:
-            self.cursor.execute("SELECT * from vedlegg")
+            self.cursor.execute('''SELECT * from vedlegg where innlegg_ID=1''')
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
