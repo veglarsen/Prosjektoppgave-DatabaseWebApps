@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h2>User</h2>
+        <form action="/loggInn" method="post">
+            <div>
+                {{ form.brukernavn.label }}<br>
+                {{ form.brukernavn(size=32) }}<br>
+                {% for error in form.etternavn.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}<br>
+                {% for error in form.password.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+
+{% endblock %}

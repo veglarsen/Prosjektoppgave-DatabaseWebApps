@@ -16,3 +16,10 @@ class BrukerSkjema(Form):
     brukernavn = HiddenField()
     submit = SubmitField('Submit form')
 
+class loggInn(Form):
+    brukernavn = StringField('Brukernavn: ', validators=[DataRequired()])
+    passord = StringField('Passord: ', validators=[DataRequired()])
+    submit = SubmitField('Submit form')
+
+
+

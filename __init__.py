@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, redirect,session, make_respon
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, flash
-from brukerSkjema import BrukerSkjema
+from brukerSkjema import BrukerSkjema, loggInn
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -26,6 +26,10 @@ def load_user(user_id):
     bruker.isauthenticated = user_dict['is_authenticated']
     return bruker
 
+# @login_manager.unauthorized_handler
+# def unauthorized_callback():
+#        return redirect(url_for('login'))
+
 @app.route('/')
 def forside() -> 'html':
     print("Forside")
@@ -43,6 +47,7 @@ def forside() -> 'html':
 @app.route('/hemmelig')
 @login_required
 def hemmelig() -> 'html':
+    pass
     return render_template('hemmelig.html', the_title="Bestkyttet side")
 
 @app.route('/blogg')
@@ -73,15 +78,19 @@ def innlegg() -> 'html':
             return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData)
 
 @app.route('/login', methods=["GET", "POST"])
-
+@app.route('/LoggInn', methods=["GET", "POST"])
 def login() -> 'html':
-    if request.method == "GET":                 #POST
+    form = loggInn(request.form)
+    if request.method == "POST" and form.validate():
+
+        bruker_navn = request.form['brukernavn']
+        passord =  request.form['password']
+        # bruker = (brukernavn, passord)
+    # if request.method == "GET":                 #POST
         # bruker_navn = request.form['username']
         # password = request.form['password']
-        bruker_navn = "bruker_en"
-        passord = "passord"
-
-
+        # bruker_navn = "bruker_en"
+        # passord = "passord"
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
             if Bruker.check_password(aktuellBruker, passord):
@@ -91,6 +100,9 @@ def login() -> 'html':
                 session['bruker'] = aktuellBruker.__dict__
                 print(session['bruker'])
             return redirect('/hemmelig')
+    else:
+        return render_template('loggInn.html', form=form)
+
 
 @app.route('/logout', methods=["GET", "POST"])
 
@@ -98,7 +110,7 @@ def logout() -> 'html':
     session.pop('logged_in')
     return redirect('/')
 
-app.secret_key = secrets.token_urlsafe(16)
+
 @app.route('/brukerEndre', methods=["GET", "POST"])
 def brukerEndre() -> 'html':
     form = BrukerSkjema(request.form)
@@ -115,6 +127,22 @@ def brukerEndre() -> 'html':
     else:
         return render_template('brukerEndre.html',
                                form=form)
+
+
+# def loggInn() -> 'html':
+#     form = loggInn(request.form)
+#     if request.method == "POST" and form.validate():
+#
+#         brukernavn = request.form['brukernavn']
+#         passord = form.passord.data
+#
+#         bruker = (brukernavn, passord)
+#
+#
+#         return redirect('/')
+#     else:
+#         return render_template('loggInn.html', form=form)
+
 
 @app.route('/upload_page', methods=["GET", "POST"])
 def upload_page() -> 'html':
@@ -165,6 +193,8 @@ def download_file(id):
         response.headers.set(
         'Content-Disposition', 'inline', filename = attachment.filename)
         return response
+
+app.secret_key = secrets.token_urlsafe(16)
 
 if __name__ == '__main__':
     app.run(debug=True)
