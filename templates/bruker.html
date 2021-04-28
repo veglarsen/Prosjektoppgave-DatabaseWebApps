@@ -1,10 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Bruker</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h2>User</h2>
+        {#    må bestemme action="" #}
+        <form action="/bruker" method="post">
+            <div>
+                {{ form.forNavn.label }}<br>
+                {{ form.forNavn(size=32) }}<br>
+                {% for error in form.forNavn.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.etterNavn.label }}<br>
+                {{ form.etterNavn(size=32) }}<br>
+                {% for error in form.etterNavn.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.eMail.label }}<br>
+                {{ form.eMail(size=32) }}<br>
+                {% for error in form.eMail.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="ID" value="{{ form.ID }}"/>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
 
-</body>
-</html>
+{% endblock %}
