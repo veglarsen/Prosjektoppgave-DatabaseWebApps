@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect
+
+from brukerSkjema import BrukerSkjema
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar
 
@@ -43,6 +45,22 @@ def innlegg() -> 'html':
             kommentarData = [Kommentar(*x) for x in kommentar]
             return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData)
 
+@app.route('/brukerEndre', methods=["GET", "POST"])
+def brukerEndre() -> 'html':
+    form = BrukerSkjema(request.form)
+    if request.method == "POST" and form.validate():
+
+        ID = request.form['ID']
+        fornavn = form.fornavn.data
+        etternavn = form.etternavn.data
+        eMail = form.eMail.data
+        bruker = (fornavn, etternavn, eMail, ID)
+        with myDB() as db:
+            result = db.brukerEndre(bruker)
+        return redirect('/')
+    else:
+        return render_template('brukerEndre.html',
+                               form=form)
 
 if __name__ == '__main__':
     app.run()
