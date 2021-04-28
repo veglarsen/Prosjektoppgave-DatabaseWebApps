@@ -11,7 +11,8 @@ class myDB:
 
     def __enter__(self) -> 'cursor':
         self.conn = mysql.connector.connect(**self.configuration)
-        self.cursor = self.conn.cursor(prepared=True)
+        self.cursor = self.conn.cursor(buffered=True)
+        # sjekk om prepared og buffered kan leve sammen
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -99,5 +100,25 @@ class myDB:
             WHERE
                 bruker = %s'''
             self.cursor.execute(sql1, bruker)
+        except mysql.connector.Error as err:
+            print(err)
+
+    def selectAllVedlegg(self):
+        try:
+            self.cursor.execute('''SELECT * from vedlegg where innlegg_ID=1''')
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
+    def addVedlegg(self, attachment):
+        try:
+            sql = '''INSERT
+            INTO
+                vedlegg(vedlegg_ID, fil_navn, fil_type, fil_data, size, innlegg_ID)
+            VALUES
+                (NULL, %s, %s, %s, %s, %s)'''
+            self.cursor.execute(sql, attachment)
+
         except mysql.connector.Error as err:
             print(err)

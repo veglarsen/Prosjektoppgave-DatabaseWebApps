@@ -1,17 +1,24 @@
 import secrets
 from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash
+from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect,session, make_response, url_for
+from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect
 
 from brukerSkjema import BrukerSkjema
 from database import myDB
-from blogg import Blogg, Innlegg, Kommentar
+from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 app = Flask(__name__, template_folder='templates')
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg', 'zip'}
+csrf = CSRFProtect(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -37,10 +44,7 @@ def forside() -> 'html':
 @app.route('/hemmelig')
 @login_required
 def hemmelig() -> 'html':
-    # if 'logged_in' in session:
     return render_template('hemmelig.html', the_title="Bestkyttet side")
-    # else:
-    #     return redirect("/")
 
 @app.route('/blogg')
 def blogg() -> 'html':
@@ -70,6 +74,7 @@ def innlegg() -> 'html':
             return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData)
 
 @app.route('/login', methods=["GET", "POST"])
+
 def login() -> 'html':
     if request.method == "GET":                 #POST
         # bruker_navn = request.form['username']
@@ -117,5 +122,34 @@ def brukerEndre() -> 'html':
         return render_template('brukerEndre.html',
                                form=form)
 
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/uploadfile', methods=['GET', 'POST'])
+def upload_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        return render_template('error.html',
+                               msg='No files')
+    file = request.files['file']
+    mimetype = file.mimetype
+    blob = request.files['file'].read()
+    size = len(blob)
+
+    if file.filename == '':
+        print('no filename')
+        return redirect(request.url)
+    elif file and allowed_file(file.filename):
+        id = 1
+        filename = secure_filename(file.filename)
+        attachment = (filename, mimetype, blob, size, id)
+        with myDB() as db:
+            result = db.addVedlegg(attachment)
+
+        return redirect(url_for('show_all_files', _external=True))
+    else:
+        return redirect(url_for('show_all_files', _external=True))
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
