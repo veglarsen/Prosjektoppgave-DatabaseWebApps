@@ -73,8 +73,8 @@ class myDB:
 
     def selectBruker(self, bruker_navn):
         try:
-            self.cursor.execute("SELECT bruker, etternavn, fornavn, passord, eMail FROM bruker where bruker = (%s)", (bruker_navn,))
-            result = self.cursor.fetchall()
+            self.cursor.execute("SELECT * FROM bruker where bruker = (%s)", (bruker_navn,))
+            result = self.cursor.fetchone()
         except mysql.connector.Error as err:
                 print(err)
         return result
@@ -87,3 +87,4 @@ class myDB:
         except mysql.connector.Error as err:
                 print(err)
         return result
+

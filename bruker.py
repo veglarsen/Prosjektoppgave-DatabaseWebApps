@@ -4,31 +4,22 @@ from database import myDB
 class Bruker():
 
     # construct / attributes
-    def __init__(self, bruker, etternavn, fornavn, passord, eMail):
-        self.bruker = bruker
-        self.etternavn = etternavn
-        self.fornavn = fornavn
+    def __init__(self,id, bruker, etternavn, fornavn, passord, eMail):
+        self.id = id
+        self.bruker = bruker                                        #"bruker_en"
+        self.etternavn = etternavn                                  #"johansen"
+        self.fornavn = fornavn                                      #"ole"
         self.passwordHash = passord.replace("\'", "")
-        self.passord = passord
-        self.eMail = eMail
+        self.eMail = eMail                                          #"ole@ole.no"
         self.is_authenticated = False
         self.is_active = True
         self.is_anonymous = False
 
-    def check_password(self, password):
-        # return check_password_hash(self.passwordHash, password)
-        return True
-
     @staticmethod
     def login(bruker, password):
         with myDB() as db:
-            Bruker = Bruker(*db.selectBruker(bruker))
-            if password == Bruker.passord:
-                return True
-            else:
-                return False
-
-            if check_password_hash(Bruker.passord, password):
+            bruker = Bruker(*db.selectBruker(bruker))
+            if check_password_hash(bruker.passwordHash, password):
                 return True
             else:
                 return False
@@ -36,8 +27,8 @@ class Bruker():
     def set_password(self, passord):
         self.passwordHash = generate_password_hash(passord)
 
-    def check_password(self, passord):
-        return check_password_hash(self.passwordHash, passord)
+    def check_password(self, password):
+        return check_password_hash(self.passwordHash, password)
 
     def __str__(self):
         return f'Username: {self.bruker}\n' + \
@@ -48,9 +39,9 @@ class Bruker():
         """True, as all users are active."""
         return True
 
-    # def get_id(self):
-    #     """Return the email address to satisfy Flask-Login's requirements."""
-    #     return self.id
+    def get_id(self):
+        """Return the email address to satisfy Flask-Login's requirements."""
+        return self.id                          #id
 
     def is_authenticated(self):
         """Return True if the user is authenticated."""
