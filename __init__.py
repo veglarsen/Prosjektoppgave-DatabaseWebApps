@@ -50,11 +50,11 @@ def brukerEndre() -> 'html':
     form = BrukerSkjema(request.form)
     if request.method == "POST" and form.validate():
 
-        ID = request.form['ID']
+        brukernavn = request.form['brukernavn']
         fornavn = form.fornavn.data
         etternavn = form.etternavn.data
         eMail = form.eMail.data
-        bruker = (fornavn, etternavn, eMail, ID)
+        bruker = (fornavn, etternavn, eMail, brukernavn)
         with myDB() as db:
             result = db.brukerEndre(bruker)
         return redirect('/')

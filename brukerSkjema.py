@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Email, Length
 
 
 class BrukerSkjema(Form):
-    brukernavn = StringField('Username: ', validators=[DataRequired()])
+    nyBruker = StringField('Username: ', validators=[DataRequired()])
     fornavn = StringField('First name: ', validators=[DataRequired()])
     etternavn = StringField('Last name: ', validators=[DataRequired()])
     password = PasswordField('New Password: ', [
@@ -13,6 +13,6 @@ class BrukerSkjema(Form):
      ])
     pwconfirm = PasswordField('Repeat Password: ')
     eMail = EmailField('E-mail Address: ', validators=[DataRequired(), Email(), Length(max=120)])
-    # ID = HiddenField()
+    brukernavn = HiddenField()
     submit = SubmitField('Submit form')
 
