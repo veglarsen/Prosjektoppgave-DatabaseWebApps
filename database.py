@@ -70,3 +70,15 @@ class myDB:
         except mysql.connector.Error as err:
                 print(err)
         return result
+
+    def brukerDetaljer(self, bruker): # kanskje tillate å endre brukernavn
+        try:
+            sql1 = '''UPDATE 
+                bruker 
+            SET 
+                fornavn = %s, etternavn = %s, eMail = %s, passord = %s
+            WHERE
+                bruker = %s'''
+            self.cursor.execute(sql1, bruker)
+        except mysql.connector.Error as err:
+                print(err)

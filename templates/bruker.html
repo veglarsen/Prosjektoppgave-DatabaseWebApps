@@ -2,19 +2,18 @@
 {% block body %}
     <div class="container">
         <h2>User</h2>
-        {#    må bestemme action="" #}
         <form action="/bruker" method="post">
             <div>
-                {{ form.forNavn.label }}<br>
-                {{ form.forNavn(size=32) }}<br>
-                {% for error in form.forNavn.errors %}
+                {{ form.fornavn.label }}<br>
+                {{ form.fornavn(size=32) }}<br>
+                {% for error in form.fornavn.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
             <div>
-                {{ form.etterNavn.label }}<br>
-                {{ form.etterNavn(size=32) }}<br>
-                {% for error in form.etterNavn.errors %}
+                {{ form.etternavn.label }}<br>
+                {{ form.etternavn(size=32) }}<br>
+                {% for error in form.etternavn.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
