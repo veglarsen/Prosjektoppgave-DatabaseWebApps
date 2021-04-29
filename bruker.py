@@ -35,8 +35,6 @@ class Bruker():
         else:
             return False
 
-
-        return Bruker
     def __str__(self):
         return f'Id: {self.id}\n' + \
                f'Username: {self.bruker}\n' + \
