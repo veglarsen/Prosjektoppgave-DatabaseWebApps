@@ -29,11 +29,6 @@ class NyBrukerSkjema(Form):
     fornavn = StringField('First name: ', validators=[DataRequired(), Length(max=20)])
     etternavn = StringField('Last name: ', validators=[DataRequired(), Length(max=20)])
     password = PasswordField('New Password: ')
-    # hashedPassword = generate_password_hash(password)
-    # pwconfirm = PasswordField('Repeat Password: ', [
-    #     validators.InputRequired(),
-    #     validators.EqualTo('password', message='Passwords must match')
-    #  ])
     pwconfirm = PasswordField('Repeat Password: ', [validators.InputRequired(), validators.EqualTo('password', message='Passwords must match')])
     eMail = EmailField('E-mail Address: ', validators=[DataRequired(), Email(), Length(max=120)])
     submit = SubmitField('Submit form')
