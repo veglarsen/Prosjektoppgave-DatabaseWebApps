@@ -136,3 +136,11 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
+    def selectTag(self):
+        try:
+            self.cursor.execute('''SELECT * from tag''')
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
