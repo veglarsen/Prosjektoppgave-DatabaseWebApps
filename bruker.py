@@ -11,9 +11,17 @@ class Bruker():
         self.fornavn = fornavn
         self.passwordHash = passord.replace("\'", "")
         self.eMail = eMail
-        self.is_authenticated = False
-        self.is_active = True
-        self.is_anonymous = False
+
+
+    @staticmethod
+    def login(username, password):                                                      #
+                                                                                        #
+        with myDB() as db:                                                              #
+            bruker = Bruker(*db.getUser(username))                                      #
+            if check_password_hash(bruker.passwordHash, password):                      # e ikke i bruk
+                return True                                                             #
+            else:                                                                       #
+                return False                                                            #
 
     def set_password(self, passord):
         self.passwordHash = generate_password_hash(passord)
@@ -22,7 +30,8 @@ class Bruker():
         return check_password_hash(self.passwordHash, password)
 
     def __str__(self):
-        return f'Username: {self.bruker}\n' + \
+        return f'Id: {self.id}\n' + \
+               f'Username: {self.bruker}\n' + \
                f'Email: {self.eMail}\n' + \
                f'Password Hash: {self.passwordHash}'
 
@@ -32,7 +41,7 @@ class Bruker():
 
     def get_id(self):
         """Return the email address to satisfy Flask-Login's requirements."""
-        return self.id                          #id
+        return self.id
 
     def is_authenticated(self):
         """Return True if the user is authenticated."""

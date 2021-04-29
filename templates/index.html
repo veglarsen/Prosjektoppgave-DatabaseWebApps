@@ -7,6 +7,9 @@
                 <th>Blogg tittel</th>
         </thead>
         <tbody>
+        {% if current_user.is_authenticated %}
+                <p>Hi {{ current_user.bruker }}!</p>
+        {% endif %}
             {% for blogg in bloggObjektene %}
             <tr>
                 <td>

@@ -13,8 +13,7 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 app = Flask(__name__, template_folder='templates')
 
 
-login_manager = LoginManager()
-login_manager.init_app(app)
+
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg', 'zip'}
@@ -23,11 +22,13 @@ app.secret_key = secrets.token_urlsafe(16)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     user_dict = session['bruker']
     bruker = Bruker(user_dict['id'], user_dict['bruker'], user_dict['etternavn'], user_dict['fornavn'],  user_dict['passwordHash'],  user_dict['eMail'])
-    bruker.isauthenticated = user_dict['is_authenticated']
+    Bruker.isauthenticated = user_dict['is_authenticated']
     return bruker
 
 # @login_manager.unauthorized_handler
@@ -47,12 +48,6 @@ def forside() -> 'html':
             bloggObjektene = [Blogg(*x) for x in result]
             print(bloggObjektene)
             return render_template('index.html', bloggObjektene=bloggObjektene)
-
-@app.route('/hemmelig')
-@login_required
-def hemmelig() -> 'html':
-    pass
-    return render_template('hemmelig.html', the_title="Bestkyttet side")
 
 @app.route('/blogg')
 def blogg() -> 'html':
@@ -89,11 +84,8 @@ def login() -> 'html':
         pass
         bruker_navn = form.brukernavn.data
         passord = form.passord.data
-        # bruker = (brukernavn, passord)
         # bruker_navn = request.form['username']
         # password = request.form['password']
-        # bruker_navn = "bruker_en"
-        # passord = "passord"
 
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
@@ -103,20 +95,25 @@ def login() -> 'html':
                 login_user(aktuellBruker)
                 session['bruker'] = aktuellBruker.__dict__
                 print(session['bruker'])
-            return redirect('/hemmelig')
+                print(current_user.bruker)
+                print(aktuellBruker.is_authenticated)
+                return redirect('/admin')
+            else:
+                return render_template('loggInn.html', form=form)
     else:
         return render_template('loggInn.html', form=form)
 
 @app.route('/admin', methods=["GET", "POST"])
+@login_required
 def admin() -> 'html':
-    form = loggInn(request.form)
-    brukernavn = form.brukernavn.data
-    passord = form.passord.data
-    return render_template('admin.html', brukernavn=brukernavn, passord=passord)
+
+
+    return render_template('admin.html', the_title="Bestkyttet side", user=current_user.bruker)
                                                                 # login required
 @app.route('/logout', methods=["GET", "POST"])
-def logout() -> 'html':                                         # Endre denne
-    session.pop('logged_in')
+@login_required
+def logout() -> 'html':
+    logout_user()
     return redirect('/')
 
 
