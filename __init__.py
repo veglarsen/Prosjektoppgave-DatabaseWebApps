@@ -83,14 +83,14 @@ def innlegg() -> 'html':
 def login() -> 'html':
     form = loggInn(request.form)
     if request.method == "POST" and form.validate():
-        # bruker_navn = form.brukernavn.data
-        # passord =  form.brukernavn.data
+        bruker_navn = form.brukernavn.data
+        passord =  form.brukernavn.data
         # bruker = (brukernavn, passord)
     # if request.method == "GET":                 #POST
         # bruker_navn = request.form['username']
         # password = request.form['password']
-        bruker_navn = "bruker_en"
-        passord = "passord"
+        # bruker_navn = "bruker_en"
+        # passord = "passord"
         if form.validate_on_submit():
             return '<h1>' + form.brukernavn.data + " " + form.passord.data + '</h1>'
         with myDB() as db:
