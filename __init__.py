@@ -9,16 +9,19 @@ from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 
+
 app = Flask(__name__, template_folder='templates')
-# app.secret_key = b'_5#y2L"F4Q8z<\n\xec]/'             #??????????????????????
-# csrf = CSRFProtect(app)
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg', 'zip'}
-csrf = CSRFProtect(app)
+
+app.secret_key = secrets.token_urlsafe(16)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -83,16 +86,15 @@ def innlegg() -> 'html':
 def login() -> 'html':
     form = loggInn(request.form)
     if request.method == "POST" and form.validate():
+        pass
         bruker_navn = form.brukernavn.data
-        passord =  form.brukernavn.data
+        passord = form.passord.data
         # bruker = (brukernavn, passord)
-    # if request.method == "GET":                 #POST
         # bruker_navn = request.form['username']
         # password = request.form['password']
         # bruker_navn = "bruker_en"
         # passord = "passord"
-        if form.validate_on_submit():
-            return '<h1>' + form.brukernavn.data + " " + form.passord.data + '</h1>'
+
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
             if Bruker.check_password(aktuellBruker, passord):
@@ -105,7 +107,12 @@ def login() -> 'html':
     else:
         return render_template('loggInn.html', form=form)
 
-
+@app.route('/admin', methods=["GET", "POST"])
+def admin() -> 'html':
+    form = loggInn(request.form)
+    brukernavn = form.brukernavn.data
+    passord = form.passord.data
+    return render_template('admin.html', brukernavn=brukernavn, passord=passord)
                                                                 # login required
 @app.route('/logout', methods=["GET", "POST"])
 def logout() -> 'html':                                         # Endre denne
@@ -181,7 +188,7 @@ def download_file(id):
         'Content-Disposition', 'inline', filename = attachment.filename)
         return response
 
-app.secret_key = secrets.token_urlsafe(16)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -18,6 +18,7 @@ class BrukerSkjema(Form):
     submit = SubmitField('Submit form')
 
 class loggInn(Form):
+
     brukernavn = StringField('Brukernavn: ', validators=[DataRequired()])
     passord = PasswordField('Passord: ', validators=[DataRequired()])
     submit = SubmitField('Submit form')
