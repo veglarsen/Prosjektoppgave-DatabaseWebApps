@@ -10,7 +10,12 @@
         <tbody>
             <tr>
             {% if is_owner == True %}
-                <p>Hi {{ current_user.bruker }}!</p>
+                <a href="{{ url_for('slettInnlegg') }}?id={{ innleggData.innlegg_ID }}">
+                        Slett innlegg
+                    </a><br>
+                <a href="{{ url_for('redigerInnlegg') }}?id={{ innleggData.innlegg_ID }}">
+                        Rediger innlegg
+                    </a><br>
             {% endif %}
 
                     <td>

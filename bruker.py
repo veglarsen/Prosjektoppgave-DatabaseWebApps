@@ -12,17 +12,6 @@ class Bruker():
         self.passwordHash = passord.replace("\'", "")
         self.eMail = eMail
 
-
-    @staticmethod
-    def login(username, password):                                                      #
-                                                                                        #
-        with myDB() as db:                                                              #
-            bruker = Bruker(*db.getUser(username))                                      #
-            if check_password_hash(bruker.passwordHash, password):                      # e ikke i bruk
-                return True                                                             #
-            else:                                                                       #
-                return False                                                            #
-
     def set_password(self, passord):
         self.passwordHash = generate_password_hash(passord)
 
@@ -35,8 +24,6 @@ class Bruker():
         else:
             return False
 
-
-        return Bruker
     def __str__(self):
         return f'Id: {self.id}\n' + \
                f'Username: {self.bruker}\n' + \

@@ -8,6 +8,8 @@ from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
+
+
 app = Flask(__name__, template_folder='templates')
 
 
@@ -68,16 +70,14 @@ def innlegg() -> 'html':
         if result is None:
             return render_template('error.html', msg='Invalid parameter')
         else:
-            # innleggData = [Innlegg(*x) for x in result]
-
+            is_owner = False
+            with myDB() as db:
+                innleggData = Innlegg(*db.selectEtInnlegg(id))
             if current_user.is_authenticated:
-                with myDB() as db:
-                    innleggData = Innlegg(*db.selectEtInnlegg(id))
-                is_owner = Bruker.is_owner(current_user, innleggData.eier)
-            else:
-                is_owner = False
-            kommentar = db.kommentarer(id)
-            kommentarData = [Kommentar(*x) for x in kommentar]
+                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
+            with myDB() as db:
+                kommentar = db.kommentarer(id)
+                kommentarData = [Kommentar(*x) for x in kommentar]
             return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner)
 
 # @app.route('/login', methods=["GET", "POST"])
@@ -189,7 +189,7 @@ def upload_file():
 
         return redirect(url_for('upload_page', _external=True))
     else:
-        return redirect(url_for('upload_page', _external=True))
+        return redirect(url_for('show_all_files', _external=True))
 
 @app.route('/download/<id>')
 def download_file(id):
@@ -204,6 +204,17 @@ def download_file(id):
         response.headers.set(
         'Content-Disposition', 'inline', filename = attachment.fil_navn)
         return response
+
+@app.route('/slettInnlegg', methods=["GET", "POST"])
+@login_required
+def slettInnlegg() -> 'html':
+    return "slett Innlegg"
+
+@app.route('/redigerInnlegg', methods=["GET", "POST"])
+@login_required
+def redigerInnlegg() -> 'html':
+    return "Rediger Innlegg"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
