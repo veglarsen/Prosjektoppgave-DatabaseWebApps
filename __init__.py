@@ -1,4 +1,6 @@
 import secrets
+from datetime import date
+
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
@@ -217,10 +219,10 @@ def redigerInnlegg() -> 'html':
 
 @app.route('/drawAddForm', methods=["GET", "POST"])
 
-def tegneNyttInnlegg() -> 'html':
-    form = LeggTilOppslag()
+def tegneNyttInnlegg() -> 'html': # uferdig, mangler template
+    form = InnleggSkjema()
     form.dato.data = date.today()
-    return render_template('addOppslag.html', form=form)
+    return render_template('addInnlegg.html', form=form)
 
 
 @app.route('/add', methods=["GET", "POST"])
@@ -233,7 +235,8 @@ def nyttInnlegg() -> 'html': # uferdig
         tittel = form.tittel.data
         ingress = form.ingress.data
         innlegg = form.innlegg.data
-        tag = form.tag.data
+        tag = form.tag.data # if null use newTag
+        newTag = form.newTag.data # if null, use tag
         dato = form.dato.data
         # bruker = form.bruker.data
         nyttInnlegg = (tittel, ingress, innlegg, tag, dato, bloggID)
