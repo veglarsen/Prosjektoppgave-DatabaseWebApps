@@ -4,9 +4,9 @@ from wtforms.validators import DataRequired, Email, Length
 
 
 class BrukerSkjema(Form):
-    nyBruker = StringField('Username: ', validators=[DataRequired()])
-    fornavn = StringField('First name: ', validators=[DataRequired()])
-    etternavn = StringField('Last name: ', validators=[DataRequired()])
+    nyBruker = StringField('Username: ', validators=[DataRequired(), Length(max=20)])
+    fornavn = StringField('First name: ', validators=[DataRequired(), Length(max=20)])
+    etternavn = StringField('Last name: ', validators=[DataRequired(), Length(max=20)])
     password = PasswordField('New Password: ', [
         validators.InputRequired(),
         validators.EqualTo('pwconfirm', message='Passwords must match')
