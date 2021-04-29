@@ -5,6 +5,7 @@ from database import myDB
 
 with myDB() as db:
     selectTag = db.selectTag()
+   # selectUser = db.selectBruker()
 
 
 class InnleggSkjema(Form):
@@ -15,5 +16,6 @@ class InnleggSkjema(Form):
     newTag = StringField('New tag: ', validators=[DataRequired(), Length(max=10)])
     dato = DateField('Dato', validators=[DataRequired()])
     # innleggID = HiddenField() # tror ikke denne er nødvendig
+    # bruker = StringField(selectUser)
     bloggID = HiddenField()
     submit = SubmitField('Submit form')
