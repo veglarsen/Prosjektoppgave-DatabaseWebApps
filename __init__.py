@@ -106,9 +106,9 @@ def login() -> 'html':
         return render_template('loggInn.html', form=form)
 
 
+                                                                # login required
 @app.route('/logout', methods=["GET", "POST"])
-
-def logout() -> 'html':
+def logout() -> 'html':                                         # Endre denne
     session.pop('logged_in')
     return redirect('/')
 
