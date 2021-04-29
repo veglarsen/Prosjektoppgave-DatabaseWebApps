@@ -230,7 +230,7 @@ def tegneNyttInnlegg() -> 'html': # uferdig, mangler template
 def nyttInnlegg() -> 'html': # uferdig
     form = InnleggSkjema(request.form)
     if request.method == "POST" and form.validate():
-        # increment innleggID
+        # innleggID
         bloggID = form.bloggID.data
         tittel = form.tittel.data
         ingress = form.ingress.data
@@ -239,7 +239,7 @@ def nyttInnlegg() -> 'html': # uferdig
         newTag = form.newTag.data # if null, use tag
         dato = form.dato.data
         # bruker = form.bruker.data
-        nyttInnlegg = (tittel, ingress, innlegg, tag, dato, bloggID)
+        nyttInnlegg = (bloggID, tittel, ingress, innlegg, tag, dato)
         with myDB() as db:
             db.nyttInnlegg(nyttInnlegg)
         return redirect('index')

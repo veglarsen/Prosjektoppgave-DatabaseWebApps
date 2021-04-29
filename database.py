@@ -56,6 +56,18 @@ class myDB:
             print(err)
         return result
 
+    def nyttInnlegg(self, nyttInnlegg): # tror innleggID og bloggID skal være null
+        try:
+            sql1 = '''INSERT INTO
+            innlegg
+            (innleggID, bloggID, tittel, ingress, innlegg, tag, dato, treff)
+            VALUES
+            (NULL, NULL, %s, %s, %s, %s, %s, %s, 0)
+            '''
+            self.cursor.execute(sql1, nyttInnlegg)
+        except mysql.connector.Error as err:
+            print(err)
+
     def newBlogg(self, bruker_navn, blogg_navn):
         try:
             self.cursor.execute("""INSERT INTO blogg (blogg_ID, eier, blogg_navn) VALUES (NULL, %s, %s);""")
