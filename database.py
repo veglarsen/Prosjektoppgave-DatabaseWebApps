@@ -86,14 +86,24 @@ class myDB:
                 print(err)
         return result
 
-    def addBruker(self, brukernavn, etternavn, fornavn, passord, eMail):
+    def addBruker(self, bruker):
+        # try:
+        #     self.cursor.execute("""INSERT INTO bruker('bruker', 'etternavn', 'fornavn', 'passord', 'eMail')
+        #                         VALUES (NULL, (%s), (%s), (%s), (%s), (%s));""", (brukernavn, etternavn, fornavn, passord, eMail ))
+        #     result = self.cursor.fetchall()
+        # except mysql.connector.Error as err:
+        #         print(err)
+        # return result
         try:
-            self.cursor.execute("""INSERT INTO bruker('bruker', 'etternavn', 'fornavn', 'passord', 'eMail')
-                                VALUES ((%s), (%s), (%s), (%s), (%s));""", (brukernavn, etternavn, fornavn, passord, eMail ))
-            result = self.cursor.fetchall()
+            sql = '''INSERT INTO 
+            bruker
+            (id, bruker, etternavn, fornavn, passord, eMail)
+            VALUES 
+            (NULL, %s, %s, %s, %s, %s)'''
+            self.cursor.execute(sql, bruker)
         except mysql.connector.Error as err:
-                print(err)
-        return result
+            print(err)
+
 
 
 

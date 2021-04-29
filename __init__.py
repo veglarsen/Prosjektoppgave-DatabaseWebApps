@@ -3,10 +3,11 @@ from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, make_response, url_for
-from brukerSkjema import BrukerSkjema, loggInn
+from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from werkzeug.security import generate_password_hash
 
 
 
@@ -123,14 +124,16 @@ def logout() -> 'html':
 
 @app.route('/nyBruker', methods=["GET", "POST"])
 def nyBruker() -> 'html':
-    form = BrukerSkjema(request.form)
+    form = NyBrukerSkjema(request.form)
     if request.method == "POST" and form.validate():
 
         brukernavn = form.brukernavn.data
         fornavn = form.fornavn.data
         etternavn = form.etternavn.data
         eMail = form.eMail.data
-        bruker = (brukernavn, fornavn, etternavn, eMail)
+        passord = form.password.data
+        hashedPassword = generate_password_hash(passord)
+        bruker = (brukernavn, etternavn, fornavn, hashedPassword, eMail)
         with myDB() as db:
             db.addBruker(bruker)
         return redirect('/')
