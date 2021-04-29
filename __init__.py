@@ -1,17 +1,18 @@
 import secrets
-from flask import Flask, render_template, request, redirect, session, flash
-from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect,session, make_response, url_for
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
-from flask import Flask, render_template, request, redirect, session, flash
+from flask import Flask, render_template, request, redirect, session, make_response, url_for
 from brukerSkjema import BrukerSkjema, loggInn
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
+
 app = Flask(__name__, template_folder='templates')
+# app.secret_key = b'_5#y2L"F4Q8z<\n\xec]/'             #??????????????????????
+# csrf = CSRFProtect(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -77,20 +78,21 @@ def innlegg() -> 'html':
             kommentarData = [Kommentar(*x) for x in kommentar]
             return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData)
 
-@app.route('/login', methods=["GET", "POST"])
-@app.route('/LoggInn', methods=["GET", "POST"])
+# @app.route('/login', methods=["GET", "POST"])
+@app.route('/loggInn', methods=["GET", "POST"])
 def login() -> 'html':
     form = loggInn(request.form)
     if request.method == "POST" and form.validate():
-
-        bruker_navn = request.form['brukernavn']
-        passord =  request.form['password']
+        # bruker_navn = form.brukernavn.data
+        # passord =  form.brukernavn.data
         # bruker = (brukernavn, passord)
     # if request.method == "GET":                 #POST
         # bruker_navn = request.form['username']
         # password = request.form['password']
-        # bruker_navn = "bruker_en"
-        # passord = "passord"
+        bruker_navn = "bruker_en"
+        passord = "passord"
+        if form.validate_on_submit():
+            return '<h1>' + form.brukernavn.data + " " + form.passord.data + '</h1>'
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
             if Bruker.check_password(aktuellBruker, passord):
@@ -127,21 +129,6 @@ def brukerEndre() -> 'html':
     else:
         return render_template('brukerEndre.html',
                                form=form)
-
-
-# def loggInn() -> 'html':
-#     form = loggInn(request.form)
-#     if request.method == "POST" and form.validate():
-#
-#         brukernavn = request.form['brukernavn']
-#         passord = form.passord.data
-#
-#         bruker = (brukernavn, passord)
-#
-#
-#         return redirect('/')
-#     else:
-#         return render_template('loggInn.html', form=form)
 
 
 @app.route('/upload_page', methods=["GET", "POST"])

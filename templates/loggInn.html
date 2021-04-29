@@ -2,21 +2,23 @@
 {% block body %}
     <div class="container">
         <h2>User</h2>
-        <form action="/loggInn" method="post">
+        <form action="/loggInn" method="POST">
+
             <div>
                 {{ form.brukernavn.label }}<br>
                 {{ form.brukernavn(size=32) }}<br>
-                {% for error in form.etternavn.errors %}
+                {% for error in form.brukernavn.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
             <div>
-                {{ form.password.label }}<br>
-                {{ form.password(size=32) }}<br>
-                {% for error in form.password.errors %}
+                {{ form.passord.label }}<br>
+                {{ form.passord(size=32) }}<br>
+                {% for error in form.passord.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
+            <input type="hidden" name="id" value="{{ form.id }}" /> # finn ut hvorfor det kommer ut "The CSRF token is missing." + de wtform video
             <p>{{ form.submit() }}</p>
         </form>
     </div>

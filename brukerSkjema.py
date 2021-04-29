@@ -3,6 +3,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
 
 
+
 class BrukerSkjema(Form):
     nyBruker = StringField('Username: ', validators=[DataRequired()])
     fornavn = StringField('First name: ', validators=[DataRequired()])
@@ -18,7 +19,7 @@ class BrukerSkjema(Form):
 
 class loggInn(Form):
     brukernavn = StringField('Brukernavn: ', validators=[DataRequired()])
-    passord = StringField('Passord: ', validators=[DataRequired()])
+    passord = PasswordField('Passord: ', validators=[DataRequired()])
     submit = SubmitField('Submit form')
 
 

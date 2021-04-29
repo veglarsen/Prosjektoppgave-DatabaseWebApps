@@ -13,9 +13,11 @@
                     <a href="{{ url_for('blogg') }}?id={{ blogg.blogg_ID }}">
                         {{ blogg.blogg_navn }}
                     </a>
+
                 </td>
             </tr>
             {% endfor %}
+        <a href="{{ url_for('login')}}">Logg Inn</a>
         </tbody>
     </table>
 {% endblock %}
