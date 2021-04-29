@@ -5,8 +5,7 @@ from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect,session, make_response, url_for
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
-from flask import Flask, render_template, request, redirect
-
+from flask import Flask, render_template, request, redirect, session, flash
 from brukerSkjema import BrukerSkjema
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
@@ -81,12 +80,7 @@ def login() -> 'html':
         # password = request.form['password']
         bruker_navn = "bruker_en"
         passord = "passord"
-        # if Bruker.login(bruker_navn, passord):
-        #     session['logged_in'] = True
-        #     session['username'] = bruker_navn
-        #     flash('You are logged in')
-        #     return redirect('/hemmelig')
-        # return redirect('/')
+
 
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
