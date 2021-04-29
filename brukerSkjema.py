@@ -34,6 +34,6 @@ class NyBrukerSkjema(Form):
     #     validators.InputRequired(),
     #     validators.EqualTo('password', message='Passwords must match')
     #  ])
-    pwconfirm = PasswordField('Repeat Password: ')
+    pwconfirm = PasswordField('Repeat Password: ', [validators.InputRequired(), validators.EqualTo('password', message='Passwords must match')])
     eMail = EmailField('E-mail Address: ', validators=[DataRequired(), Email(), Length(max=120)])
     submit = SubmitField('Submit form')
