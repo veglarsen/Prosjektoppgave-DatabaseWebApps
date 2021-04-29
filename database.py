@@ -59,10 +59,8 @@ class myDB:
     def incrementTreff(self, id):
         try:
             self.cursor.execute('UPDATE innlegg SET treff = (SELECT treff FROM innlegg where innlegg_ID=(%s)) + 1 WHERE innlegg_ID = (%s)', (id, id))
-            result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
-        return result
 
     def kommentarer(self, id):
         try:

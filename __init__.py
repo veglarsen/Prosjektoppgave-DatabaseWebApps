@@ -99,6 +99,24 @@ def logout() -> 'html':
     return redirect('/')
 
 app.secret_key = secrets.token_urlsafe(16)
+
+@app.route('/nyBruker', methods=["GET", "POST"])
+def nyBruker() -> 'html':
+    form = BrukerSkjema(request.form)
+    if request.method == "POST" and form.validate():
+
+        brukernavn = form.brukernavn.data
+        fornavn = form.fornavn.data
+        etternavn = form.etternavn.data
+        eMail = form.eMail.data
+        bruker = (brukernavn, fornavn, etternavn, eMail)
+        with myDB() as db:
+            db.addBruker(bruker)
+        return redirect('/')
+    else:
+        return render_template('nyBruker.html', form=form)
+
+
 @app.route('/brukerEndre', methods=["GET", "POST"])
 def brukerEndre() -> 'html':
     form = BrukerSkjema(request.form)
