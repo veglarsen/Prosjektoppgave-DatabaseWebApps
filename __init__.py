@@ -70,22 +70,16 @@ def innlegg() -> 'html':
         if result is None:
             return render_template('error.html', msg='Invalid parameter')
         else:
-            # innleggData = [Innlegg(*x) for x in result]
             is_owner = False
-            innleggData = Innlegg(*db.selectEtInnlegg(id))
-
-
+            with myDB() as db:
+                innleggData = Innlegg(*db.selectEtInnlegg(id))
             if current_user.is_authenticated:
-                is_owner = True
-                with myDB() as db:
-                    innleggData = Innlegg(*db.selectEtInnlegg(id))
-                    eier = innleggData.eier
-                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, eier)
-            # kommentar = db.kommentarer(id)
-            # kommentarData = [Kommentar(*x) for x in kommentar]
-            return render_template('innlegg.html', innleggData=innleggData, is_owner=is_owner)
+                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
+            with myDB() as db:
+                kommentar = db.kommentarer(id)
+                kommentarData = [Kommentar(*x) for x in kommentar]
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner)
 
-# @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
 def login() -> 'html':
     form = loggInn(request.form)
@@ -194,6 +188,15 @@ def download_file(id):
         'Content-Disposition', 'inline', filename = attachment.filename)
         return response
 
+@app.route('/slettInnlegg', methods=["GET", "POST"])
+@login_required
+def slettInnlegg() -> 'html':
+    return "slett Innlegg"
+
+@app.route('/redigerInnlegg', methods=["GET", "POST"])
+@login_required
+def redigerInnlegg() -> 'html':
+    return "Rediger Innlegg"
 
 
 if __name__ == '__main__':
