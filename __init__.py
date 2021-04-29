@@ -8,8 +8,6 @@ from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
-
-
 app = Flask(__name__, template_folder='templates')
 
 
@@ -123,6 +121,23 @@ def logout() -> 'html':
     return redirect('/')
 
 
+@app.route('/nyBruker', methods=["GET", "POST"])
+def nyBruker() -> 'html':
+    form = BrukerSkjema(request.form)
+    if request.method == "POST" and form.validate():
+
+        brukernavn = form.brukernavn.data
+        fornavn = form.fornavn.data
+        etternavn = form.etternavn.data
+        eMail = form.eMail.data
+        bruker = (brukernavn, fornavn, etternavn, eMail)
+        with myDB() as db:
+            db.addBruker(bruker)
+        return redirect('/')
+    else:
+        return render_template('nyBruker.html', form=form)
+
+
 @app.route('/brukerEndre', methods=["GET", "POST"])
 def brukerEndre() -> 'html':
     form = BrukerSkjema(request.form)
@@ -139,7 +154,6 @@ def brukerEndre() -> 'html':
     else:
         return render_template('brukerEndre.html',
                                form=form)
-
 
 @app.route('/upload_page', methods=["GET", "POST"])
 def upload_page() -> 'html':
@@ -173,25 +187,23 @@ def upload_file():
         with myDB() as db:
             result = db.addVedlegg(attachment)
 
-        return redirect(url_for('show_all_files', _external=True))
+        return redirect(url_for('upload_page', _external=True))
     else:
-        return redirect(url_for('show_all_files', _external=True))
+        return redirect(url_for('upload_page', _external=True))
 
 @app.route('/download/<id>')
 def download_file(id):
     with myDB() as db:
-        attachment = Vedlegg(*db.get(id))
+        attachment = Vedlegg(*db.getVedlegg(id))
     if attachment is None:
             pass
     else:
-        response = make_response(attachment.code)
-        response.headers.set('Content-Type', attachment.mimetype)
+        response = make_response(attachment.fil_data)
+        response.headers.set('Content-Type', attachment.fil_type)
         response.headers.set('Content-Length', attachment.size)
         response.headers.set(
-        'Content-Disposition', 'inline', filename = attachment.filename)
+        'Content-Disposition', 'inline', filename = attachment.fil_navn)
         return response
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
