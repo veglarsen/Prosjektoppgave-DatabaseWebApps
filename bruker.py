@@ -29,6 +29,14 @@ class Bruker():
     def check_password(self, password):
         return check_password_hash(self.passwordHash, password)
 
+    def is_owner(self, bruker_navn, eier):
+        if bruker_navn == eier:
+            return True
+        else:
+            return False
+
+
+        return Bruker
     def __str__(self):
         return f'Id: {self.id}\n' + \
                f'Username: {self.bruker}\n' + \

@@ -11,7 +11,7 @@ class myDB:
 
     def __enter__(self) -> 'cursor':
         self.conn = mysql.connector.connect(**self.configuration)
-        self.cursor = self.conn.cursor(buffered=True)
+        self.cursor = self.conn.cursor(prepared=True)
         # sjekk om prepared og buffered kan leve sammen
         return self
 
@@ -28,10 +28,18 @@ class myDB:
             print(err)
         return result
 
+    def currentBlogg(self):
+        try:
+            self.cursor.execute("""SELECT eier FROM blogg""")
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
     def selectAlleInnlegg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, tag, treff, ingress,
-                                tittel FROM innlegg inner join blogg 
+                                tittel, eier FROM innlegg inner join blogg 
                                 on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s)""", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
@@ -41,9 +49,9 @@ class myDB:
     def selectEtInnlegg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, tag, treff, ingress, 
-                                tittel FROM innlegg inner join blogg 
+                                tittel, eier FROM innlegg inner join blogg 
                                 on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id,))
-            result = self.cursor.fetchall()
+            result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)
         return result
@@ -59,10 +67,8 @@ class myDB:
     def incrementTreff(self, id):
         try:
             self.cursor.execute('UPDATE innlegg SET treff = (SELECT treff FROM innlegg where innlegg_ID=(%s)) + 1 WHERE innlegg_ID = (%s)', (id, id))
-            result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
-        return result
 
     def kommentarer(self, id):
         try:

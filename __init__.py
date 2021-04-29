@@ -68,13 +68,19 @@ def innlegg() -> 'html':
         db.incrementTreff(id)
         result = db.selectEtInnlegg(id)
         if result is None:
-            return render_template('error.html',
-                                   msg='Invalid parameter')
+            return render_template('error.html', msg='Invalid parameter')
         else:
-            innleggData = [Innlegg(*x) for x in result]
+            # innleggData = [Innlegg(*x) for x in result]
+
+            if current_user.is_authenticated:
+                with myDB() as db:
+                    innleggData = Innlegg(*db.selectEtInnlegg(id))
+                is_owner = Bruker.is_owner(current_user, innleggData.eier)
+            else:
+                is_owner = False
             kommentar = db.kommentarer(id)
             kommentarData = [Kommentar(*x) for x in kommentar]
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])

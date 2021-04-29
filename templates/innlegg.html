@@ -9,16 +9,18 @@
         </thead>
         <tbody>
             <tr>
-                {% for innlegg in innleggData %}
+            {% if is_owner == True %}
+                <p>Hi {{ current_user.bruker }}!</p>
+            {% endif %}
+
                     <td>
-                        <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
-                            <h3>{{ innlegg.tittel }}</h3>
-                            <h3>{{ innlegg.ingress }}</h3>
-                            <p>{{ innlegg.innlegg }}</p>
-                            <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p>
+                        <a href="{{ url_for('innlegg') }}?id={{ innleggData.innlegg_ID }}">
+                            <h3>{{ innleggData.tittel }}</h3>
+                            <h3>{{ innleggData.ingress }}</h3>
+                            <p>{{ innleggData.innlegg }}</p>
+                            <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
                         </a>
                     </td>
-                {% endfor %}
                 {% for kommentar in kommentarData %}
                     <td>
                         <h3>{{ kommentar.bruker }}</h3>
