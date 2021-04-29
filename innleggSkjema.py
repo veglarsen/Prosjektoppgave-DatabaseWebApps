@@ -12,6 +12,7 @@ class InnleggSkjema(Form):
     ingress = StringField('Preface text: ', validators=[DataRequired(), Length(max=50)])
     innlegg = TextAreaField('Body text: ', validators=[DataRequired(), Length(max=6000)])  # cirka 2 sider
     tag = SelectField(u'Tag: ', choices=selectTag)
+    newTag = StringField('New tag: ', validators=[DataRequired(), Length(max=10)])
     dato = DateField('Dato', validators=[DataRequired()])
     # innleggID = HiddenField() # tror ikke denne er nødvendig
     bloggID = HiddenField()
