@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, HiddenField, SubmitField, PasswordField, validators
+from wtforms import Form, StringField, HiddenField, SubmitField, PasswordField, validators, SelectField, TextAreaField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,6 +23,15 @@ class loggInn(Form):
     brukernavn = StringField('Brukernavn: ', validators=[DataRequired()])
     passord = PasswordField('Passord: ', validators=[DataRequired()])
     submit = SubmitField('Submit form')
+
+class RedigerInnleggForm(Form):
+    # tegs = SelectField(u'Tegs', choices=tegs)
+    tittel = StringField('innlegg', validators=[DataRequired(), Length(max=20)])               #REDIGER LENGDEN
+    ingress = StringField('Ingress', validators=[DataRequired(), Length(max=50)])
+    innlegg = TextAreaField('Oppslagstekst', validators=[DataRequired(), Length(max=250)])
+    id = HiddenField()
+    submit = SubmitField('Update')
+
 
 class NyBrukerSkjema(Form):
     brukernavn = StringField('Username: ', validators=[DataRequired(), Length(max=20)])

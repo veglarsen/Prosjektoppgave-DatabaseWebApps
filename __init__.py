@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, make_response, url_for
-from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema
+from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema, RedigerInnleggForm
 from database import myDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -32,9 +32,9 @@ def load_user(user_id):
     Bruker.isauthenticated = user_dict['is_authenticated']
     return bruker
 
-# @login_manager.unauthorized_handler
-# def unauthorized_callback():
-#        return redirect(url_for('login'))
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+       return redirect(url_for('login'))
 
 @app.route('/')
 def forside() -> 'html':
@@ -111,9 +111,9 @@ def login() -> 'html':
 @app.route('/admin', methods=["GET", "POST"])
 @login_required
 def admin() -> 'html':
+    return redirect('/')
 
-
-    return render_template('admin.html', the_title="Bestkyttet side", user=current_user.bruker)
+    # return render_template('admin.html', the_title="Bestkyttet side", user=current_user.bruker)
                                                                 # login required
 @app.route('/logout', methods=["GET", "POST"])
 @login_required
@@ -211,13 +211,25 @@ def download_file(id):
 @app.route('/slettInnlegg', methods=["GET", "POST"])
 @login_required
 def slettInnlegg() -> 'html':
+
     return "slett Innlegg"
 
 @app.route('/redigerInnlegg', methods=["GET", "POST"])
 @login_required
 def redigerInnlegg() -> 'html':
-    return "Rediger Innlegg"
-
+    form = RedigerInnleggForm(request.form)
+    if request.method == "POST" and form.validate():
+        # tegs = form.tegs.data
+        id = request.form['id']
+        tittel = form.tittel.data
+        ingress = form.ingress.data
+        innlegg = form.oppslagtekst.data
+        redigertInnlegg = (tittel, ingress, innlegg, id)
+        with myDB() as db:
+            result = db.redigerInnlegg(redigertInnlegg)
+        return redirect('index')
+    else:
+        return render_template('redigerInnlegg.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)

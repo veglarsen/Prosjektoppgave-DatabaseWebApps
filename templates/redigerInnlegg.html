@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class = "container">
+            <h2>Endre oppslag</h2>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <form action="{{ url_for('redigerInnlegg') }}" method="post">
+                <div>
+{#                    {{ form.tags }}#}
+                </div>
+                <div>
+                    {{ form.tittel.label }}<br>
+                    {{ form.tittel(size=32) }}<br>
+                    {%  for error in form.tittel.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.ingress.label }}<br>
+                    {{ form.ingress(size=40) }}<br>
+                    {% for error in form.ingress.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.innlegg.label }}<br>
+                    {{ form.innlegg(cols=30) }}<br>
+                    {%  for error in form.innlegg.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="id" value="{{ form.id }}" />
+                <p>{{ form.submit() }}</p>
+            </form>
+    <a href="{{ url_for('forside') }}">Avbryt</a>
+    </div>
+{% endblock %}
