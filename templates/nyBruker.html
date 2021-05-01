@@ -7,7 +7,7 @@
             <div>
                 {{ form.brukernavn.label }}<br>
                 {{ form.brukernavn(size=32) }}<br>
-                {% for error in form.fornavn.errors %}
+                {% for error in form.brukernavn.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>

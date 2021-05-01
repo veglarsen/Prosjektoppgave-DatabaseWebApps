@@ -86,6 +86,14 @@ class myDB:
                 print(err)
         return result
 
+    def selectAllBrukernavn(self):
+        try:
+            self.cursor.execute("SELECT bruker from bruker")
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
     def addBruker(self, bruker):
         # try:
         #     self.cursor.execute("""INSERT INTO bruker('bruker', 'etternavn', 'fornavn', 'passord', 'eMail')
