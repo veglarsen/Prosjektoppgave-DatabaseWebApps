@@ -36,8 +36,8 @@ class NyBrukerSkjema(Form):
         with myDB() as db:
             listUsernames = db.selectAllBrukernavn()
             print(listUsernames)
-            if (brukernavn.data in str(listUsernames)):
-                print('Brukernavn er allerede i bruk')
+            if brukernavn.data in str(listUsernames):
+                print(f'Brukernavet {brukernavn.data} er allerede i bruk')
                 raise ValidationError(message="Brukernavn er allerede i bruk")
 
     submit = SubmitField('Submit form')
