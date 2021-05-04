@@ -59,11 +59,8 @@ class myDB:
 
     def nyttInnlegg(self, nyttInnlegg): # tror innleggID og bloggID skal være null
         try:
-            sql1 = '''INSERT INTO
-            innlegg
-            (innleggID, bloggID, tittel, ingress, innlegg, tag, dato, treff)
-            VALUES
-            (NULL, NULL, %s, %s, %s, %s, %s, %s, 0)
+            sql1 = '''INSERT INTO innlegg (innlegg_ID, blogg_ID, tittel, ingress, innlegg, tag, treff) 
+            VALUES (NULL, %s, %s , %s , %s, (SELECT tag_ID from tag where tag_navn = %s), 0)
             '''
             self.cursor.execute(sql1, nyttInnlegg)
         except mysql.connector.Error as err:

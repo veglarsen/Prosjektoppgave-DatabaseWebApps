@@ -56,14 +56,20 @@ def forside() -> 'html':
 @app.route('/blogg')
 def blogg() -> 'html':
     with myDB() as db:
+        is_owner = False
         id = request.args.get('id')
         result = db.selectAlleInnlegg(id)
         if result is None:
             return render_template('error.html',
                                    msg='Invalid parameter')
         else:
+            if current_user.is_authenticated:
+                innleggData = Innlegg(*db.selectEtInnlegg(id))
+                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
             innleggData = [Innlegg(*x) for x in result]
-            return render_template('blogg.html', innleggData=innleggData)
+            blogg_navn = innleggData[0].blogg_navn
+            blogg_ID = innleggData[0].blogg_ID
+            return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID, blogg_navn=blogg_navn)
 
 @app.route('/innlegg')
 def innlegg() -> 'html':
@@ -266,16 +272,15 @@ def redigerInnlegg() -> 'html':
             return render_template('redigerInnlegg.html', form=form)
 
 @app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
-
 def tegneNyttInnlegg() -> 'html':
     form = NyttInnlegg()
-    form.dato.data = date.today()
+    form.bloggID.data = request.args.get('id')
     return render_template('nyttInnlegg.html', form=form)
 
 
 
 @app.route('/add', methods=["GET", "POST"])
-
+@login_required
 def nyttInnlegg() -> 'html':
     form = NyttInnlegg(request.form)
     if request.method == "POST" and form.validate():
@@ -286,12 +291,12 @@ def nyttInnlegg() -> 'html':
         innlegg = form.innlegg.data
         tag = form.tag.data # if null use newTag
         newTag = form.newTag.data # if null, use tag
-        dato = form.dato.data
+        # dato = form.dato.data
         # bruker = form.bruker.data
-        nyttInnlegg = (bloggID, tittel, ingress, innlegg, newTag, dato)
+        nyttInnlegg = (bloggID, tittel, ingress, innlegg, tag)
         with myDB() as db:
             db.nyttInnlegg(nyttInnlegg)
-        return redirect('index')
+        return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
 if __name__ == '__main__':

@@ -13,10 +13,7 @@ class NyttInnlegg(Form):
     ingress = StringField('Ingress: ', validators=[DataRequired(), Length(max=50)])
     innlegg = TextAreaField('Innlegg: ', validators=[DataRequired(), Length(max=6000)])  # cirka 2 sider
     tag = SelectField(u'Tag: ', choices=selectTag)
-    newTag = StringField('Ny tag: ', validators=[DataRequired(), Length(max=10)])
-    dato = DateField('Dato', validators=[DataRequired()])
-    # innleggID = HiddenField() # tror ikke denne er nødvendig
+    newTag = StringField('Ny tag: ', validators=[Length(max=10)])      # kan ikke være DataRequired(),
     # trenger vedlegg!
-    # bruker = StringField(selectUser)
     bloggID = HiddenField()
     submit = SubmitField('Legg til')

@@ -38,15 +38,8 @@
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-                <div>
-{#                bør være tekst, ikke tekstfelt#}
-                    {{ form.dato.label }}<br>
-                    {{ form.dato(size=10) }}<br>
-                    {%  for error in form.dato.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </div>
-                <input type="hidden" name="bloggID" value="{{ form.bloggID }}" />
+                <input type="hidden" name="bloggID" value="{{ form.bloggID.data }}" />
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <p>{{ form.submit() }}</p>
             </form>
     <form style="display: inline" action="{{ url_for('innlegg') }}" method="get">

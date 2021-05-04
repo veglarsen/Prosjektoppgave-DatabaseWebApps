@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
 {% block body %}
-    <header><h1>{{ innleggData.blogg_navn }}</h1></header>
+    <header><h1>{{ blogg_navn }}</h1></header>
     <table>
         <thead>
             <tr>
-                <th>{{ innleggData.blogg_navn }}</th>
+                <th>{{ blogg_navn }}</th>
             </tr>
         </thead>
         <tbody>
+            {% if is_owner == True %}
+                <a href="{{ url_for('tegneNyttInnlegg') }}?id={{ blogg_ID }}"> Nytt innlegg </a><br>
+            {% endif %}
             {% for innlegg in innleggData %}
-            <tr>
-                <td>
-                    <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
-                        <h3>{{ innlegg.tittel }}</h3>
-                        <h3>{{ innlegg.ingress }}</h3>
-                        <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p><!-- Innlegg tittel/Ingress? -->
-                    </a>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
+                            <h3>{{ innlegg.tittel }}</h3>
+                            <h3>{{ innlegg.ingress }}</h3>
+                            <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p><!-- Innlegg tittel/Ingress? -->
+                        </a>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
