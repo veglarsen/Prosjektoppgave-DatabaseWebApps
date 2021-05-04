@@ -223,12 +223,22 @@ def redigerInnlegg() -> 'html':
         id = request.form['id']
         tittel = form.tittel.data
         ingress = form.ingress.data
-        innlegg = form.oppslagtekst.data
-        redigertInnlegg = (tittel, ingress, innlegg, id)
+        innlegg = form.innlegg.data
+        redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
             result = db.redigerInnlegg(redigertInnlegg)
-        return redirect('index')
+        return redirect('/')
     else:
+        id = request.args.get('id')
+        with myDB() as db:
+            innlegget = db.selectEtInnlegg(id)
+            innleggObj = Innlegg(*innlegget)
+            form = RedigerInnleggForm(request.form)
+            form.id.data = innleggObj.innlegg_ID
+            form.tittel.data = innleggObj.tittel
+            form.ingress.data = innleggObj.ingress
+            form.innlegg.data = innleggObj.innlegg
+
         return render_template('redigerInnlegg.html', form=form)
 
 if __name__ == '__main__':

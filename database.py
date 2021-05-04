@@ -146,11 +146,12 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
-    def redigerInnlegg(self, tittel, ingress, innlegg, id):
+    def redigerInnlegg(self, redigerInnlegg):
         try:
-           self.cursor.execute("""UPDATE innlegg SET innlegg = %s, tittel = %s, ingress = %s,
-                                WHERE innlegg_ID = %s"""(innlegg, tittel, ingress, id,))
-           result = self.cursor.fetchone()
+           sql1 = ('''UPDATE innlegg
+                                    SET innlegg = (%s), innlegg.tittel = (%s), innlegg.ingress = (%s)
+                                WHERE innlegg.innlegg_ID = (%s)''')
+           result = self.cursor.execute(sql1, redigerInnlegg)
         except mysql.connector.Error as err:
             print(err)
         return result

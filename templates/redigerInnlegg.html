@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block body %}
     <div class = "container">
-            <h2>Endre oppslag</h2>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <h2>Rediger innlegg</h2>
             <form action="{{ url_for('redigerInnlegg') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
 {#                    {{ form.tags }}#}
                 </div>
@@ -28,7 +28,12 @@
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-                <input type="hidden" name="id" value="{{ form.id }}" />
+                <div>
+                    {{ form.id }}
+                    {%  for error in form.id.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
                 <p>{{ form.submit() }}</p>
             </form>
     <a href="{{ url_for('forside') }}">Avbryt</a>

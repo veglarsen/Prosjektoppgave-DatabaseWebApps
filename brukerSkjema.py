@@ -26,9 +26,9 @@ class loggInn(Form):
 
 class RedigerInnleggForm(Form):
     # tegs = SelectField(u'Tegs', choices=tegs)
-    tittel = StringField('innlegg', validators=[DataRequired(), Length(max=20)])               #REDIGER LENGDEN
+    tittel = StringField('Tittel', validators=[DataRequired(), Length(max=20)])               #REDIGER LENGDEN
     ingress = StringField('Ingress', validators=[DataRequired(), Length(max=50)])
-    innlegg = TextAreaField('Oppslagstekst', validators=[DataRequired(), Length(max=250)])
+    innlegg = TextAreaField('Innlegg Tekst', validators=[DataRequired(), Length(max=250)])
     id = HiddenField()
     submit = SubmitField('Update')
 
