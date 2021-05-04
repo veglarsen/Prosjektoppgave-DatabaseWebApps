@@ -10,7 +10,7 @@
         <tbody>
             <tr>
             {% if is_owner == True %}
-                <a href="{{ url_for('slettInnlegg') }}?id={{ innleggData.innlegg_ID }}">
+                <a href="{{ url_for('bekreftSletting') }}?id={{ innleggData.innlegg_ID }}">
                         Slett innlegg
                     </a><br>
                 <a href="{{ url_for('redigerInnlegg') }}?id={{ innleggData.innlegg_ID }}">

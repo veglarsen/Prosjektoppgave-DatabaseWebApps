@@ -158,3 +158,9 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
+    def slettInnlegg(self, id):
+        try:
+            self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (id,))
+        except mysql.connector.Error as err:
+            print(err)

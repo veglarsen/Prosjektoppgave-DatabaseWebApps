@@ -213,7 +213,7 @@ def download_file(id):
 
 @app.route('/bekreftSletting', methods=["GET", "POST"])
 @login_required
-def slettInnlegg() -> 'html':
+def bekreftSletting() -> 'html':
     id = request.args.get('id')
     if not id:
         return render_template('error.html', msg='Invalid parameter')
@@ -224,7 +224,19 @@ def slettInnlegg() -> 'html':
                 return render_template('error.html', msg='Invalid parameter')
             else:
                 innlegget = Innlegg(*innlegget)
-                return render_template('confirmDelete.html', innlegg=innlegget)
+                return render_template('bekreftSletting.html', innlegg=innlegget)
+
+@app.route('/slettInnlegg', methods=["GET", "POST"])
+@login_required
+def slettInnlegg() -> 'html':
+    if request.method == "POST":
+        id = request.form['id']
+        with myDB() as db:
+            db.slettInnlegg(id)
+        return redirect('/')
+
+    return redirect(url_for('forside'))
+
 
 @app.route('/redigerInnlegg', methods=["GET", "POST"])
 @login_required
