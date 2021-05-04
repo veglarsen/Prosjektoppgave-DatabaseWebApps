@@ -91,7 +91,7 @@ class myDB:
             print(err)
         return result
 
-    def nyKommentar(self, nyKommentar):
+    def nyKommentar(self, kommentar):
         try:
             sql1 = '''INSERT INTO
             kommentar
@@ -99,7 +99,19 @@ class myDB:
             VALUES
             (NULL, NULL, NULL, %s, %s, %s)
             '''
-            self.cursor.execute(sql1, nyKommentar)
+            self.cursor.execute(sql1, kommentar)
+        except mysql.connector.Error as err:
+            print(err)
+
+    def endreKommentar(self, kommentar):
+        try:
+            sql1 = '''UPDATE
+                kommentar
+            SET
+                kommentar, dato
+            WHERE
+                kommentar_ID = %s'''
+            self.cursor.execute(sql1, kommentar)
         except mysql.connector.Error as err:
             print(err)
 
@@ -136,9 +148,6 @@ class myDB:
             self.cursor.execute(sql, bruker)
         except mysql.connector.Error as err:
             print(err)
-
-
-
 
     def brukerEndre(self, bruker):  # kanskje tillate å endre brukernavn
         try:

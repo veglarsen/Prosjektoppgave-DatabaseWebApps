@@ -3,37 +3,61 @@
     <header><h1>{{ innleggData.blogg_navn }}</h1></header>
     <table>
         <thead>
-            <tr>
-                <th>{{ innleggData.blogg_navn }}</th>
-            </tr>
+        <tr>
+            <th>{{ innleggData.blogg_navn }}</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
+        <tr>
             {% if is_owner == True %}
                 <a href="{{ url_for('slettInnlegg') }}?id={{ innleggData.innlegg_ID }}">
-                        Slett innlegg
-                    </a><br>
+                    Slett innlegg
+                </a><br>
                 <a href="{{ url_for('redigerInnlegg') }}?id={{ innleggData.innlegg_ID }}">
-                        Rediger innlegg
-                    </a><br>
+                    Rediger innlegg
+                </a><br>
             {% endif %}
 
-                    <td>
-                        <a href="{{ url_for('innlegg') }}?id={{ innleggData.innlegg_ID }}">
-                            <h3>{{ innleggData.tittel }}</h3>
-                            <h3>{{ innleggData.ingress }}</h3>
-                            <p>{{ innleggData.innlegg }}</p>
-                            <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
-                        </a>
-                    </td>
-                {% for kommentar in kommentarData %}
-                    <td>
-                        <h3>{{ kommentar.bruker }}</h3>
-                        <h3>{{ kommentar.kommentar }}</h3>
-                        <p>{{ kommentar.dato }}</p>
-                    </td>
-                {% endfor %}
-            </tr>
+            <td>
+                <a href="{{ url_for('innlegg') }}?id={{ innleggData.innlegg_ID }}">
+                    <h3>{{ innleggData.tittel }}</h3>
+                    <h3>{{ innleggData.ingress }}</h3>
+                    <p>{{ innleggData.innlegg }}</p>
+                    <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
+                </a>
+            </td>
+            {% for kommentar in kommentarData %}
+                <td>
+                    <h3>{{ kommentar.bruker }}</h3>
+                    <h3>{{ kommentar.kommentar }}</h3>
+                    <p>{{ kommentar.dato }}</p>
+                </td>
+            {% endfor %}
+        </tr>
         </tbody>
     </table>
+    <div class = "container">
+            <h3>Ny kommentar</h3>
+            <form action="{{ url_for('nyKommentar') }}" method="post">
+                <div>
+                    {{ form.kommentar.label }}<br>
+                    {{ form.kommentar(size=32) }}<br>
+                    {% for error in form.kommentar.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {# bør være tekst, ikke tekstfelt#}
+                    {{ form.dato.label }}<br>
+                    {{ form.dato(size=10) }}<br>
+                    {% for error in form.dato.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="innleggID" value="{{ form.innleggID }}"/>
+                <input type="hidden" name="bruker" value="{{ form.bruker }}"/>
+                <p>{{ form.submit() }}</p>
+
+            </form>
+    </div>
 {% endblock %}

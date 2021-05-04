@@ -66,7 +66,9 @@ def blogg() -> 'html':
             innleggData = [Innlegg(*x) for x in result]
             return render_template('blogg.html', innleggData=innleggData)
 
-@app.route('/innlegg')
+# @app.route('/innlegg')
+@app.route('/innlegg', methods=["GET", "POST"])
+# @app.route('/innlegg', methods=["POST"])
 def innlegg() -> 'html':
     with myDB() as db:
         id = request.args.get('id')
@@ -83,7 +85,19 @@ def innlegg() -> 'html':
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner)
+            form = NyKommentar(request.form)
+            if request.method == "POST" and form.validate():
+                innleggID = form.innleggID.data
+                kommentar = form.kommentar.data
+                dato = form.dato.data
+                bruker = form.bruker.data
+                kommentarSQL = (innleggID, bruker, kommentar, dato)
+                with myDB() as db:
+                    db.nyKommentar(kommentarSQL)
+            #     return redirect('innlegg')
+            # else:
+            return render_template('innlegg.html', innleggData=innleggData,
+                                   kommentarData=kommentarData, is_owner=is_owner, form=form)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -251,21 +265,21 @@ def nyttInnlegg() -> 'html':
     else:
         return render_template('nyttInnlegg.html', form=form)
 
-@app.route('/nyKommentar', methods=["GET", "POST"]) # ikke ny side, flett inn i innlegg
-
-def nyKommentar() -> 'html':
-    form = NyKommentar(request.form)
-    if request.method == "POST" and form.validate():
-        innleggID = form.innleggID.data
-        kommentar = form.kommentar.data
-        dato = form.dato.data
-        bruker = form.bruker.data
-        nyKommentar = (innleggID, bruker, kommentar, dato)
-        with myDB() as db:
-            db.nyKommentar(nyKommentar)
-        return redirect('index')
-    else:
-        return render_template('nyttInnlegg.html', form=form)
+# @app.route('/nyKommentar', methods=["GET", "POST"]) # ikke ny side, flett inn i innlegg
+#
+# def nyKommentar() -> 'html':
+#     form = NyKommentar(request.form)
+#     if request.method == "POST" and form.validate():
+#         innleggID = form.innleggID.data
+#         kommentar = form.kommentar.data
+#         dato = form.dato.data
+#         bruker = form.bruker.data
+#         kommentarSQL = (innleggID, bruker, kommentar, dato)
+#         with myDB() as db:
+#             db.nyKommentar(kommentarSQL)
+#         return redirect('index')
+#     else:
+#         return render_template('nyttInnlegg.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
