@@ -16,6 +16,7 @@ class InnleggSkjema(Form):
     newTag = StringField('New tag: ', validators=[DataRequired(), Length(max=10)])
     dato = DateField('Dato', validators=[DataRequired()])
     # innleggID = HiddenField() # tror ikke denne er nødvendig
+    # trenger vedlegg!
     # bruker = StringField(selectUser)
     bloggID = HiddenField()
     submit = SubmitField('Submit form')
