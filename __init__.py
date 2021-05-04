@@ -98,8 +98,6 @@ def login() -> 'html':
         pass
         bruker_navn = form.brukernavn.data
         passord = form.passord.data
-        # bruker_navn = request.form['username']
-        # password = request.form['password']
 
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
@@ -158,9 +156,16 @@ def brukerEndre() -> 'html':
         eMail = form.eMail.data
         bruker = (fornavn, etternavn, eMail, brukernavn)
         with myDB() as db:
-            result = db.brukerEndre(bruker)
+            result = db.brukerEndre(bruker)                     #fjern result
         return redirect('/')
     else:
+        with myDB() as db:
+            brukeren = db.selectBruker(current_user.bruker)
+            brukerObj = Bruker(*brukeren)
+            form.fornavn.data = brukerObj.fornavn
+            form.etternavn.data = brukerObj.etternavn
+            form.eMail.data = brukerObj.eMail
+
         return render_template('brukerEndre.html',
                                form=form)
 
@@ -179,8 +184,7 @@ def allowed_file(filename):
 def upload_file():
     # check if the post request has the file part
     if 'file' not in request.files:
-        return render_template('error.html',
-                               msg='No files')
+        return render_template('error.html', msg='No files')
     file = request.files['file']
     mimetype = file.mimetype
     blob = request.files['file'].read()
@@ -253,7 +257,7 @@ def redigerInnlegg() -> 'html':
         innlegg = form.innlegg.data
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
-            result = db.redigerInnlegg(redigertInnlegg)
+            result = db.redigerInnlegg(redigertInnlegg)             # fjern resultat
         return redirect('/')
     else:
         id = request.args.get('id')
@@ -288,8 +292,7 @@ def nyttInnlegg() -> 'html':
         innlegg = form.innlegg.data
         tag = form.tag.data # if null use newTag
         newTag = form.newTag.data # if null, use tag
-        # dato = form.dato.data
-        # bruker = form.bruker.data
+
         nyttInnlegg = (bloggID, tittel, ingress, innlegg, tag)
         with myDB() as db:
             db.nyttInnlegg(nyttInnlegg)
