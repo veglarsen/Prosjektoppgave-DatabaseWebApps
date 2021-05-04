@@ -1,4 +1,6 @@
 import secrets
+from datetime import date
+
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
@@ -10,7 +12,7 @@ from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 
-
+from innleggSkjema import NyttInnlegg
 
 app = Flask(__name__, template_folder='templates')
 
@@ -219,6 +221,33 @@ def slettInnlegg() -> 'html':
 def redigerInnlegg() -> 'html':
     return "Rediger Innlegg"
 
+@app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
 
+def tegneNyttInnlegg() -> 'html':
+    form = NyttInnlegg()
+    form.dato.data = date.today()
+    return render_template('nyttInnlegg.html', form=form)
+
+
+@app.route('/add', methods=["GET", "POST"])
+
+def nyttInnlegg() -> 'html':
+    form = NyttInnlegg(request.form)
+    if request.method == "POST" and form.validate():
+        # tror ikke innleggID er nødvendig
+        bloggID = form.bloggID.data
+        tittel = form.tittel.data
+        ingress = form.ingress.data
+        innlegg = form.innlegg.data
+        tag = form.tag.data # if null use newTag
+        newTag = form.newTag.data # if null, use tag
+        dato = form.dato.data
+        # bruker = form.bruker.data
+        nyttInnlegg = (bloggID, tittel, ingress, innlegg, newTag, dato)
+        with myDB() as db:
+            db.nyttInnlegg(nyttInnlegg)
+        return redirect('index')
+    else:
+        return render_template('nyttInnlegg.html', form=form)
 if __name__ == '__main__':
     app.run(debug=True)

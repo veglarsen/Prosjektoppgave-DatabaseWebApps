@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class = "container">
+            <h2>Legg til nytt innlegg</h2>
+            <form action="{{ url_for('nyttInnlegg') }}" method="post">
+                <div>
+                    {{ form.tittel.label }}<br>
+                    {{ form.tittel(size=32) }}<br>
+                    {%  for error in form.tittel.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.ingress.label }}<br>
+                    {{ form.ingress(size=40) }}<br>
+                    {% for error in form.ingress.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.innlegg.label }}<br>
+                    {{ form.innlegg(size=100) }}<br>
+                    {%  for error in form.innlegg.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.tag.label }}<br>
+                    {{ form.tag(size=10) }}<br>
+                    {%  for error in form.tag.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+             <div>
+                    {{ form.newTag.label }}<br>
+                    {{ form.newTag(size=10) }}<br>
+                    {%  for error in form.newTag.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+{#                bør være tekst, ikke tekstfelt#}
+                    {{ form.dato.label }}<br>
+                    {{ form.dato(size=10) }}<br>
+                    {%  for error in form.dato.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="bloggID" value="{{ form.bloggID }}" />
+                <p>{{ form.submit() }}</p>
+            </form>
+    <form style="display: inline" action="{{ url_for('innlegg') }}" method="get">
+        <button>Avbryt</button>
+    </form>
+
+{#    <a href="{{ url_for('innlegg') }}"><button class="btn btn-primary">Avbryt</button></a>#}
+    </div>
+{% endblock %}
