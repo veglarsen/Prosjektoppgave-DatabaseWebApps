@@ -1,15 +1,18 @@
 import secrets
+from datetime import date
+
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, make_response, url_for
 from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema, RedigerInnleggForm
 from database import myDB
+from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 
-
+from innleggSkjema import NyttInnlegg
 
 app = Flask(__name__, template_folder='templates')
 
@@ -160,7 +163,7 @@ def brukerEndre() -> 'html':
 
 @app.route('/upload_page', methods=["GET", "POST"])
 def upload_page() -> 'html':
-    with myDB() as db:
+    with fileDB() as db:
         result = db.selectAllVedlegg()
         alleVedlegg = [Vedlegg(*x) for x in result]
         return render_template('upload.html', attachments=alleVedlegg)
@@ -187,7 +190,7 @@ def upload_file():
         id = 1
         filename = secure_filename(file.filename)
         attachment = (filename, mimetype, blob, size, id)
-        with myDB() as db:
+        with fileDB() as db:
             result = db.addVedlegg(attachment)
 
         return redirect(url_for('upload_page', _external=True))
@@ -196,7 +199,7 @@ def upload_file():
 
 @app.route('/download/<id>')
 def download_file(id):
-    with myDB() as db:
+    with fileDB() as db:
         attachment = Vedlegg(*db.getVedlegg(id))
     if attachment is None:
             pass
@@ -211,7 +214,6 @@ def download_file(id):
 @app.route('/slettInnlegg', methods=["GET", "POST"])
 @login_required
 def slettInnlegg() -> 'html':
-
     return "slett Innlegg"
 
 @app.route('/redigerInnlegg', methods=["GET", "POST"])
@@ -239,7 +241,36 @@ def redigerInnlegg() -> 'html':
             form.ingress.data = innleggObj.ingress
             form.innlegg.data = innleggObj.innlegg
 
-        return render_template('redigerInnlegg.html', form=form)
+            return render_template('redigerInnlegg.html', form=form)
 
+@app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
+
+def tegneNyttInnlegg() -> 'html':
+    form = NyttInnlegg()
+    form.dato.data = date.today()
+    return render_template('nyttInnlegg.html', form=form)
+
+
+
+@app.route('/add', methods=["GET", "POST"])
+
+def nyttInnlegg() -> 'html':
+    form = NyttInnlegg(request.form)
+    if request.method == "POST" and form.validate():
+        # tror ikke innleggID er nødvendig
+        bloggID = form.bloggID.data
+        tittel = form.tittel.data
+        ingress = form.ingress.data
+        innlegg = form.innlegg.data
+        tag = form.tag.data # if null use newTag
+        newTag = form.newTag.data # if null, use tag
+        dato = form.dato.data
+        # bruker = form.bruker.data
+        nyttInnlegg = (bloggID, tittel, ingress, innlegg, newTag, dato)
+        with myDB() as db:
+            db.nyttInnlegg(nyttInnlegg)
+        return redirect('index')
+    else:
+        return render_template('nyttInnlegg.html', form=form)
 if __name__ == '__main__':
     app.run(debug=True)

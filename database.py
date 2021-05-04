@@ -15,6 +15,7 @@ class myDB:
         # sjekk om prepared og buffered kan leve sammen
         return self
 
+
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.conn.commit()
         self.cursor.close()
@@ -56,6 +57,18 @@ class myDB:
             print(err)
         return result
 
+    def nyttInnlegg(self, nyttInnlegg): # tror innleggID og bloggID skal være null
+        try:
+            sql1 = '''INSERT INTO
+            innlegg
+            (innleggID, bloggID, tittel, ingress, innlegg, tag, dato, treff)
+            VALUES
+            (NULL, NULL, %s, %s, %s, %s, %s, %s, 0)
+            '''
+            self.cursor.execute(sql1, nyttInnlegg)
+        except mysql.connector.Error as err:
+            print(err)
+
     def newBlogg(self, bruker_navn, blogg_navn):
         try:
             self.cursor.execute("""INSERT INTO blogg (blogg_ID, eier, blogg_navn) VALUES (NULL, %s, %s);""")
@@ -84,6 +97,14 @@ class myDB:
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
                 print(err)
+        return result
+
+    def selectAllBrukernavn(self):
+        try:
+            self.cursor.execute("SELECT bruker from bruker")
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
         return result
 
     def addBruker(self, bruker):
@@ -119,33 +140,15 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-    def selectAllVedlegg(self):
+    def selectTag(self):
         try:
-            self.cursor.execute('''SELECT * from vedlegg where innlegg_ID=1''')
+            self.cursor.execute('''SELECT * from tag''')
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
         return result
 
-    def addVedlegg(self, attachment):
-        try:
-            sql = '''INSERT
-            INTO
-                vedlegg(vedlegg_ID, fil_navn, fil_type, fil_data, size, innlegg_ID)
-            VALUES
-                (NULL, %s, %s, %s, %s, %s)'''
-            self.cursor.execute(sql, attachment)
 
-        except mysql.connector.Error as err:
-            print(err)
-
-    def getVedlegg(self, id):
-        try:
-           self.cursor.execute("SELECT * FROM vedlegg WHERE vedlegg_ID=(%s)", (id,))
-           result = self.cursor.fetchone()
-        except mysql.connector.Error as err:
-            print(err)
-        return result
     def redigerInnlegg(self, redigerInnlegg):
         try:
            sql1 = ('''UPDATE innlegg
