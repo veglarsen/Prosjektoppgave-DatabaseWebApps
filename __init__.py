@@ -13,6 +13,7 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 from werkzeug.security import generate_password_hash
 
 from innleggSkjema import NyttInnlegg
+from kommentarSkjema import NyKommentar
 
 app = Flask(__name__, template_folder='templates')
 
@@ -229,7 +230,7 @@ def tegneNyttInnlegg() -> 'html':
     return render_template('nyttInnlegg.html', form=form)
 
 
-@app.route('/add', methods=["GET", "POST"])
+@app.route('/nyttInnlegg', methods=["GET", "POST"])
 
 def nyttInnlegg() -> 'html':
     form = NyttInnlegg(request.form)
@@ -249,5 +250,22 @@ def nyttInnlegg() -> 'html':
         return redirect('index')
     else:
         return render_template('nyttInnlegg.html', form=form)
+
+@app.route('/nyKommentar', methods=["GET", "POST"]) # ikke ny side, flett inn i innlegg
+
+def nyKommentar() -> 'html':
+    form = NyKommentar(request.form)
+    if request.method == "POST" and form.validate():
+        innleggID = form.innleggID.data
+        kommentar = form.kommentar.data
+        dato = form.dato.data
+        bruker = form.bruker.data
+        nyKommentar = (innleggID, bruker, kommentar, dato)
+        with myDB() as db:
+            db.nyKommentar(nyKommentar)
+        return redirect('index')
+    else:
+        return render_template('nyttInnlegg.html', form=form)
+
 if __name__ == '__main__':
     app.run(debug=True)

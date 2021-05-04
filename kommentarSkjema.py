@@ -1,35 +1,18 @@
-from wtforms import Form, StringField, HiddenField, SubmitField, SelectField, TextAreaField
+from wtforms import Form, StringField, HiddenField, SubmitField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, Length
-from database import myDB
-
-with myDB() as db:
-    selectTag = db.selectTag()
-   # selectUser = db.selectBruker()
-
 
 class NyKommentar(Form):
-    tittel = StringField('Tittel: ', validators=[DataRequired(), Length(max=20)])
-    ingress = StringField('Ingress: ', validators=[DataRequired(), Length(max=50)])
-    innlegg = TextAreaField('Innlegg: ', validators=[DataRequired(), Length(max=6000)])  # cirka 2 sider
-    tag = SelectField(u'Tag: ', choices=selectTag)
-    newTag = StringField('Ny tag: ', validators=[DataRequired(), Length(max=10)])
+    # må være innlogget
+    innleggID = HiddenField()
+    kommentar = StringField('Kommentar: ', validators=[DataRequired(), Length(max=200)])
     dato = DateField('Dato', validators=[DataRequired()])
-    # innleggID = HiddenField() # tror ikke denne er nødvendig
-    # trenger vedlegg!
-    # bruker = StringField(selectUser)
-    bloggID = HiddenField()
+    bruker = HiddenField()
     submit = SubmitField('Legg til')
 
 class EndreKommentar(Form):
-    tittel = StringField('Tittel: ', validators=[DataRequired(), Length(max=20)])
-    ingress = StringField('Ingress: ', validators=[DataRequired(), Length(max=50)])
-    innlegg = TextAreaField('Innlegg: ', validators=[DataRequired(), Length(max=6000)])  # cirka 2 sider
-    tag = SelectField(u'Tag: ', choices=selectTag)
-    newTag = StringField('Ny tag: ', validators=[DataRequired(), Length(max=10)])
+    innleggID = HiddenField()
+    kommentar = StringField('Kommentar: ', validators=[DataRequired(), Length(max=200)])
     dato = DateField('Dato', validators=[DataRequired()])
-    # innleggID = HiddenField() # tror ikke denne er nødvendig
-    # trenger vedlegg!
-    # bruker = StringField(selectUser)
-    bloggID = HiddenField()
-    submit = SubmitField('Legg til')
+    bruker = HiddenField()
+    submit = SubmitField('Endre')

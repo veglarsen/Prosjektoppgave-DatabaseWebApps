@@ -91,6 +91,18 @@ class myDB:
             print(err)
         return result
 
+    def nyKommentar(self, nyKommentar):
+        try:
+            sql1 = '''INSERT INTO
+            kommentar
+            (kommentar_ID, innlegg_ID, blogg_ID, bruker, kommentar, dato)
+            VALUES
+            (NULL, NULL, NULL, %s, %s, %s)
+            '''
+            self.cursor.execute(sql1, nyKommentar)
+        except mysql.connector.Error as err:
+            print(err)
+
     def selectBruker(self, bruker_navn):
         try:
             self.cursor.execute("SELECT * FROM bruker where bruker = (%s)", (bruker_navn,))
