@@ -227,7 +227,7 @@ def tegneNyttInnlegg() -> 'html': # uferdig, mangler template
 
 @app.route('/add', methods=["GET", "POST"])
 
-def nyttInnlegg() -> 'html': # uferdig
+def nyttInnlegg() -> 'html': # uferdig, mangler template
     form = InnleggSkjema(request.form)
     if request.method == "POST" and form.validate():
         # innleggID
