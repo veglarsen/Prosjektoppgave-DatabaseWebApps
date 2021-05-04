@@ -5,6 +5,7 @@ from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, make_response, url_for
 from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema
 from database import myDB
+from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
@@ -160,7 +161,7 @@ def brukerEndre() -> 'html':
 
 @app.route('/upload_page', methods=["GET", "POST"])
 def upload_page() -> 'html':
-    with myDB() as db:
+    with fileDB() as db:
         result = db.selectAllVedlegg()
         alleVedlegg = [Vedlegg(*x) for x in result]
         return render_template('upload.html', attachments=alleVedlegg)
@@ -187,7 +188,7 @@ def upload_file():
         id = 1
         filename = secure_filename(file.filename)
         attachment = (filename, mimetype, blob, size, id)
-        with myDB() as db:
+        with fileDB() as db:
             result = db.addVedlegg(attachment)
 
         return redirect(url_for('upload_page', _external=True))
@@ -196,7 +197,7 @@ def upload_file():
 
 @app.route('/download/<id>')
 def download_file(id):
-    with myDB() as db:
+    with fileDB() as db:
         attachment = Vedlegg(*db.getVedlegg(id))
     if attachment is None:
             pass
