@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block body %}
+    <header><h3>Bekreft at du ønsker å slette innlegget</h3>
+            <h4>Dato: {{ innlegg.dato }}</h4>
+            <h4>Tittel: {{ innlegg.tittel }}</h4>
+            <h4>Ingress: {{ innlegg.ingress }}</h4>
+            <h4>Tekst: {{ innlegg.innlegg }}</h4>
+            <h4>Fra bruker: {{ innlegg.bruker }}</h4>
+
+    </header>
+    <form method="post" action="{{ url_for('slettInnlegg') }}">
+        <p><button type="submit" class="btn btn-primary">Slett</button></p>
+        <input type="hidden" name="id" value="{{ innlegg.id }}"/>
+    </form>
+    <a href="{{ url_for('forside') }}"><button class="btn btn-primary">Tilbake</button></a>
+{% endblock %}

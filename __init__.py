@@ -211,10 +211,20 @@ def download_file(id):
         'Content-Disposition', 'inline', filename = attachment.fil_navn)
         return response
 
-@app.route('/slettInnlegg', methods=["GET", "POST"])
+@app.route('/bekreftSletting', methods=["GET", "POST"])
 @login_required
 def slettInnlegg() -> 'html':
-    return "slett Innlegg"
+    id = request.args.get('id')
+    if not id:
+        return render_template('error.html', msg='Invalid parameter')
+    else:
+        with myDB() as db:
+            innlegget = db.selectEtInnlegg(id)
+            if innlegget is None:
+                return render_template('error.html', msg='Invalid parameter')
+            else:
+                innlegget = Innlegg(*innlegget)
+                return render_template('confirmDelete.html', innlegg=innlegget)
 
 @app.route('/redigerInnlegg', methods=["GET", "POST"])
 @login_required
