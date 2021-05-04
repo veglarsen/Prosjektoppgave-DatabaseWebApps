@@ -88,7 +88,10 @@ def innlegg() -> 'html':
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner)
+            with fileDB() as filedb:
+                result = filedb.selectAllVedlegg()
+                alleVedlegg = [Vedlegg(*x) for x in result]
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, attachments=alleVedlegg)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -275,7 +278,10 @@ def redigerInnlegg() -> 'html':
 def tegneNyttInnlegg() -> 'html':
     form = NyttInnlegg()
     form.bloggID.data = request.args.get('id')
-    return render_template('nyttInnlegg.html', form=form)
+    with fileDB() as db:
+        result = db.selectAllVedlegg()
+        alleVedlegg = [Vedlegg(*x) for x in result]
+        return render_template('nyttInnlegg.html', form=form, attachments=alleVedlegg)
 
 
 
