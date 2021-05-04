@@ -50,7 +50,6 @@ def forside() -> 'html':
                                    msg='Invalid parameter')
         else:
             bloggObjektene = [Blogg(*x) for x in result]
-            print(bloggObjektene)
             return render_template('index.html', bloggObjektene=bloggObjektene)
 
 @app.route('/blogg')
@@ -88,7 +87,8 @@ def innlegg() -> 'html':
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner)
+                blogg_navn = innleggData.blogg_navn
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -104,13 +104,9 @@ def login() -> 'html':
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
             if Bruker.check_password(aktuellBruker, passord):
-                print("Passordet er korrekt")
                 aktuellBruker.is_authenticated = True
                 login_user(aktuellBruker)
                 session['bruker'] = aktuellBruker.__dict__
-                print(session['bruker'])
-                print(current_user.bruker)
-                print(aktuellBruker.is_authenticated)
                 return redirect('/admin')
             else:
                 return render_template('loggInn.html', form=form)
@@ -151,6 +147,7 @@ def nyBruker() -> 'html':
 
 
 @app.route('/brukerEndre', methods=["GET", "POST"])
+@login_required
 def brukerEndre() -> 'html':
     form = BrukerSkjema(request.form)
     if request.method == "POST" and form.validate():
