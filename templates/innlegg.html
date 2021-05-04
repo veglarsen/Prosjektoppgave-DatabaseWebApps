@@ -36,28 +36,28 @@
         </tr>
         </tbody>
     </table>
-    <div class = "container">
-            <h3>Ny kommentar</h3>
-            <form action="{{ url_for('nyKommentar') }}" method="post">
-                <div>
-                    {{ form.kommentar.label }}<br>
-                    {{ form.kommentar(size=32) }}<br>
-                    {% for error in form.kommentar.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </div>
-                <div>
+{#    <div class = "container">#}
+{#            <h3>Ny kommentar</h3>#}
+{#            <form action="{{ url_for('nyKommentar') }}" method="post">#}
+{#                <div>#}
+{#                    {{ form.kommentar.label }}<br>#}
+{#                    {{ form.kommentar(size=32) }}<br>#}
+{#                    {% for error in form.kommentar.errors %}#}
+{#                        <span style="color: red;">[{{ error }}]</span>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#                <div>#}
                     {# bør være tekst, ikke tekstfelt#}
-                    {{ form.dato.label }}<br>
-                    {{ form.dato(size=10) }}<br>
-                    {% for error in form.dato.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </div>
-                <input type="hidden" name="innleggID" value="{{ form.innleggID }}"/>
-                <input type="hidden" name="bruker" value="{{ form.bruker }}"/>
-                <p>{{ form.submit() }}</p>
-
-            </form>
-    </div>
+{#                    {{ form.dato.label }}<br>#}
+{#                    {{ form.dato(size=10) }}<br>#}
+{#                    {% for error in form.dato.errors %}#}
+{#                        <span style="color: red;">[{{ error }}]</span>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#                <input type="hidden" name="innleggID" value="{{ form.innleggID }}"/>#}
+{#                <input type="hidden" name="bruker" value="{{ form.bruker }}"/>#}
+{#                <p>{{ form.submit() }}</p>#}
+{##}
+{#            </form>#}
+{#    </div>#}
 {% endblock %}

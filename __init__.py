@@ -83,8 +83,6 @@ def innlegg() -> 'html':
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
-        #       return redirect('innlegg')
-            # else:
             return render_template('innlegg.html', innleggData=innleggData,
                                    kommentarData=kommentarData, is_owner=is_owner)
 
