@@ -72,6 +72,7 @@ def innlegg() -> 'html':
         id = request.args.get('id')
         db.incrementTreff(id)
         result = db.selectEtInnlegg(id)
+        form = NyKommentar(request.form)
         if result is None:
             return render_template('error.html', msg='Invalid parameter')
         else:
@@ -84,7 +85,7 @@ def innlegg() -> 'html':
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
             return render_template('innlegg.html', innleggData=innleggData,
-                                   kommentarData=kommentarData, is_owner=is_owner)
+                                   kommentarData=kommentarData, is_owner=is_owner, form=form)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
