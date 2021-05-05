@@ -19,9 +19,11 @@ class fileDB:
         self.cursor.close()
         self.conn.close
 
-    def selectAllVedlegg(self):
+    def selectAllVedlegg(self, id):
         try:
-            self.cursor.execute('''SELECT * from vedlegg where innlegg_ID=1''')
+            # sql = '''SELECT * from vedlegg where innlegg_ID= (%s)'''
+            self.cursor.execute("SELECT * from vedlegg where innlegg_ID=(%s)", (id,))
+            # self.cursor.execute(sql)
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
