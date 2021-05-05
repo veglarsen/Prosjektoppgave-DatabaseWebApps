@@ -94,10 +94,11 @@ class myDB:
     def nyKommentar(self, kommentar):
         try:
             sql1 = '''INSERT INTO
-            kommentar
-            (kommentar_ID, innlegg_ID, blogg_ID, bruker, kommentar, dato)
-            VALUES
-            (NULL, NULL, NULL, %s, %s, %s)
+            `kommentar`
+            (`innlegg_ID`, `blogg_ID`, `bruker`, `kommentar`) 
+            VALUES 
+            ((%s), (SELECT innlegg.blogg_ID FROM innlegg WHERE innlegg.innlegg_ID = (%s)
+            ), (%s), (%s));
             '''
             self.cursor.execute(sql1, kommentar)
         except mysql.connector.Error as err:

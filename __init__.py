@@ -258,15 +258,14 @@ def nyKommentar() -> 'html':
     form = NyKommentar(request.form)
     if request.method == "POST" and form.validate():
         innleggID = form.innleggID.data
+        bruker = current_user.bruker
         kommentar = form.kommentar.data
-        dato = form.dato.data
-        bruker = form.bruker.data
-        kommentarSQL = (innleggID, bruker, kommentar, dato)
+        kommentarSQL = (innleggID, innleggID, bruker, kommentar)
         with myDB() as db:
             db.nyKommentar(kommentarSQL)
         return redirect('innlegg')
     else:
-        return render_template('innlegg.html', form=form)
+        return render_template('index.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
