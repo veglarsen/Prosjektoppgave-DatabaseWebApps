@@ -254,6 +254,7 @@ def nyttInnlegg() -> 'html':
         return render_template('nyttInnlegg.html', form=form)
 
 @app.route('/nyKommentar', methods=["GET", "POST"])
+@login_required
 def nyKommentar() -> 'html':
     form = NyKommentar(request.form)
     if request.method == "POST" and form.validate():

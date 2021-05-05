@@ -104,14 +104,14 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-    def endreKommentar(self, kommentar):
+    def redigerKommentar(self, kommentar): # fiks at dato oppdateres
         try:
             sql1 = '''UPDATE
                 kommentar
             SET
-                kommentar, dato
+                kommentar = (%s)
             WHERE
-                kommentar_ID = %s'''
+                kommentar_ID = (%s)'''
             self.cursor.execute(sql1, kommentar)
         except mysql.connector.Error as err:
             print(err)
