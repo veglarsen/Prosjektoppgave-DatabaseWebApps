@@ -86,8 +86,11 @@ def innlegg() -> 'html':
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
+            with fileDB() as filedb:
+                result = filedb.selectAllVedlegg(id)
+                alleVedlegg = [Vedlegg(*x) for x in result]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, attachments=alleVedlegg, blogg_navn=blogg_navn)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -163,20 +166,24 @@ def brukerEndre() -> 'html':
         return render_template('brukerEndre.html',
                                form=form)
 
-@app.route('/upload_page', methods=["GET", "POST"])
-def upload_page() -> 'html':
+@app.route('/upload_page/<id>', methods=["GET", "POST"])
+def upload_page(id) -> 'html':
     with fileDB() as db:
-        result = db.selectAllVedlegg()
-        alleVedlegg = [Vedlegg(*x) for x in result]
-        return render_template('upload.html', attachments=alleVedlegg)
+        result = db.selectAllVedlegg(id)
+        if result:
+            alleVedlegg = [Vedlegg(*x) for x in result]
+            return render_template('upload.html', attachments=alleVedlegg)
+        else:
+            return render_template('upload.html', attachments=None, innlegg_id=id)
 
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/uploadfile', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/uploadfile/<id>', methods=['GET', 'POST'])
+def upload_file(id):
     # check if the post request has the file part
+    # id2 = request.args.get('id')
     if 'file' not in request.files:
         return render_template('error.html',
                                msg='No files')
@@ -189,15 +196,15 @@ def upload_file():
         print('no filename')
         return redirect(request.url)
     elif file and allowed_file(file.filename):
-        id = 1
+
         filename = secure_filename(file.filename)
         attachment = (filename, mimetype, blob, size, id)
         with fileDB() as db:
             result = db.addVedlegg(attachment)
 
-        return redirect(url_for('upload_page', _external=True))
+        return redirect(url_for('forside', _external=True))
     else:
-        return redirect(url_for('show_all_files', _external=True))
+        return redirect(url_for('forside', _external=True))
 
 @app.route('/download/<id>')
 def download_file(id):
@@ -265,12 +272,22 @@ def redigerInnlegg() -> 'html':
             form.ingress.data = innleggObj.ingress
             form.innlegg.data = innleggObj.innlegg
 
+            if id:
+                with fileDB() as filedb:
+                    result = filedb.selectAllVedlegg(id)
+                    alleVedlegg = [Vedlegg(*x) for x in result]
+
+                    return render_template('redigerInnlegg.html', form=form, attachments=alleVedlegg)
+
             return render_template('redigerInnlegg.html', form=form)
 
 @app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
 def tegneNyttInnlegg() -> 'html':
     form = NyttInnlegg()
     form.bloggID.data = request.args.get('id')
+    # with fileDB() as db:
+    #     result = db.selectAllVedlegg()
+    #     alleVedlegg = [Vedlegg(*x) for x in result]
     return render_template('nyttInnlegg.html', form=form)
 
 
@@ -293,6 +310,9 @@ def nyttInnlegg() -> 'html':
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
         print(nyttInnlegg)
         with myDB() as db:
+            lastID = db.nyttInnlegg(nyttInnlegg)
+            return redirect(url_for('upload_page', id=lastID))
+
             db.nyttInnlegg(nyttInnlegg, tag, newTag)
         return redirect('/')
     else:

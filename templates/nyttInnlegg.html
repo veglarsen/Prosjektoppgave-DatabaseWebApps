@@ -2,7 +2,7 @@
 {% block body %}
     <div class = "container">
             <h2>Legg til nytt innlegg</h2>
-            <form action="{{ url_for('nyttInnlegg') }}" method="post">
+            <form action="{{ url_for('nyttInnlegg') }}" method="post" enctype=multipart/form-data>
                 <div>
                     {{ form.tittel.label }}<br>
                     {{ form.tittel(size=32) }}<br>
@@ -46,6 +46,6 @@
         <button>Avbryt</button>
     </form>
 
-{#    <a href="{{ url_for('innlegg') }}"><button class="btn btn-primary">Avbryt</button></a>#}
+    <a href="{{ url_for('innlegg') }}"><button class="btn btn-primary">Avbryt</button></a>
     </div>
 {% endblock %}
