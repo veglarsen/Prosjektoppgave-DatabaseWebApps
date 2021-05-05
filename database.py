@@ -1,4 +1,6 @@
 import mysql.connector
+from wtforms import ValidationError
+
 
 class myDB:
 
@@ -56,13 +58,67 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+    # def sjekkTag(self, tag):
+    #     try:
+    #         self.cursor.execute("""SELECT tag_navn FROM tag where tag_ID = %s""", (tag, ))
+    #         result = self.cursor.arraysize
+    #         if result > 0:
+    #             sjekk = True
+    #         else:
+    #             sjekk = False
+    #
+    #     except mysql.connector.Error as err:
+    #         print(err)
+    #     return sjekk
+    def validate_tag_navn(self, tag_navn):
+        with myDB() as db:
+            listTag = db.selectTag()
+            print(listTag)
+            if tag_navn in str(listTag):
+                print(f'Brukernavet {tag_navn} er allerede i bruk')
+                raise ValidationError(message="Brukernavn er allerede i bruk")
 
-    def nyttInnlegg(self, nyttInnlegg): # tror innleggID og bloggID skal være null
+    def nyttInnlegg(self, nyttInnlegg, tag, newTag): # tror innleggID og bloggID skal være null
         try:
-            sql1 = '''INSERT INTO innlegg (innlegg_ID, blogg_ID, tittel, ingress, innlegg, tag, treff) 
-            VALUES (NULL, %s, %s , %s , %s, (SELECT tag_ID from tag where tag_navn = %s), 0)
-            '''
+            sql1 = '''INSERT INTO innlegg (innlegg_ID, blogg_ID, tittel, ingress, innlegg, treff)
+            VALUES (NULL, %s, %s , %s , %s, 0);'''
             self.cursor.execute(sql1, nyttInnlegg)
+            innlegg_ID = self.cursor.lastrowid
+            if len(tag) != 0:
+                for x in tag:
+                    tag_ID = x;
+                    self.cursor.execute('''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                                VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''', (tag_ID, innlegg_ID, innlegg_ID,))
+            with myDB() as db:
+                listTag = db.selectTag()
+                print(listTag)
+                if newTag in str(listTag):
+                    sjekk = True
+                else:
+                    sjekk = False
+            if newTag != " " and sjekk == False:
+                self.cursor.execute('''INSERT INTO tag (tag_navn) VALUES (%s)''', (newTag, ))
+                tag_ID = self.cursor.lastrowid
+                self.cursor.execute('''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                                                VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''',
+                                    (tag_ID, innlegg_ID, innlegg_ID,))
+            if newTag == " " and len(tag):
+                print("HEIHEI")
+
+
+
+
+            #     try:
+            #         self.cursor.execute("""SELECT tag_navn FROM tag where tag_ID = %s""", (,))
+            #         result = self.cursor.arraysize
+            #         if result > 0:
+            #             sjekk = True
+            #         else:
+            #             sjekk = False
+            #     except mysql.connector.Error as err:
+            #         print(err)
+            # if (self.sjekkTag(x) == )
+
         except mysql.connector.Error as err:
             print(err)
 
@@ -125,6 +181,7 @@ class myDB:
 
 
 
+
     def brukerEndre(self, bruker):  # kanskje tillate å endre brukernavn
         try:
             sql1 = '''UPDATE 
@@ -139,7 +196,7 @@ class myDB:
 
     def selectTag(self):
         try:
-            self.cursor.execute('''SELECT * from tag''')
+            self.cursor.execute('''SELECT CAST(tag_ID as char) as tag_ID, tag_navn from tag;''')
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)

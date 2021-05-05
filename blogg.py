@@ -54,3 +54,11 @@ class Bruker():
         self.is_authenticated = False
         self.is_active = True
         self.is_anonymous = False
+
+class Tag():
+
+    # construct / attributes
+    def __init__(self, tag_ID, tag_navn,):
+        self.tag_ID = tag_ID
+        self.tag_navn = tag_navn
+

@@ -11,7 +11,6 @@ from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
-
 from innleggSkjema import NyttInnlegg
 
 app = Flask(__name__, template_folder='templates')
@@ -287,12 +286,14 @@ def nyttInnlegg() -> 'html':
         ingress = form.ingress.data
         innlegg = form.innlegg.data
         tag = form.tag.data # if null use newTag
+
         newTag = form.newTag.data # if null, use tag
         # dato = form.dato.data
         # bruker = form.bruker.data
-        nyttInnlegg = (bloggID, tittel, ingress, innlegg, tag)
+        nyttInnlegg = (bloggID, tittel, ingress, innlegg)
+        print(nyttInnlegg)
         with myDB() as db:
-            db.nyttInnlegg(nyttInnlegg)
+            db.nyttInnlegg(nyttInnlegg, tag, newTag)
         return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
