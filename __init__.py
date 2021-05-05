@@ -86,11 +86,12 @@ def innlegg() -> 'html':
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
+                blogg_navn = innleggData.blogg_navn
             with fileDB() as filedb:
                 result = filedb.selectAllVedlegg(id)
                 alleVedlegg = [Vedlegg(*x) for x in result]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, attachments=alleVedlegg, blogg_navn=blogg_navn)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -183,7 +184,6 @@ def allowed_file(filename):
 @app.route('/uploadfile/<id>', methods=['GET', 'POST'])
 def upload_file(id):
     # check if the post request has the file part
-    # id2 = request.args.get('id')
     if 'file' not in request.files:
         return render_template('error.html',
                                msg='No files')
@@ -303,12 +303,10 @@ def nyttInnlegg() -> 'html':
         ingress = form.ingress.data
         innlegg = form.innlegg.data
         tag = form.tag.data # if null use newTag
-
         newTag = form.newTag.data # if null, use tag
         # dato = form.dato.data
         # bruker = form.bruker.data
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
-        print(nyttInnlegg)
         with myDB() as db:
             lastID = db.nyttInnlegg(nyttInnlegg)
             return redirect(url_for('upload_page', id=lastID))
