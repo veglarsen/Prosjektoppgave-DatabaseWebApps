@@ -63,8 +63,10 @@ class myDB:
             VALUES (NULL, %s, %s , %s , %s, (SELECT tag_ID from tag where tag_navn = %s), 0)
             '''
             self.cursor.execute(sql1, nyttInnlegg)
+            lastID = self.cursor.lastrowid
         except mysql.connector.Error as err:
             print(err)
+        return lastID
 
     def newBlogg(self, bruker_navn, blogg_navn):
         try:

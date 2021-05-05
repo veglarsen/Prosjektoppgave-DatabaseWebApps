@@ -170,12 +170,15 @@ def brukerEndre() -> 'html':
         return render_template('brukerEndre.html',
                                form=form)
 
-@app.route('/upload_page', methods=["GET", "POST"])
-def upload_page() -> 'html':
+@app.route('/upload_page/<id>', methods=["GET", "POST"])
+def upload_page(id) -> 'html':
     with fileDB() as db:
         result = db.selectAllVedlegg(id)
-        alleVedlegg = [Vedlegg(*x) for x in result]
-        return render_template('upload.html', attachments=alleVedlegg)
+        if result:
+            alleVedlegg = [Vedlegg(*x) for x in result]
+            return render_template('upload.html', attachments=alleVedlegg)
+        else:
+            return render_template('upload.html', attachments=None, innlegg_id=id)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -309,9 +312,8 @@ def nyttInnlegg() -> 'html':
         # bruker = form.bruker.data
         nyttInnlegg = (bloggID, tittel, ingress, innlegg, tag)
         with myDB() as db:
-            db.nyttInnlegg(nyttInnlegg)
-            innleggID = db.getLastAddedInnleggID()
-            redirect(upload_file, innleggID)
+            lastID = db.nyttInnlegg(nyttInnlegg)
+            return redirect(url_for('upload_page', id=lastID))
 
         return redirect('/')
     else:
