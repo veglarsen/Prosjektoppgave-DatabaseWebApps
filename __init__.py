@@ -11,6 +11,7 @@ from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
+
 from innleggSkjema import NyttInnlegg
 
 app = Flask(__name__, template_folder='templates')
@@ -87,7 +88,10 @@ def innlegg() -> 'html':
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn)
+            with fileDB() as filedb:
+                result = filedb.selectAllVedlegg()
+                alleVedlegg = [Vedlegg(*x) for x in result]
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -271,7 +275,10 @@ def redigerInnlegg() -> 'html':
 def tegneNyttInnlegg() -> 'html':
     form = NyttInnlegg()
     form.bloggID.data = request.args.get('id')
-    return render_template('nyttInnlegg.html', form=form)
+    with fileDB() as db:
+        result = db.selectAllVedlegg()
+        alleVedlegg = [Vedlegg(*x) for x in result]
+        return render_template('nyttInnlegg.html', form=form, attachments=alleVedlegg)
 
 
 
@@ -286,12 +293,10 @@ def nyttInnlegg() -> 'html':
         ingress = form.ingress.data
         innlegg = form.innlegg.data
         tag = form.tag.data # if null use newTag
-
         newTag = form.newTag.data # if null, use tag
         # dato = form.dato.data
         # bruker = form.bruker.data
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
-        print(nyttInnlegg)
         with myDB() as db:
             db.nyttInnlegg(nyttInnlegg, tag, newTag)
         return redirect('/')

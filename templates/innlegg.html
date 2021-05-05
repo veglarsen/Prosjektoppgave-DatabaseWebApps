@@ -33,6 +33,26 @@
                         <p>{{ kommentar.dato }}</p>
                     </td>
                 {% endfor %}
+                {%if attachments %}
+		            <div id="filliste">
+                        <ul>
+                            {% for attachment in attachments %}
+                                {% if attachment.fil_type == 'image/jpeg' or  attachment.fil_type == 'image/pjpeg' or attachment.fil_type == 'image/png' or attachment.fil_type == 'image/gif'%}
+                                  <a href="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}">
+                                      <img src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" width="10%"/></a>
+                                {% elif attachment.fil_type == 'video/mp4' or attachment.fil_type == 'video/webm' or attachment.fil_type == 'video/ogg' %}
+                                    <video width="25%" height="100%" controls>
+                                        <source src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" type="{{attachment.fil_type}}">
+                                    </video>
+                                {% else %}
+                                    <li>
+                                        {{attachment.fil_navn}}&nbsp;<a href="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}">{{attachment.fil_navn}}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </tr>
         </tbody>
     </table>
