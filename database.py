@@ -95,9 +95,8 @@ class myDB:
                                     (tag_ID, innlegg_ID, innlegg_ID,))
             else:
                 self.cursor.execute('''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-                                                                VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''',
+                                        VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''',
                                     (1, innlegg_ID, innlegg_ID,))
-
 
 
         except mysql.connector.Error as err:
