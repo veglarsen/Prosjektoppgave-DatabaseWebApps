@@ -11,7 +11,9 @@ from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
+
 from innleggSkjema import NyttInnlegg
+from kommentarSkjema import NyKommentar
 
 app = Flask(__name__, template_folder='templates')
 
@@ -75,6 +77,7 @@ def innlegg() -> 'html':
         id = request.args.get('id')
         db.incrementTreff(id)
         result = db.selectEtInnlegg(id)
+        form = NyKommentar(request.form)
         if result is None:
             return render_template('error.html', msg='Invalid parameter')
         else:
@@ -91,7 +94,7 @@ def innlegg() -> 'html':
                 result = filedb.selectAllVedlegg(id)
                 alleVedlegg = [Vedlegg(*x) for x in result]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg, form=form)
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -107,9 +110,13 @@ def login() -> 'html':
         with myDB() as db:
             aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
             if Bruker.check_password(aktuellBruker, passord):
+                print("Passordet er korrekt")
                 aktuellBruker.is_authenticated = True
                 login_user(aktuellBruker)
                 session['bruker'] = aktuellBruker.__dict__
+                print(session['bruker'])
+                print(current_user.bruker)
+                print(aktuellBruker.is_authenticated)
                 return redirect('/admin')
             else:
                 return render_template('loggInn.html', form=form)
@@ -291,7 +298,6 @@ def tegneNyttInnlegg() -> 'html':
     return render_template('nyttInnlegg.html', form=form)
 
 
-
 @app.route('/add', methods=["GET", "POST"])
 @login_required
 def nyttInnlegg() -> 'html':
@@ -315,5 +321,21 @@ def nyttInnlegg() -> 'html':
         return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
+
+@app.route('/nyKommentar', methods=["GET", "POST"])
+@login_required
+def nyKommentar() -> 'html':
+    form = NyKommentar(request.form)
+    if request.method == "POST" and form.validate():
+        innleggID = form.innleggID.data
+        bruker = current_user.bruker
+        kommentar = form.kommentar.data
+        kommentarSQL = (innleggID, innleggID, bruker, kommentar)
+        with myDB() as db:
+            db.nyKommentar(kommentarSQL)
+        return redirect('innlegg')
+    else:
+        return render_template('index.html', form=form)
+
 if __name__ == '__main__':
     app.run(debug=True)

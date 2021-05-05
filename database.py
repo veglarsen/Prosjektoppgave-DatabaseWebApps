@@ -124,6 +124,31 @@ class myDB:
             print(err)
         return result
 
+    def nyKommentar(self, kommentar):
+        try:
+            sql1 = '''INSERT INTO
+            `kommentar`
+            (`innlegg_ID`, `blogg_ID`, `bruker`, `kommentar`) 
+            VALUES 
+            ((%s), (SELECT innlegg.blogg_ID FROM innlegg WHERE innlegg.innlegg_ID = (%s)
+            ), (%s), (%s));
+            '''
+            self.cursor.execute(sql1, kommentar)
+        except mysql.connector.Error as err:
+            print(err)
+
+    def redigerKommentar(self, kommentar): # fiks at dato oppdateres
+        try:
+            sql1 = '''UPDATE
+                kommentar
+            SET
+                kommentar = (%s)
+            WHERE
+                kommentar_ID = (%s)'''
+            self.cursor.execute(sql1, kommentar)
+        except mysql.connector.Error as err:
+            print(err)
+
     def selectBruker(self, bruker_navn):
         try:
             self.cursor.execute("SELECT * FROM bruker where bruker = (%s)", (bruker_navn,))

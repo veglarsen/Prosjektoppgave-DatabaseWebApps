@@ -56,4 +56,23 @@
             </tr>
         </tbody>
     </table>
+{# {% if is_authenticated == True %}#}
+    <div class = "container">
+        <h3>Ny kommentar</h3>
+
+        <form action="{{ url_for('nyKommentar') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div>
+                {{ form.kommentar.label }}<br>
+                {{ form.kommentar(size=32) }}<br>
+                {% for error in form.kommentar.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="innleggID" value="{{ innleggData.innlegg_ID }}"/>
+            <p>{{ form.submit() }}</p>
+
+        </form>
+    </div>
+{# {% endif %}#}
 {% endblock %}
