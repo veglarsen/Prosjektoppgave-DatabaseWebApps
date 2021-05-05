@@ -2,7 +2,7 @@
 {% block body %}
     <div class = "container">
             <h2>Legg til nytt innlegg</h2>
-            <form action="{{ url_for('nyttInnlegg') }}" method="post">
+            <form action="{{ url_for('nyttInnlegg') }}" method="post" enctype=multipart/form-data>
                 <div>
                     {{ form.tittel.label }}<br>
                     {{ form.tittel(size=32) }}<br>
@@ -40,19 +40,20 @@
                 </div>
                 <input type="hidden" name="bloggID" value="{{ form.bloggID.data }}" />
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <p><input type=file name=file>
                 <p>{{ form.submit() }}</p>
             </form>
-    <h3>Upload new File</h3>
-    <form action={{ url_for('upload_file', _external=True) }} method=post enctype=multipart/form-data>
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <input type="hidden" name="MAX_FILE_SIZE" value="2097152" />
-        <p><input type=file name=file>
-        <input type=submit value=Upload>
-    </form>
-
-    <form style="display: inline" action="{{ url_for('innlegg') }}" method="get">
-        <button>Avbryt</button>
-    </form>
+{#    <h3>Upload new File</h3>#}
+{#    <form action={{ url_for('upload_file', _external=True) }} method=post enctype=multipart/form-data>#}
+{#        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
+{#        <input type="hidden" name="MAX_FILE_SIZE" value="2097152" />#}
+{#        <p><input type=file name=file>#}
+{#        <input type=submit value=Upload>#}
+{#    </form>#}
+{##}
+{#    <form style="display: inline" action="{{ url_for('innlegg') }}" method="get">#}
+{#        <button>Avbryt</button>#}
+{#    </form>#}
 
 {#    <a href="{{ url_for('innlegg') }}"><button class="btn btn-primary">Avbryt</button></a>#}
     </div>

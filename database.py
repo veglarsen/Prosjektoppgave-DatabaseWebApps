@@ -161,3 +161,10 @@ class myDB:
             self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (id,))
         except mysql.connector.Error as err:
             print(err)
+
+    def getLastAddedInnleggID(self):
+        try:
+            result = self.cursor.execute("SELECT innlegg_ID from stud_v21_larsen.vedlegg where innlegg_ID=last_insert_id()")
+        except mysql.connector.Error as err:
+            print(err)
+        return result

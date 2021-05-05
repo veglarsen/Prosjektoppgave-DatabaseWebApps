@@ -286,10 +286,10 @@ def redigerInnlegg() -> 'html':
 def tegneNyttInnlegg() -> 'html':
     form = NyttInnlegg()
     form.bloggID.data = request.args.get('id')
-    with fileDB() as db:
-        result = db.selectAllVedlegg()
-        alleVedlegg = [Vedlegg(*x) for x in result]
-        return render_template('nyttInnlegg.html', form=form, attachments=alleVedlegg)
+    # with fileDB() as db:
+    #     result = db.selectAllVedlegg()
+    #     alleVedlegg = [Vedlegg(*x) for x in result]
+    return render_template('nyttInnlegg.html', form=form)
 
 
 
@@ -310,6 +310,8 @@ def nyttInnlegg() -> 'html':
         nyttInnlegg = (bloggID, tittel, ingress, innlegg, tag)
         with myDB() as db:
             db.nyttInnlegg(nyttInnlegg)
+            innleggID = db.getLastAddedInnleggID()
+            redirect(upload_file, innleggID)
 
         return redirect('/')
     else:
