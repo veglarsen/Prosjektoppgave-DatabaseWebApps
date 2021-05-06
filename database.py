@@ -41,7 +41,7 @@ class myDB:
 
     def selectAlleInnlegg(self, id):
         try:
-            self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, tag, treff, ingress,
+            self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress,
                                 tittel, eier FROM innlegg inner join blogg 
                                 on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s)""", (id,))
             result = self.cursor.fetchall()
@@ -64,9 +64,9 @@ class myDB:
 
     def selectEtInnlegg(self, id):
         try:
-            self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, tag, treff, ingress, 
+            self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress, 
                                 tittel, eier FROM innlegg inner join blogg 
-                                on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id,))
+                                on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id, ))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)

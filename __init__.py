@@ -64,8 +64,8 @@ def blogg() -> 'html':
                                    msg='Invalid parameter')
         else:
             if current_user.is_authenticated:
-                innleggData = Innlegg(*db.selectEtInnlegg(id))
-                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
+                innleggData = [Innlegg(*x) for x in result]
+                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData[0].eier)
             innleggData = [Innlegg(*x) for x in result]
             blogg_navn = innleggData[0].blogg_navn
             blogg_ID = innleggData[0].blogg_ID
