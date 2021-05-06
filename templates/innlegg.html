@@ -71,6 +71,9 @@
                 </div>
                 <input type="hidden" name="innleggID" value="{{ innleggData.innlegg_ID }}"/>
                 <p>{{ form.submit() }}</p>
+                <a href="{{ url_for('redigerKommentar') }}?id={{ innleggData.innlegg_ID }}">
+                        Rediger kommentar
+                    </a><br>
 
             </form>
         </div>

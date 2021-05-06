@@ -341,18 +341,25 @@ def nyKommentar() -> 'html':
 
 @app.route('/redigerKommentar', methods=["GET", "POST"])
 @login_required
-def redigerKommentar() -> 'html': # fiks at dato oppdateres
+def redigerKommentar() -> 'html':
     form = RedigerKommentar(request.form)
     if request.method == "POST" and form.validate():
-        innleggID = form.innleggID.data
         # bruker = current_user.bruker
         kommentar = form.kommentar.data
-        kommentarSQL = (innleggID, innleggID, kommentar)
+        kommentarID = request.form['kommentarID']
+        redigertKommentar = (kommentar, kommentarID)
         with myDB() as db:
-            db.redigerKommentar(kommentarSQL)
-        return redirect(url_for("innlegg", id=innleggID))
+            db.redigerKommentar(redigertKommentar)
+        return redirect('/')
     else:
-        return render_template('index.html', form=form)
+        kommentarID = request.args.get('kommentarID')
+        with myDB() as db:
+            kommentaren = db.selectEnKommentar(kommentarID)
+            kommentarObj = Kommentar(*kommentaren)
+            form = RedigerKommentar(request.form)
+            form.kommentarID.data = kommentarObj.kommentar_ID
+            form.kommentar.data = kommentarObj.kommentar
+        return render_template('redigerKommentar.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
