@@ -48,3 +48,47 @@ class fileDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
+    def slettVedlegg(self, id):
+        try:
+            self.cursor.execute("SELECT vedlegg_ID FROM vedlegg WHERE innlegg_ID = (%s)", (id,))
+            allVedlegg = self.cursor.fetchall()
+            for vedlegg in allVedlegg:
+                vedleggID = vedlegg[0]
+                self.cursor.execute("DELETE FROM vedlegg WHERE innlegg_ID = (%s) AND vedlegg_ID = (%s)",
+                                    (id, vedleggID))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def slettTags(self, id):
+        try:
+            self.cursor.execute("SELECT innlegg_blogg_ID from tag_innlegg WHERE innlegg_innlegg_ID = (%s)", (id,))
+            innleggBloggID = self.cursor.fetchone()
+            self.cursor.execute("SELECT tag_tag_ID from tag_innlegg WHERE innlegg_innlegg_ID = (%s)", (id,))
+            allTags = self.cursor.fetchall()
+            for tag in allTags:
+                tagID = tag[0]
+                self.cursor.execute(
+                    "DELETE FROM tag_innlegg WHERE tag_tag_ID = (%s) and innlegg_innlegg_ID = (%s) and innlegg_blogg_ID = (%s)",
+                    (tagID, id, innleggBloggID[0]))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def slettKommentarer(self, id):
+        try:
+            self.cursor.execute("SELECT kommentar_ID from kommentar WHERE innlegg_ID = (%s)", (id,))
+            allKommentarID = self.cursor.fetchall()
+            for kommentar in allKommentarID:
+                kommentarID = kommentar[0]
+                self.cursor.execute("DELETE FROM kommentar where kommentar_ID = (%s)", (kommentarID,))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def slettInnlegg(self, id):
+        try:
+            self.slettVedlegg(id)
+            self.slettTags(id)
+            self.slettKommentarer(id)
+            self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (id,))
+        except mysql.connector.Error as err:
+            print(err)

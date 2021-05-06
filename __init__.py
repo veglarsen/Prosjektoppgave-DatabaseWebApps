@@ -247,7 +247,7 @@ def bekreftSletting() -> 'html':
 def slettInnlegg() -> 'html':
     if request.method == "POST":
         id = request.form['id']
-        with myDB() as db:
+        with fileDB() as db:
             db.slettInnlegg(id)
         return redirect('/')
 

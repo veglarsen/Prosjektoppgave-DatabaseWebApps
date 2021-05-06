@@ -219,18 +219,6 @@ class myDB:
             print(err)
         return result
 
-    def slettInnlegg(self, id):
-        try:
-            self.cursor.execute("SELECT vedlegg_ID from vedlegg WHERE innlegg_ID = (%s)", (id,))
-            allVedlegg = self.cursor.fetchall()
-            for vedlegg in allVedlegg:
-                vedleggID = vedlegg[0]
-                self.cursor.execute("DELETE FROM vedlegg WHERE innlegg_ID = (%s) and vedlegg_ID = (%s)", (id, vedleggID))
-            self.cursor.execute("DELETE FROM tag_innlegg WHERE innlegg_innlegg_ID = (%s)", (id,))
-            self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (id,))
-        except mysql.connector.Error as err:
-            print(err)
-
     def getLastAddedInnleggID(self):
         try:
             result = self.cursor.lastrowid
