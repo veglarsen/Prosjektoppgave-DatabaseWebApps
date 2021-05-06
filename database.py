@@ -101,6 +101,7 @@ class myDB:
 
         except mysql.connector.Error as err:
             print(err)
+        return innlegg_ID
 
     def newBlogg(self, bruker_navn, blogg_navn):
         try:
@@ -226,7 +227,7 @@ class myDB:
 
     def getLastAddedInnleggID(self):
         try:
-            result = self.cursor.execute("SELECT innlegg_ID from stud_v21_larsen.vedlegg where innlegg_ID=last_insert_id()")
+            result = self.cursor.lastrowid
         except mysql.connector.Error as err:
             print(err)
         return result

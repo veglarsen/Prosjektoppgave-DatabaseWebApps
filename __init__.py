@@ -207,7 +207,7 @@ def upload_file(id):
         filename = secure_filename(file.filename)
         attachment = (filename, mimetype, blob, size, id)
         with fileDB() as db:
-            result = db.addVedlegg(attachment)
+            db.addVedlegg(attachment)
 
         return redirect(url_for('forside', _external=True))
     else:
@@ -314,7 +314,7 @@ def nyttInnlegg() -> 'html':
         # bruker = form.bruker.data
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
         with myDB() as db:
-            lastID = db.nyttInnlegg(nyttInnlegg)
+            lastID = db.nyttInnlegg(nyttInnlegg, tag, newTag)
             return redirect(url_for('upload_page', id=lastID))
 
             db.nyttInnlegg(nyttInnlegg, tag, newTag)
