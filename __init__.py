@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, redirect, session, make_respo
 from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema, RedigerInnleggForm
 from database import myDB
 from fileoperations import fileDB
-from blogg import Blogg, Innlegg, Kommentar, Vedlegg
+from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag, InnleggTag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 
