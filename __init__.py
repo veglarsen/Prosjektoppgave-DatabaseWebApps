@@ -334,7 +334,7 @@ def nyKommentar() -> 'html':
         kommentarSQL = (innleggID, innleggID, bruker, kommentar)
         with myDB() as db:
             db.nyKommentar(kommentarSQL)
-        return redirect('innlegg')
+        return redirect(url_for("innlegg", id=innleggID))
     else:
         return render_template('index.html', form=form)
 
