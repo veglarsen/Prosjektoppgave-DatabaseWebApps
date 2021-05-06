@@ -88,7 +88,9 @@ def innlegg() -> 'html':
                 is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
             with myDB() as db:
                 kommentar = db.kommentarer(id)
+                innleggData = Innlegg(*db.selectEtInnlegg(id))
                 kommentarData = [Kommentar(*x) for x in kommentar]
+                # kommentarData = Kommentar(*db.selectEnKommentar(id))
                 blogg_navn = innleggData.blogg_navn
             with fileDB() as filedb:
                 result = filedb.selectAllVedlegg(id)
