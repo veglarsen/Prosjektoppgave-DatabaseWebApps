@@ -42,7 +42,7 @@ def unauthorized_callback():
 
 @app.route('/')
 def forside() -> 'html':
-    print("Forside")
+    # print("Forside")
     redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()

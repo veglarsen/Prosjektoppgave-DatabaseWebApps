@@ -25,7 +25,7 @@ class myDB:
 
     def selectBlogg(self):
         try:
-            self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel FROM blogg""")
+            self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel, eier FROM blogg""")
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)

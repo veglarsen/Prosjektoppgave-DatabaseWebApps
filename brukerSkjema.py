@@ -16,7 +16,7 @@ class BrukerSkjema(Form):
     pwconfirm = PasswordField('Repeat Password: ')
     eMail = EmailField('E-mail Address: ', validators=[DataRequired(), Email(), Length(max=120)])
     brukernavn = HiddenField()
-    submit = SubmitField('Submit form')
+    submit = SubmitField('Logg inn')
 
 class loggInn(Form):
 

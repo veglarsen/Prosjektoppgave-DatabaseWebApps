@@ -4,23 +4,26 @@
     <table>
         <thead>
             <tr>
-                <th>Blogg tittel</th>
+                <th><h2>Blogg tittel</h2></th>
         </thead>
         <tbody>
-        {% if current_user.is_authenticated %}
-                <p>Hi {{ current_user.bruker }}!</p>
-        {% endif %}
+{#        {% if current_user.is_authenticated %}#}
+{#                <p>Hi {{ current_user.bruker }}!</p>#}
+{#                <p><a href="{{ url_for('logout')}}">Logg Ut</a></p>#}
+{#        {% endif %}#}
             {% for blogg in bloggObjektene %}
             <tr>
                 <td>
                     <a href="{{ url_for('blogg') }}?id={{ blogg.blogg_ID }}">
-                        {{ blogg.blogg_navn }}
+                        <h2>{{ blogg.blogg_navn }}</h2> <h5>av {{ blogg.blogg_eier }}</h5>
                     </a>
 
                 </td>
             </tr>
             {% endfor %}
-        <a href="{{ url_for('login')}}">Logg Inn</a>
+{#        {% if not current_user.is_authenticated %}#}
+{#        <a href="{{ url_for('login')}}">Logg Inn</a>#}
+{#        {% endif %}#}
         </tbody>
     </table>
 {% endblock %}

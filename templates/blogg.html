@@ -2,11 +2,6 @@
 {% block body %}
     <header><h1>{{ blogg_navn }}</h1></header>
     <table>
-        <thead>
-            <tr>
-                <th>{{ blogg_navn }}</th>
-            </tr>
-        </thead>
         <tbody>
             {% if is_owner == True %}
                 <a href="{{ url_for('tegneNyttInnlegg') }}?id={{ blogg_ID }}"> Nytt innlegg </a><br>
@@ -15,9 +10,9 @@
                 <tr>
                     <td>
                         <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
-                            <h3>{{ innlegg.tittel }}</h3>
-                            <h3>{{ innlegg.ingress }}</h3>
-                            <p>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </p><!-- Innlegg tittel/Ingress? -->
+                            <h2>{{ innlegg.tittel }}</h2>
+                            <h5>{{ innlegg.ingress }}</h5>
+                            <p><h5>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </h5></p><!-- Innlegg tittel/Ingress? -->
                         </a>
                     </td>
                 </tr>
