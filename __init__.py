@@ -317,11 +317,9 @@ def nyttInnlegg() -> 'html':
 
         with myDB() as db:
             db.nyttInnlegg(nyttInnlegg, tag, newTag)
-            lastID = db.nyttInnlegg(nyttInnlegg)
-            return redirect(url_for('upload_page', id=lastID))
-
-
-        return redirect('/')
+            # lastID = db.nyttInnlegg(nyttInnlegg, tag, newTag)
+            # return redirect(url_for('upload_page', id=lastID))
+            return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
 
