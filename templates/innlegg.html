@@ -25,6 +25,12 @@
                             <p>{{ innleggData.innlegg }}</p>
                             <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
                         </a>
+                        TAGS:
+                        {%  for tag in tagData %}
+                        <a href="{{ url_for('tagInnlegg') }}?tag={{ tag.tag_ID }}">
+                                {{tag.tag_navn + " ," }}
+                        </a>
+                        {% endfor %}
                     </td>
                 {% for kommentar in kommentarData %}
                     <td>

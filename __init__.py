@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, redirect, session, make_respo
 from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema, RedigerInnleggForm
 from database import myDB
 from fileoperations import fileDB
-from blogg import Blogg, Innlegg, Kommentar, Vedlegg
+from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 
@@ -84,17 +84,34 @@ def innlegg() -> 'html':
             is_owner = False
             with myDB() as db:
                 innleggData = Innlegg(*db.selectEtInnlegg(id))
+                tag = db.selectTags(id)
+                tagData = [Tag(*x) for x in tag]
             if current_user.is_authenticated:
                 is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
             with myDB() as db:
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
-                blogg_navn = innleggData.blogg_navn
             with fileDB() as filedb:
                 result = filedb.selectAllVedlegg(id)
                 alleVedlegg = [Vedlegg(*x) for x in result]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg, form=form)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg, tagData=tagData, form=form)
+
+@app.route('/tagInnlegg')
+def tagInnlegg() -> 'html':
+    with myDB() as db:
+        tag = request.args.get('tag')
+        result = db.selectAlleInnleggTag(tag)
+        if result is None:
+            return render_template('error.html',
+                                   msg='Invalid parameter')
+        else:
+            innleggData = [Innlegg(*x) for x in result]
+            blogg_navn = innleggData[0].blogg_navn
+            blogg_ID = innleggData[0].blogg_ID
+            return render_template('blogg.html', innleggData=innleggData, blogg_ID=blogg_ID,
+                                   blogg_navn=blogg_navn)
+
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
@@ -309,10 +326,8 @@ def nyttInnlegg() -> 'html':
         ingress = form.ingress.data
         innlegg = form.innlegg.data
         tag = form.tag.data  # if null use newTag
-
         newTag = form.newTag.data  # if null, use tag
-        # dato = form.dato.data
-        # bruker = form.bruker.data
+
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
 
         with myDB() as db:

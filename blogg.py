@@ -8,13 +8,12 @@ class Blogg:
 class Innlegg:
 
     # construct / attributes
-    def __init__(self, blogg_navn, innlegg_ID, blogg_ID, innlegg, dato, tag, treff, ingress, tittel, eier):
+    def __init__(self, blogg_navn, innlegg_ID, blogg_ID, innlegg, dato, treff, ingress, tittel, eier, tag_navn):
         self.blogg_navn = blogg_navn
         self.innlegg_ID = innlegg_ID
         self.blogg_ID = blogg_ID
         self.innlegg = innlegg
         self.dato = dato
-        self.tag = tag
         self.treff = treff
         self.ingress = ingress
         self.tittel = tittel

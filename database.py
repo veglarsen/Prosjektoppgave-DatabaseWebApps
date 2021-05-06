@@ -49,12 +49,33 @@ class myDB:
             print(err)
         return result
 
+    def selectAlleInnleggTag(self, tag):
+        try:
+            self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress, 
+            tittel, eier, tag_navn FROM innlegg 
+                                   inner join blogg on innlegg.blogg_ID = blogg.blogg_ID
+                                   inner join tag_innlegg on innlegg.innlegg_id = tag_innlegg.innlegg_innlegg_ID 
+                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s)""", (tag,))
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
+
     def selectEtInnlegg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, tag, treff, ingress, 
                                 tittel, eier FROM innlegg inner join blogg 
                                 on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id,))
             result = self.cursor.fetchone()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+    def selectTags(self, innlegg_ID):
+        try:
+            self.cursor.execute("""SELECT tag_ID, tag_navn FROM tag_innlegg inner join tag on tag_tag_ID = tag.tag_ID 
+                                where innlegg_innlegg_ID = (%s)""", (innlegg_ID,))
+            result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
         return result
@@ -66,6 +87,7 @@ class myDB:
             if tag_navn in str(listTag):
                 print(f'Brukernavet {tag_navn} er allerede i bruk')
                 raise ValidationError(message="Brukernavn er allerede i bruk")
+
 
     def nyttInnlegg(self, nyttInnlegg, tag, newTag):
         try:
@@ -84,20 +106,25 @@ class myDB:
             if len(tag) != 0:
                 for x in tag:
                     tag_ID = x;
-                    self.cursor.execute('''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-                                        VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''',
-                                        (tag_ID, innlegg_ID, innlegg_ID,))
-            elif newTag != " " and sjekk == False:
-                self.cursor.execute('''INSERT INTO tag (tag_navn) VALUES (%s)''', (newTag, ))
-                tag_ID = self.cursor.lastrowid
-                self.cursor.execute('''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-                                                VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''',
-                                    (tag_ID, innlegg_ID, innlegg_ID,))
-            else:
-                self.cursor.execute('''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-                                        VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))''',
-                                    (1, innlegg_ID, innlegg_ID,))
+                    sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                                        VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))'''
+                    data = (tag_ID, innlegg_ID, innlegg_ID)
+                    self.cursor.execute(sql1, data)
 
+            elif newTag != " " and sjekk == False:
+                sql1 = '''INSERT INTO tag (tag_navn) VALUES (%s)'''
+                self.cursor.execute(sql1, newTag)
+
+                tag_ID = self.cursor.lastrowid
+                sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                          VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))'''
+                data = (tag_ID, innlegg_ID, innlegg_ID)
+                self.cursor.execute(sql1, data)
+            else:
+                sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                                        VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))'''
+                data = (1, innlegg_ID, innlegg_ID)
+                self.cursor.execute(sql1, data)
 
         except mysql.connector.Error as err:
             print(err)
