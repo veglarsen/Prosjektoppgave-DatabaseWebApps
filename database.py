@@ -138,7 +138,7 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-    def redigerKommentar(self, kommentar): # fiks at dato oppdateres ---- jeg jobber her
+    def redigerKommentar(self, kommentar): # fiks at dato oppdateres
         try:
             sql1 = '''UPDATE
                 kommentar
