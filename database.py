@@ -80,6 +80,14 @@ class myDB:
             print(err)
         return result
 
+    def selectEnKommentar(self, id):
+        try:
+            self.cursor.execute("""SELECT kommentar FROM kommentar where kommentar_id = (%s)""", (id,))
+            result = self.cursor.fetchone()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
     def validate_tag_navn(self, tag_navn):
         with myDB() as db:
             listTag = db.selectTag()

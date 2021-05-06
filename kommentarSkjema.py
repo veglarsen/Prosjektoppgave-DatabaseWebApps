@@ -8,8 +8,8 @@ class NyKommentar(Form):
     bruker = HiddenField()
     submit = SubmitField('Legg til')
 
-class EndreKommentar(Form):
-    innleggID = HiddenField()
+class RedigerKommentar(Form):
+    kommentarID = HiddenField()
     kommentar = StringField('Kommentar: ', validators=[DataRequired(), Length(max=200)])
-    bruker = HiddenField()
+    # bruker = HiddenField()
     submit = SubmitField('Endre')
