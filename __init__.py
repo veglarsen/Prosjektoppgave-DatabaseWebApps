@@ -308,16 +308,19 @@ def nyttInnlegg() -> 'html':
         tittel = form.tittel.data
         ingress = form.ingress.data
         innlegg = form.innlegg.data
-        tag = form.tag.data # if null use newTag
-        newTag = form.newTag.data # if null, use tag
+        tag = form.tag.data  # if null use newTag
+
+        newTag = form.newTag.data  # if null, use tag
         # dato = form.dato.data
         # bruker = form.bruker.data
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
+
         with myDB() as db:
+            db.nyttInnlegg(nyttInnlegg, tag, newTag)
             lastID = db.nyttInnlegg(nyttInnlegg)
             return redirect(url_for('upload_page', id=lastID))
 
-            db.nyttInnlegg(nyttInnlegg, tag, newTag)
+
         return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
