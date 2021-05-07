@@ -82,7 +82,7 @@ class myDB:
 
     def selectEnKommentar(self, id):
         try:
-            self.cursor.execute("""SELECT kommentar FROM kommentar where kommentar_id = (%s)""", (id,))
+            self.cursor.execute("""SELECT kommentar_id, innlegg_id, blogg_id, bruker, kommentar, dato FROM kommentar where kommentar_id = (%s)""", (id,))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)
