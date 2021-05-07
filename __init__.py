@@ -12,6 +12,8 @@ from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag, InnleggTag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 from innleggSkjema import NyttInnlegg, SearchForm
+
+from innleggSkjema import NyttInnlegg, RedigerInnleggForm
 from kommentarSkjema import NyKommentar, RedigerKommentar
 
 app = Flask(__name__, template_folder='templates')
@@ -286,7 +288,51 @@ def redigerInnlegg() -> 'html':
         innlegg = form.innlegg.data
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
-            result = db.redigerInnlegg(redigertInnlegg)
+            # result = db.redigerInnlegg(redigertInnlegg)
+            db.redigerInnlegg(redigertInnlegg)
+            oldTagID = db.selectTags(id)
+            innlegg_innlegg_ID = id
+            tag_tag_ID = form.tag.data
+            if tag_tag_ID == []:
+                tag_tag_ID = [1];
+            innlegg_blogg_ID = db.currentBloggID(id)
+            if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
+                tag_tag_ID = oldTagID[0]
+                tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                # db.updateTagInnlegg(tagInnlegg)
+                for tag in tag_tag_ID:
+                    # db.updateTagInnlegg(tag, innlegg_innlegg_ID, innlegg_blogg_ID)
+                    tagInnlegg = (tag, tag, innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+                # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+            elif len(tag_tag_ID) == len(oldTagID):
+                for i in range(0, len(tag_tag_ID)):
+                    oldTag = oldTagID[i]
+                    tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+            elif len(tag_tag_ID) < len(oldTagID):
+                for i in range(0, len(oldTagID) - (len(oldTagID) - len(tag_tag_ID))):
+                    oldTag = oldTagID[i]
+                    tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+
+                for j in range(len(oldTagID) - len(tag_tag_ID), 0, -1):
+                    oldTag = oldTagID[j]
+                    tagInnlegg = (oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.deleteTagFromInnlegg(tagInnlegg)
+
+            elif len(tag_tag_ID) > len(oldTagID):
+                for i in range(0, len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTagID))):
+                    oldTag = oldTagID[i]
+                    tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+
+                for j in range(len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTagID)), len(tag_tag_ID)):
+                    tagInnlegg = (tag_tag_ID[j], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.addTagToInnlegg(tagInnlegg)
+
+
+
         return redirect('/')
     else:
         id = request.args.get('id')
@@ -298,6 +344,9 @@ def redigerInnlegg() -> 'html':
             form.tittel.data = innleggObj.tittel
             form.ingress.data = innleggObj.ingress
             form.innlegg.data = innleggObj.innlegg
+            tags = db.selectTags(id)
+            form.tag.data = tags
+
 
             if id:
                 with fileDB() as filedb:

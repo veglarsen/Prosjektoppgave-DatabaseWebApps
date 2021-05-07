@@ -25,3 +25,12 @@ class SearchForm(Form):
     searchField = StringField('Søk i alle innlegg', validators=[Length(max=20)])                #validator!
     tag = SelectMultipleField(u'Tag: ', choices=selectTag)
     submit = SubmitField('SØK')
+
+class RedigerInnleggForm(Form):
+    tittel = StringField('Tittel', validators=[DataRequired(), Length(max=20)])               #REDIGER LENGDEN
+    ingress = StringField('Ingress', validators=[DataRequired(), Length(max=50)])
+    innlegg = TextAreaField('Innlegg Tekst', validators=[DataRequired(), Length(max=250)])
+    id = HiddenField()
+    tag = SelectMultipleField(u'Tag: ', choices=selectTag)
+    newTag = StringField('Ny tag: ', validators=[Length(max=10)])
+    submit = SubmitField('Update')

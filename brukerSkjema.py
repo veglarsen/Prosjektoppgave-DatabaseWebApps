@@ -23,14 +23,6 @@ class loggInn(Form):
     passord = PasswordField('Passord: ', validators=[DataRequired()])
     submit = SubmitField('Submit form')
 
-class RedigerInnleggForm(Form):
-    # tegs = SelectField(u'Tegs', choices=tegs)
-    tittel = StringField('Tittel', validators=[DataRequired(), Length(max=20)])               #REDIGER LENGDEN
-    ingress = StringField('Ingress', validators=[DataRequired(), Length(max=50)])
-    innlegg = TextAreaField('Innlegg Tekst', validators=[DataRequired(), Length(max=250)])
-    id = HiddenField()
-    submit = SubmitField('Update')
-
 
 
 class NyBrukerSkjema(Form):
