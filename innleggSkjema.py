@@ -20,3 +20,8 @@ class NyttInnlegg(Form):
     # trenger vedlegg!
     bloggID = HiddenField()
     submit = SubmitField('Legg til')
+
+class SearchForm(Form):
+    searchField = StringField('Søk i alle innlegg', validators=[Length(max=20)])                #validator!
+    tag = SelectMultipleField(u'Tag: ', choices=selectTag)
+    submit = SubmitField('SØK')
