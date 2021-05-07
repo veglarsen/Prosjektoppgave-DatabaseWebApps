@@ -25,3 +25,7 @@ class SearchForm(Form):
     searchField = StringField('Søk i alle innlegg', validators=[Length(max=20)])                #validator!
     tag = SelectMultipleField(u'Tag: ', choices=selectTag)
     submit = SubmitField('SØK')
+
+class NyBlogg(Form):
+    blogg_navn = StringField('Blogg Navn: ', validators=[DataRequired(), Length(max=32)])
+    submit = SubmitField('Legg til')

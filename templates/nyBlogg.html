@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class = "container">
+            <h2>Legg til nytt innlegg</h2>
+            <form action="{{ url_for('nyBlogg') }}" method="POST">
+                <div>
+                    {{ form.blogg_navn.label }}<br>
+                    {{ form.blogg_navn(size=32) }}<br>
+                    {%  for error in form.blogg_navn.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+{#                funker ikke får ikke inn det som skrives inn#}
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <p>{{ form.submit() }}</p>
+            </form>
+    <form style="display: inline" action="{{ url_for('forside') }}" method="get">
+        <button>Avbryt</button>
+    </form>
+
+    <a href="{{ url_for('innlegg') }}"><button class="btn btn-primary">Avbryt</button></a>
+    </div>
+{% endblock %}

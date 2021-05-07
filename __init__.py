@@ -11,7 +11,7 @@ from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag, InnleggTag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
-from innleggSkjema import NyttInnlegg, SearchForm
+from innleggSkjema import NyttInnlegg, SearchForm, NyBlogg
 from kommentarSkjema import NyKommentar, RedigerKommentar
 
 app = Flask(__name__, template_folder='templates')
@@ -412,7 +412,17 @@ def search() -> 'html':
             # blogg_ID = innleggData[0].blogg_ID
 
             return render_template('blogg.html', innleggData=innleggData, searchForm=searchForm)   #, blogg_ID=blogg_ID, blogg_navn=blogg_navn
-
+@login_required
+@app.route('/nyBlogg', methods=["GET", "POST"])
+def nyBlogg() -> 'html':
+    form = NyBlogg(request.form)
+    if request.method == "POST" and form.validate():
+        eier = current_user.bruker
+        blogg_navn = form.blogg_navn.data
+        with myDB() as db:
+            db.newBlogg(blogg_navn, eier)
+        return redirect('/')
+    return render_template('nyBlogg.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
