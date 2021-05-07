@@ -366,18 +366,19 @@ def redigerKommentar() -> 'html':
         redigertKommentar = (kommentar, kommentarID)
         with myDB() as db:
             db.redigerKommentar(redigertKommentar)
-        return redirect(url_for("innlegg", id=innleggID))
-        # return redirect('/')
+        # return redirect(url_for("innlegg", id=innleggID))
+        return redirect('/')
     else:
         kommentarID = request.args.get('kommentarID')
         with myDB() as db:
-            innleggData = Innlegg(*db.selectEtInnlegg(kommentarID))
+            # innleggData = Innlegg(*db.selectEtInnlegg(kommentarID))
             kommentaren = db.selectEnKommentar(kommentarID)
             kommentarObj = Kommentar(*kommentaren)
             form = RedigerKommentar(request.form)
             form.kommentarID.data = kommentarObj.kommentar_ID
             form.kommentar.data = kommentarObj.kommentar
-        return render_template('redigerKommentar.html', form=form, innleggData=innleggData)
+        return render_template('redigerKommentar.html', form=form)
+        # return render_template('redigerKommentar.html', form=form, innleggData=innleggData)
 
 
 
