@@ -37,8 +37,10 @@
                         <h3>{{ kommentar.bruker }}</h3>
                         <h3>{{ kommentar.kommentar }}</h3>
                         <p>{{ kommentar.dato }}</p>
+                        {% if current_user.isauthenticated == True %}
                          <a href="{{ url_for('redigerKommentar') }}?id={{ kommentar.kommentar_ID }}">
                              Rediger</a>
+                        {% endif %}
                     </td>
                 {% endfor %}
                 {%if attachments %}
@@ -79,10 +81,6 @@
                 </div>
                 <input type="hidden" name="innleggID" value="{{ innleggData.innlegg_ID }}"/>
                 <p>{{ form.submit() }}</p>
-                <a href="{{ url_for('redigerKommentar') }}?id={{ kommentarData.kommentar_ID }}">
-                        Rediger kommentar
-                    </a><br>
-
             </form>
         </div>
      {% endif %}

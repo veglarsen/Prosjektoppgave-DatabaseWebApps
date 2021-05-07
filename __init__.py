@@ -370,10 +370,10 @@ def redigerKommentar() -> 'html':
         kommentarID = request.args.get('kommentarID')
         with myDB() as db:
             kommentaren = db.selectEnKommentar(kommentarID)
-            kommentarObj = Kommentar(*kommentaren)
+            # kommentarObj = Kommentar(*kommentaren)
             form = RedigerKommentar(request.form)
-            form.kommentarID.data = kommentarObj.kommentar_ID
-            form.kommentar.data = kommentarObj.kommentar
+            # form.kommentarID.data = kommentarObj.kommentar_ID
+            # form.kommentar.data = kommentarObj.kommentar
         return render_template('redigerKommentar.html', form=form)
 
 if __name__ == '__main__':
