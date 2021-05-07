@@ -11,8 +11,7 @@ from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag, InnleggTag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
-
-from innleggSkjema import NyttInnlegg
+from innleggSkjema import NyttInnlegg, SearchForm
 from kommentarSkjema import NyKommentar, RedigerKommentar
 
 app = Flask(__name__, template_folder='templates')
@@ -42,7 +41,7 @@ def unauthorized_callback():
 
 @app.route('/')
 def forside() -> 'html':
-    # print("Forside")
+    searchForm = SearchForm(request.form)
     redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()
@@ -51,12 +50,13 @@ def forside() -> 'html':
                                    msg='Invalid parameter')
         else:
             bloggObjektene = [Blogg(*x) for x in result]
-            return render_template('index.html', bloggObjektene=bloggObjektene)
+            return render_template('index.html', bloggObjektene=bloggObjektene, searchForm=searchForm)
 
 @app.route('/blogg')
 def blogg() -> 'html':
     with myDB() as db:
         is_owner = False
+
         id = request.args.get('id')
         result = db.selectAlleInnlegg(id)
         if result is None:
@@ -69,6 +69,7 @@ def blogg() -> 'html':
             innleggData = [Innlegg(*x) for x in result]
             blogg_navn = innleggData[0].blogg_navn
             blogg_ID = innleggData[0].blogg_ID
+
             return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID, blogg_navn=blogg_navn)
 
 @app.route('/innlegg')
@@ -376,7 +377,35 @@ def redigerKommentar() -> 'html':
             form.kommentar.data = kommentarObj.kommentar
         return render_template('redigerKommentar.html', form=form)
 
+@app.route('/search', methods=["GET", "POST"])
+def search() -> 'html':
+    searchForm = SearchForm()
 
+    if request.method == "GET" and searchForm.validate():
+        searchKeyWord = request.args.get('searchField')
+        searchTag = request.args.get('tag')
+        with myDB() as db:
+            if(searchKeyWord != "" and searchTag != None):
+                result = db.searchAndTag(searchKeyWord, searchTag)
+                innleggData = [Innlegg(*x) for x in result]
+            elif(searchKeyWord == "" and searchTag != None):
+                result = db.selectAlleInnleggTag(searchTag)
+                innleggData = [InnleggTag(*x) for x in result]
+            elif (searchKeyWord != "" and searchTag == None):
+                result = db.search(searchKeyWord)
+                innleggData = [Innlegg(*x) for x in result]
+            elif (searchKeyWord == "" and searchTag == None):
+                return redirect(url_for("forside"))
+        if result is None:
+            return render_template('error.html',
+                                   msg='Invalid parameter')
+        else:
+
+
+            # blogg_navn = innleggData[0].blogg_navn
+            # blogg_ID = innleggData[0].blogg_ID
+
+            return render_template('blogg.html', innleggData=innleggData, searchForm=searchForm)   #, blogg_ID=blogg_ID, blogg_navn=blogg_navn
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@
             {% if is_owner == True %}
                 <a href="{{ url_for('tegneNyttInnlegg') }}?id={{ blogg_ID }}"> Nytt innlegg </a><br>
             {% endif %}
+
             {% for innlegg in innleggData %}
                 <tr>
                     <td>

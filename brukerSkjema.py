@@ -19,7 +19,6 @@ class BrukerSkjema(Form):
     submit = SubmitField('Logg inn')
 
 class loggInn(Form):
-
     brukernavn = StringField('Brukernavn: ', validators=[DataRequired()])
     passord = PasswordField('Passord: ', validators=[DataRequired()])
     submit = SubmitField('Submit form')
@@ -31,10 +30,6 @@ class RedigerInnleggForm(Form):
     innlegg = TextAreaField('Innlegg Tekst', validators=[DataRequired(), Length(max=250)])
     id = HiddenField()
     submit = SubmitField('Update')
-
-class SearchForm(Form):
-    searchField = StringField('Søk')                                        #validator!
-    submit = SubmitField('')
 
 
 

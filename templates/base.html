@@ -49,9 +49,6 @@
                             {% if not current_user.is_authenticated %}
                                 <a class="nav-link" href="{{ url_for('login')}}">Logg Inn</a>
                             {% endif %}
-                            <form method="get" action="{{ url_for('search') }}">
-
-                            </form>
 {#                            <a class="nav-link" href="#">Features</a>#}
 {#                            <a class="nav-link" href="#">Pricing</a>#}
 {#                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
