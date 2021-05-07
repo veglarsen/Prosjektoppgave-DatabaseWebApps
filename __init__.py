@@ -106,7 +106,7 @@ def tagInnlegg() -> 'html':
             return render_template('error.html',
                                    msg='Invalid parameter')
         else:
-            innleggData = [Innlegg(*x) for x in result]
+            innleggData = [InnleggTag(*x) for x in result]
             blogg_navn = innleggData[0].blogg_navn
             blogg_ID = innleggData[0].blogg_ID
             return render_template('blogg.html', innleggData=innleggData, blogg_ID=blogg_ID,
