@@ -63,12 +63,14 @@ def blogg() -> 'html':
             return render_template('error.html',
                                    msg='Invalid parameter')
         else:
+            bloggData = db.selectEnBlogg(id)
+            bloggDataUt = [Blogg(*x) for x in bloggData]
+
             if current_user.is_authenticated:
-                innleggData = [Innlegg(*x) for x in result]
-                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData[0].eier)
+                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, bloggDataUt[0].eier)
             innleggData = [Innlegg(*x) for x in result]
-            blogg_navn = innleggData[0].blogg_navn
-            blogg_ID = innleggData[0].blogg_ID
+            blogg_navn = bloggDataUt[0].blogg_navn
+            blogg_ID = bloggDataUt[0].blogg_ID
 
             return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID, blogg_navn=blogg_navn)
 

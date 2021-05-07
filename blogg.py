@@ -1,10 +1,10 @@
 class Blogg:
 
     # construct / attributes
-    def __init__(self, blogg_navn, blogg_ID, blogg_eier):
+    def __init__(self, blogg_navn, blogg_ID, eier):
         self.blogg_navn = blogg_navn
         self.blogg_ID = blogg_ID
-        self.blogg_eier = blogg_eier
+        self.eier = eier
 
 class Innlegg:
 

@@ -30,6 +30,13 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+    def selectEnBlogg(self, id):
+        try:
+            self.cursor.execute("""SELECT blogg_navn, blogg_ID, eier FROM blogg where blogg_ID = %s""", (id, ))
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
 
     def currentBlogg(self):
         try:
