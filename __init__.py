@@ -288,6 +288,8 @@ def redigerInnlegg() -> 'html':
             oldTagID = db.selectTags(id)
             innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
+            if tag_tag_ID == []:
+                tag_tag_ID = [1];
             innlegg_blogg_ID = db.currentBloggID(id)
             if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
                 tag_tag_ID = oldTagID[0]
@@ -299,14 +301,14 @@ def redigerInnlegg() -> 'html':
                     db.updateTagInnlegg(tagInnlegg)
                 # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
             elif len(tag_tag_ID) == len(oldTagID):
-                for i in range(0, len(oldTagID)):
+                for i in range(0, len(tag_tag_ID)):
                     oldTag = oldTagID[i]
-                    tagInnlegg = (tag_tag_ID[i], oldTag[i], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
             elif len(tag_tag_ID) < len(oldTagID):
                 for i in range(0, len(oldTagID) - (len(oldTagID) - len(tag_tag_ID))):
                     oldTag = oldTagID[i]
-                    tagInnlegg = (tag_tag_ID[i], oldTag[i], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
 
                 for j in range(len(oldTagID) - len(tag_tag_ID), 0, -1):
@@ -320,7 +322,7 @@ def redigerInnlegg() -> 'html':
                     tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
 
-                for j in range(len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTag)), len(tag_tag_ID)):
+                for j in range(len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTagID)), len(tag_tag_ID)):
                     tagInnlegg = (tag_tag_ID[j], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.addTagToInnlegg(tagInnlegg)
 
