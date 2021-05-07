@@ -280,3 +280,26 @@ class myDB:
             # self.cursor.execute(sql1, tagID, innleggID, bloggID)
         except mysql.connector.Error as err:
             print(err)
+
+    def deleteTagFromInnlegg(self, tagInnlegg):
+        try:
+            sql1 = ('''DELETE FROM tag_innlegg
+                        WHERE tag_tag_ID = (%s)
+                        AND innlegg_innlegg_ID = (%s)
+                        AND innlegg_blogg_ID = (%s)''')
+            self.cursor.execute(sql1, tagInnlegg)
+        except mysql.connector.Error as err:
+            print(err)
+
+    def addTagToInnlegg(self, tagInnlegg):
+        try:
+            sql1 = ('''INSERT INTO tag_innlegg
+                        (tag_tag_ID,
+                        innlegg_innlegg_ID,
+                        innlegg_blogg_ID)
+                        VALUES
+                        ((%s), (%s), (%s))
+                        ''')
+            self.cursor.execute(sql1, tagInnlegg)
+        except mysql.connector.Error as err:
+            print(err)

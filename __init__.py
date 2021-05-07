@@ -286,17 +286,45 @@ def redigerInnlegg() -> 'html':
             # result = db.redigerInnlegg(redigertInnlegg)
             db.redigerInnlegg(redigertInnlegg)
             oldTagID = db.selectTags(id)
-            tag_tag_ID = form.tag.data
             innlegg_innlegg_ID = id
+            tag_tag_ID = form.tag.data
             innlegg_blogg_ID = db.currentBloggID(id)
-            tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-            # db.updateTagInnlegg(tagInnlegg)
-            for oldTag in oldTagID:
+            if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
+                tag_tag_ID = oldTagID[0]
+                tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                # db.updateTagInnlegg(tagInnlegg)
                 for tag in tag_tag_ID:
                     # db.updateTagInnlegg(tag, innlegg_innlegg_ID, innlegg_blogg_ID)
-                    tagInnlegg = (tag, oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    tagInnlegg = (tag, tag, innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
                 # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+            elif len(tag_tag_ID) == len(oldTagID):
+                for i in range(0, len(oldTagID)):
+                    oldTag = oldTagID[i]
+                    tagInnlegg = (tag_tag_ID[i], oldTag[i], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+            elif len(tag_tag_ID) < len(oldTagID):
+                for i in range(0, len(oldTagID) - (len(oldTagID) - len(tag_tag_ID))):
+                    oldTag = oldTagID[i]
+                    tagInnlegg = (tag_tag_ID[i], oldTag[i], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+
+                for j in range(len(oldTagID) - len(tag_tag_ID), 0, -1):
+                    oldTag = oldTagID[j]
+                    tagInnlegg = (oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.deleteTagFromInnlegg(tagInnlegg)
+
+            elif len(tag_tag_ID) > len(oldTagID):
+                for i in range(0, len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTagID))):
+                    oldTag = oldTagID[i]
+                    tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+
+                for j in range(len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTag)), len(tag_tag_ID)):
+                    tagInnlegg = (tag_tag_ID[j], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.addTagToInnlegg(tagInnlegg)
+
+
 
         return redirect('/')
     else:
