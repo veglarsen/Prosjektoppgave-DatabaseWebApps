@@ -5,15 +5,13 @@ from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, make_response, url_for
-from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema, RedigerInnleggForm
+from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema
 from database import myDB
 from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag, InnleggTag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
-from innleggSkjema import NyttInnlegg, SearchForm
-
-from innleggSkjema import NyttInnlegg, RedigerInnleggForm
+from innleggSkjema import NyttInnlegg, SearchForm, RedigerInnleggForm
 from kommentarSkjema import NyKommentar, RedigerKommentar
 
 app = Flask(__name__, template_folder='templates')
