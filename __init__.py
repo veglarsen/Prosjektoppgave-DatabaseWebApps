@@ -376,5 +376,8 @@ def redigerKommentar() -> 'html':
             form.kommentar.data = kommentarObj.kommentar
         return render_template('redigerKommentar.html', form=form)
 
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

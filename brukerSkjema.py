@@ -32,6 +32,11 @@ class RedigerInnleggForm(Form):
     id = HiddenField()
     submit = SubmitField('Update')
 
+class SearchForm(Form):
+    searchField = StringField('Søk')                                        #validator!
+    submit = SubmitField('')
+
+
 
 class NyBrukerSkjema(Form):
     brukernavn = StringField('Username: ', validators=[InputRequired(message='Brukernavn må spesifiseres'), Length(min=3, max=20, message='Brukernavn må være minst 3 tegn og maks 20 tegn')])
