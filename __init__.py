@@ -360,8 +360,8 @@ def redigerKommentar() -> 'html':
     form = RedigerKommentar(request.form)
     if request.method == "POST" and form.validate():
         # bruker = current_user.bruker
-        kommentar = form.kommentar.data
         kommentarID = request.form['kommentarID']
+        kommentar = form.kommentar.data
         redigertKommentar = (kommentar, kommentarID)
         with myDB() as db:
             db.redigerKommentar(redigertKommentar)
