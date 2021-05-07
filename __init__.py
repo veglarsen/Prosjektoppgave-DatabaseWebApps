@@ -5,14 +5,14 @@ from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from bruker import Bruker
 from flask import Flask, render_template, request, redirect, session, make_response, url_for
-from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema, RedigerInnleggForm
+from brukerSkjema import BrukerSkjema, loggInn, NyBrukerSkjema
 from database import myDB
 from fileoperations import fileDB
 from blogg import Blogg, Innlegg, Kommentar, Vedlegg, Tag, InnleggTag
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 
-from innleggSkjema import NyttInnlegg
+from innleggSkjema import NyttInnlegg, RedigerInnleggForm
 from kommentarSkjema import NyKommentar, RedigerKommentar
 
 app = Flask(__name__, template_folder='templates')
@@ -283,7 +283,21 @@ def redigerInnlegg() -> 'html':
         innlegg = form.innlegg.data
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
-            result = db.redigerInnlegg(redigertInnlegg)
+            # result = db.redigerInnlegg(redigertInnlegg)
+            db.redigerInnlegg(redigertInnlegg)
+            oldTagID = db.selectTags(id)
+            tag_tag_ID = form.tag.data
+            innlegg_innlegg_ID = id
+            innlegg_blogg_ID = db.currentBloggID(id)
+            tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+            # db.updateTagInnlegg(tagInnlegg)
+            for oldTag in oldTagID:
+                for tag in tag_tag_ID:
+                    # db.updateTagInnlegg(tag, innlegg_innlegg_ID, innlegg_blogg_ID)
+                    tagInnlegg = (tag, oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
+                    db.updateTagInnlegg(tagInnlegg)
+                # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+
         return redirect('/')
     else:
         id = request.args.get('id')
@@ -295,6 +309,9 @@ def redigerInnlegg() -> 'html':
             form.tittel.data = innleggObj.tittel
             form.ingress.data = innleggObj.ingress
             form.innlegg.data = innleggObj.innlegg
+            tags = db.selectTags(id)
+            form.tag.data = tags
+
 
             if id:
                 with fileDB() as filedb:
