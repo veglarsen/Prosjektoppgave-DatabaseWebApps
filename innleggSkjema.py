@@ -34,3 +34,7 @@ class RedigerInnleggForm(Form):
     tag = SelectMultipleField(u'Tag: ', choices=selectTag)
     newTag = StringField('Ny tag: ', validators=[Length(max=10)])
     submit = SubmitField('Update')
+
+class NyBlogg(Form):
+    blogg_navn = StringField('Blogg Navn: ', validators=[DataRequired(), Length(max=32)])
+    submit = SubmitField('Legg til')

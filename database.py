@@ -30,6 +30,7 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
     def selectEnBlogg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, blogg_ID, eier FROM blogg where blogg_ID = %s""", (id, ))
@@ -153,13 +154,13 @@ class myDB:
             print(err)
         return innlegg_ID
 
-    def newBlogg(self, bruker_navn, blogg_navn):
+    def newBlogg(self, blogg_navn, eier):
         try:
-            self.cursor.execute("""INSERT INTO blogg (blogg_ID, eier, blogg_navn) VALUES (NULL, %s, %s);""")
-            result = self.cursor.fetchall()
+            self.cursor.execute("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""", (eier, blogg_navn, ))
+            # sql1 = ("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""")
+            # self.cursor.execute(sql1, blogg, )
         except mysql.connector.Error as err:
             print(err)
-        return result
 
     def incrementTreff(self, id):
         try:
