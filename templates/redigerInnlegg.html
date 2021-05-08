@@ -80,6 +80,6 @@
                     <p><input type=file name=file></p>
                     <input type=submit value=Upload>
                 </form>
-            <a href="{{ url_for('forside') }}">Avbryt</a>
+            <a href="{{ url_for('innlegg') }}?id={{ form.id.data }}">Avbryt</a>
     </div>
 {% endblock %}

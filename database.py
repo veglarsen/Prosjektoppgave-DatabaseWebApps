@@ -34,7 +34,7 @@ class myDB:
     def selectEnBlogg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, blogg_ID, eier FROM blogg where blogg_ID = %s""", (id, ))
-            result = self.cursor.fetchall()
+            result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)
         return result

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block body %}
+    <header><h3>Bekreft at du ønsker å slette Bloggen</h3>
+            <h4>Blogg Navn: {{ blogg.blogg_navn }}</h4>
+            <h4>AV: {{ blogg.eier}}</h4>
+
+    </header>
+
+    <form method="post" action="{{ url_for('slettBlogg') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="blogg_ID" value="{{ blogg.blogg_ID }}"/>
+        <p><button type="submit" class="btn btn-primary">Slett</button></p>
+    </form>
+    <a href="{{ url_for('blogg') }}?id={{ blogg.blogg_ID }}"><button class="btn btn-primary">Tilbake</button></a>
+{% endblock %}

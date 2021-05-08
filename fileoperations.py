@@ -1,4 +1,6 @@
 import mysql.connector
+from database import myDB
+from blogg import Innlegg
 
 class fileDB:
 
@@ -97,5 +99,25 @@ class fileDB:
             self.slettTags(id)
             self.slettKommentarer(id)
             self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (id,))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def slettAlleInnlegg(self, id):
+        try:
+            self.cursor.execute("SELECT innlegg_ID FROM innlegg WHERE blogg_ID = (%s)", (id,))
+            allInnlegg = self.cursor.fetchall()
+            for innlegg in allInnlegg:
+                innlegg_ID = innlegg[0]
+                self.slettAlleVedlegg(innlegg_ID)
+                self.slettTags(innlegg_ID)
+                self.slettKommentarer(innlegg_ID)
+                self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (innlegg_ID,))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def slettBlogg(self, id):
+        try:
+            self.slettAlleInnlegg(id)
+            self.cursor.execute("DELETE FROM blogg WHERE blogg_ID = (%s)", (id,))
         except mysql.connector.Error as err:
             print(err)

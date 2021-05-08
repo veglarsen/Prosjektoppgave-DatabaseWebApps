@@ -5,6 +5,7 @@
         <tbody>
             {% if is_owner == True %}
                 <a href="{{ url_for('tegneNyttInnlegg') }}?id={{ blogg_ID }}"> Nytt innlegg </a><br>
+                <a href="{{ url_for('bekreftSlettingBlogg') }}?id={{ blogg_ID }}"> Slett blogg </a><br>
             {% endif %}
 
             {% for innlegg in innleggData %}

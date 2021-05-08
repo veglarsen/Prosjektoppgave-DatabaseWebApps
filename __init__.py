@@ -64,13 +64,14 @@ def blogg() -> 'html':
                                    msg='Invalid parameter')
         else:
             bloggData = db.selectEnBlogg(id)
-            bloggDataUt = [Blogg(*x) for x in bloggData]
+            bloggDataUt = Blogg(*bloggData)
+            # bloggDataUt = [Blogg(*x) for x in bloggData]
 
             if current_user.is_authenticated:
-                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, bloggDataUt[0].eier)
+                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, bloggDataUt.eier)
             innleggData = [Innlegg(*x) for x in result]
-            blogg_navn = bloggDataUt[0].blogg_navn
-            blogg_ID = bloggDataUt[0].blogg_ID
+            blogg_navn = bloggDataUt.blogg_navn
+            blogg_ID = bloggDataUt.blogg_ID
 
             return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID, blogg_navn=blogg_navn)
 
@@ -275,9 +276,10 @@ def bekreftSletting() -> 'html':
 def slettInnlegg() -> 'html':
     if request.method == "POST":
         id = request.form['id']
+        blogg_id = request.form['blogg_id']
         with fileDB() as db:
             db.slettInnlegg(id)
-        return redirect('/')
+        return redirect(url_for('blogg', id=blogg_id))
 
     return redirect(url_for('forside'))
 
@@ -337,9 +339,7 @@ def redigerInnlegg() -> 'html':
                     tagInnlegg = (tag_tag_ID[j], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.addTagToInnlegg(tagInnlegg)
 
-
-
-        return redirect('/')
+        return redirect(url_for("innlegg", id=innlegg_innlegg_ID))
     else:
         id = request.args.get('id')
         with myDB() as db:
@@ -352,7 +352,6 @@ def redigerInnlegg() -> 'html':
             form.innlegg.data = innleggObj.innlegg
             tags = db.selectTags(id)
             form.tag.data = tags
-
 
             if id:
                 with fileDB() as filedb:
@@ -476,8 +475,34 @@ def nyBlogg() -> 'html':
         blogg_navn = form.blogg_navn.data
         with myDB() as db:
             db.newBlogg(blogg_navn, eier)
-        return redirect('/')
+        return redirect(url_for(forside))
     return render_template('nyBlogg.html', form=form)
+
+@login_required
+@app.route('/bekreftSlettingBlogg', methods=["GET", "POST"])
+def bekreftSlettingBlogg() -> 'html':
+    id = request.args.get('id')
+    if not id:
+        return render_template('error.html', msg='Invalid parameter')
+    else:
+        with myDB() as db:
+            blogg = db.selectEnBlogg(id)
+            if blogg is None:
+                return render_template('error.html', msg='Invalid parameter')
+            else:
+                blogg2 = Blogg(*blogg)
+                return render_template('bekreftSlettingBlogg.html', blogg=blogg2)
+
+@app.route('/slettBlogg', methods=["GET", "POST"])
+@login_required
+def slettBlogg() -> 'html':
+    if request.method == "POST":
+        id = request.form['blogg_ID']
+        with fileDB() as db:
+            db.slettBlogg(id)
+    else:
+        print("test")
+    return redirect(url_for('forside'))
 
 if __name__ == '__main__':
     app.run(debug=True)
