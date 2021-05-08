@@ -308,18 +308,16 @@ def redigerInnlegg() -> 'html':
 
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
-            # result = db.redigerInnlegg(redigertInnlegg)
             db.redigerInnlegg(redigertInnlegg)
-
-            if db.validate_tag_navn(nytag) or not None:
-                db.createNewTag(nytag)
-                nytagID = db.getLastAddedTagID()
-
 
             oldTagID = db.selectTags(id)
             innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
-            tag_tag_ID.append(nytagID)
+
+            if db.boolean_validate_tag_navn(nytag) and nytag !='':
+                db.createNewTag(nytag)
+                nytagID = db.getLastAddedTagID()
+                tag_tag_ID.append(nytagID)
 
             # Hvis ingen tag er valgt, velger tag 1 (udef.)
             if tag_tag_ID == []:
