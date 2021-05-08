@@ -41,11 +41,12 @@ def unauthorized_callback():
 
 @app.route('/')
 def forside() -> 'html':
-    from innleggSkjema import NyttInnlegg, SearchForm, RedigerInnleggForm, NyBlogg
     searchForm = SearchForm(request.form)
     redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()
+        tags = db.selectTag()
+        searchForm.tag.choices = [(tag[0], tag[1]) for tag in tags]
 
         if result is None:
             return render_template('error.html',
@@ -288,8 +289,11 @@ def slettInnlegg() -> 'html':
 @login_required
 def redigerInnlegg() -> 'html':
     form = RedigerInnleggForm(request.form)
+    with myDB() as db:
+        tags = db.selectTag()
+    form.tag.choices = [(tag[0], tag[1]) for tag in tags]
+
     if request.method == "POST" and form.validate():
-        # tegs = form.tegs.data
         id = request.form['id']
         tittel = form.tittel.data
         ingress = form.ingress.data
@@ -301,9 +305,11 @@ def redigerInnlegg() -> 'html':
             oldTagID = db.selectTags(id)
             innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
+
             if tag_tag_ID == []:
                 tag_tag_ID = [1];
             innlegg_blogg_ID = db.currentBloggID(id)
+
             if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
                 tag_tag_ID = oldTagID[0]
                 tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
@@ -313,11 +319,13 @@ def redigerInnlegg() -> 'html':
                     tagInnlegg = (tag, tag, innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
                 # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+
             elif len(tag_tag_ID) == len(oldTagID):
                 for i in range(0, len(tag_tag_ID)):
                     oldTag = oldTagID[i]
                     tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
+
             elif len(tag_tag_ID) < len(oldTagID):
                 for i in range(0, len(oldTagID) - (len(oldTagID) - len(tag_tag_ID))):
                     oldTag = oldTagID[i]
@@ -367,7 +375,10 @@ def redigerInnlegg() -> 'html':
 
 @app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
 def tegneNyttInnlegg() -> 'html':
+    with myDB() as db:
+        tags = db.selectTag();
     form = NyttInnlegg()
+    form.tag.choices = [(tag[0], tag[1]) for tag in tags]
     form.bloggID.data = request.args.get('id')
     # with fileDB() as db:
     #     result = db.selectAllVedlegg()
