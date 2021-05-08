@@ -25,7 +25,7 @@ class myDB:
 
     def selectBlogg(self):
         try:
-            self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel, eier FROM blogg""")
+            self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel, eier FROM blogg ORDER BY blogg_ID""")
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -59,7 +59,7 @@ class myDB:
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress,
                                 tittel, eier FROM innlegg inner join blogg 
-                                on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s)""", (id,))
+                                on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s) order by dato desc""", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
