@@ -129,18 +129,22 @@ def login() -> 'html':
         # password = request.form['password']
 
         with myDB() as db:
-            aktuellBruker = Bruker(*db.selectBruker(bruker_navn))
-            if Bruker.check_password(aktuellBruker, passord):
-                print("Passordet er korrekt")
-                aktuellBruker.is_authenticated = True
-                login_user(aktuellBruker)
-                session['bruker'] = aktuellBruker.__dict__
-                print(session['bruker'])
-                print(current_user.bruker)
-                print(aktuellBruker.is_authenticated)
-                return redirect('/admin')
+            brukeren = db.selectBruker(bruker_navn)
+            if brukeren != None:
+                aktuellBruker = Bruker(*brukeren)
+                if Bruker.check_password(aktuellBruker, passord):
+                    print("Passordet er korrekt")
+                    aktuellBruker.is_authenticated = True
+                    login_user(aktuellBruker)
+                    session['bruker'] = aktuellBruker.__dict__
+                    print(session['bruker'])
+                    print(current_user.bruker)
+                    print(aktuellBruker.is_authenticated)
+                    return redirect('/admin')
+                else:
+                    return render_template('loggInn.html', form=form)
             else:
-                return render_template('loggInn.html', form=form)
+                return render_template('loggInn.html', form=form, brukerFinnes=False)
     else:
         return render_template('loggInn.html', form=form)
 

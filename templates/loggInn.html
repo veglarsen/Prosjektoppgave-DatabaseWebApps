@@ -11,6 +11,9 @@
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
+            {% if brukerFinnes == False %}
+                    <h5 style="color: red">Brukernavn finnes ikke!</h5>
+            {% endif %}
             <div>
                 {{ form.passord.label }}<br>
                 {{ form.passord(size=32) }}<br>

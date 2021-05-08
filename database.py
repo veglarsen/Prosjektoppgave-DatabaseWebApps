@@ -129,11 +129,18 @@ class myDB:
 
             if len(tag) != 0:
                 for x in tag:
-                    tag_ID = x;
-                    sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-                                        VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))'''
-                    data = (tag_ID, innlegg_ID, innlegg_ID)
-                    self.cursor.execute(sql1, data)
+                    if x == '1':
+                        sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                                                                VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))'''
+                        data = (1, innlegg_ID, innlegg_ID)
+                        self.cursor.execute(sql1, data)
+                        break
+                    else:
+                        tag_ID = x;
+                        sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                                            VALUES ((%s), (%s), (SELECT blogg_ID from innlegg where innlegg_ID = (%s)))'''
+                        data = (tag_ID, innlegg_ID, innlegg_ID)
+                        self.cursor.execute(sql1, data)
 
             elif newTag != " " and sjekk == False:
                 # sql1 = '''INSERT INTO tag (tag_navn) VALUES (%s)'''
