@@ -41,10 +41,12 @@ def unauthorized_callback():
 
 @app.route('/')
 def forside() -> 'html':
+    from innleggSkjema import NyttInnlegg, SearchForm, RedigerInnleggForm, NyBlogg
     searchForm = SearchForm(request.form)
     redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()
+
         if result is None:
             return render_template('error.html',
                                    msg='Invalid parameter')
@@ -194,15 +196,15 @@ def brukerEndre() -> 'html':
         return render_template('brukerEndre.html',
                                form=form)
 
-@app.route('/upload_page/<id>', methods=["GET", "POST"])
-def upload_page(id) -> 'html':
-    with fileDB() as db:
-        result = db.selectAllVedlegg(id)
-        if result:
-            alleVedlegg = [Vedlegg(*x) for x in result]
-            return render_template('upload.html', attachments=alleVedlegg)
-        else:
-            return render_template('upload.html', attachments=None, innlegg_id=id)
+# @app.route('/upload_page/<id>', methods=["GET", "POST"])
+# def upload_page(id) -> 'html':
+#     with fileDB() as db:
+#         result = db.selectAllVedlegg(id)
+#         if result:
+#             alleVedlegg = [Vedlegg(*x) for x in result]
+#             return render_template('upload.html', attachments=alleVedlegg)
+#         else:
+#             return render_template('upload.html', attachments=None, innlegg_id=id)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -390,7 +392,7 @@ def nyttInnlegg() -> 'html':
 
         with myDB() as db:
             lastID = db.nyttInnlegg(nyttInnlegg, tag, newTag)
-            return redirect(url_for('upload_page', id=lastID))
+            return redirect(url_for('redigerInnlegg', id=lastID))
 
             db.nyttInnlegg(nyttInnlegg, tag, newTag)
         return redirect('/')
@@ -437,6 +439,14 @@ def redigerKommentar() -> 'html':
             form.innlegg_ID.data = kommentarObj.innlegg_ID
         return render_template('redigerKommentar.html', form=form)
         # return render_template('redigerKommentar.html', form=form, innlegg_ID=form.innleggID.data)
+
+@app.route('/slettKommentar', methods=["GET", "POST"])
+def slettKommentar() -> 'html':
+    id = request.args.get('id')
+    innleggID = request.args.get('innleggID')
+    with myDB() as db:
+        db.slettKommentar(id)
+    return redirect(url_for("innlegg", id=innleggID))
 
 @app.route('/search', methods=["GET", "POST"])
 def search() -> 'html':
