@@ -304,18 +304,29 @@ def redigerInnlegg() -> 'html':
         tittel = form.tittel.data
         ingress = form.ingress.data
         innlegg = form.innlegg.data
+        nytag = form.newTag.data
+
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
             # result = db.redigerInnlegg(redigertInnlegg)
-            db.redigerInnlegg(redigertInnlegg)                  #
+            db.redigerInnlegg(redigertInnlegg)
+
+            if db.validate_tag_navn(nytag) or not None:
+                db.createNewTag(nytag)
+                nytagID = db.getLastAddedTagID()
+
+
             oldTagID = db.selectTags(id)
             innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
+            tag_tag_ID.append(nytagID)
 
+            # Hvis ingen tag er valgt, velger tag 1 (udef.)
             if tag_tag_ID == []:
                 tag_tag_ID = [1];
             innlegg_blogg_ID = db.currentBloggID(id)
 
+            # Hvis innlegget har en tag fra før, beholde forrige tag
             if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
                 tag_tag_ID = oldTagID[0]
                 tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
@@ -326,12 +337,14 @@ def redigerInnlegg() -> 'html':
                     db.updateTagInnlegg(tagInnlegg)
                 # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
 
+            # Hvis innlegget har like mange nye tags som gamle tags, oppdaterer til nye tags
             elif len(tag_tag_ID) == len(oldTagID):
                 for i in range(0, len(tag_tag_ID)):
                     oldTag = oldTagID[i]
                     tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
 
+            # Hvis det er færre nye tags enn gamle, så oppdateres ant gamle tags som nye, og resten fjernes
             elif len(tag_tag_ID) < len(oldTagID):
                 for i in range(0, len(oldTagID) - (len(oldTagID) - len(tag_tag_ID))):
                     oldTag = oldTagID[i]
@@ -343,6 +356,7 @@ def redigerInnlegg() -> 'html':
                     tagInnlegg = (oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.deleteTagFromInnlegg(tagInnlegg)
 
+            # Hvis det er flere nye tags en gamle, så oppdateres de gamle, og deretter legges de nye til
             elif len(tag_tag_ID) > len(oldTagID):
                 for i in range(0, len(tag_tag_ID) - (len(tag_tag_ID) - len(oldTagID))):
                     oldTag = oldTagID[i]
@@ -359,9 +373,9 @@ def redigerInnlegg() -> 'html':
         with myDB() as db:
             innlegget = db.selectEtInnlegg(id)
             innleggObj = Innlegg(*innlegget)
-            # form = RedigerInnleggForm(request.form)
-            # tags = db.selectTag()
-            # form.tag.choices = [(tag[0], tag[1]) for tag in tags]
+            form = RedigerInnleggForm(request.form)
+            tags = db.selectTag()
+            form.tag.choices = [(tag[0], tag[1]) for tag in tags]
             form.id.data = innleggObj.innlegg_ID
             form.tittel.data = innleggObj.tittel
             form.ingress.data = innleggObj.ingress

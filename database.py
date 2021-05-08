@@ -108,9 +108,11 @@ class myDB:
         with myDB() as db:
             listTag = db.selectTag()
             print(listTag)
-            if tag_navn in str(listTag):
-                print(f'Brukernavet {tag_navn} er allerede i bruk')
-                raise ValidationError(message="Brukernavn er allerede i bruk")
+            for x in listTag:
+                if tag_navn == x[1]:
+                    print(f'Brukernavet {tag_navn} er allerede i bruk')
+                    raise ValidationError(message="Brukernavn er allerede i bruk")
+
 
 
     def nyttInnlegg(self, nyttInnlegg, tag, newTag):
@@ -350,3 +352,16 @@ class myDB:
             self.cursor.execute(sql1, tagInnlegg)
         except mysql.connector.Error as err:
             print(err)
+
+    def createNewTag(self, nytag):
+        try:
+            self.cursor.execute("INSERT INTO tag (tag_ID, tag_navn) VALUES (NULL, (%s))", (nytag,))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def getLastAddedTagID(self):
+        try:
+            result = self.cursor.lastrowid
+        except mysql.connector.Error as err:
+            print(err)
+        return result
