@@ -128,8 +128,9 @@ class myDB:
                     self.cursor.execute(sql1, data)
 
             elif newTag != " " and sjekk == False:
-                sql1 = '''INSERT INTO tag (tag_navn) VALUES (%s)'''
-                self.cursor.execute(sql1, newTag)
+                # sql1 = '''INSERT INTO tag (tag_navn) VALUES (%s)'''
+                self.cursor.execute('''INSERT INTO tag (tag_navn) VALUES (%s)''', (newTag, ))
+                # self.cursor.execute(sql1, newTag)
 
                 tag_ID = self.cursor.lastrowid
                 sql1 = '''INSERT INTO tag_innlegg (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)

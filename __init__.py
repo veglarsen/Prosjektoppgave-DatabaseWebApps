@@ -229,7 +229,7 @@ def upload_file(id):
         with fileDB() as db:
             db.addVedlegg(attachment)
 
-        return redirect(url_for('forside', _external=True))
+        return redirect(url_for('innlegg', id=id, _external=True))
     else:
         return redirect(url_for('forside', _external=True))
 
@@ -328,8 +328,8 @@ def nyttInnlegg() -> 'html':
         tittel = form.tittel.data
         ingress = form.ingress.data
         innlegg = form.innlegg.data
-        tag = form.tag.data  # if null use newTag
-        newTag = form.newTag.data  # if null, use tag
+        tag = form.tag.data
+        newTag = form.newTag.data
 
         nyttInnlegg = (bloggID, tittel, ingress, innlegg)
 
@@ -363,14 +363,13 @@ def redigerKommentar() -> 'html':
     form = RedigerKommentar(request.form)
     if request.method == "POST" and form.validate():
         # bruker = current_user.bruker
-        innleggID = form.innleggID.data # henter blank str
+        innlegg_ID = form.innlegg_ID.data # henter blank str
         kommentarID = request.form['kommentarID']
         kommentar = form.kommentar.data
         redigertKommentar = (kommentar, kommentarID)
         with myDB() as db:
             db.redigerKommentar(redigertKommentar)
-        # return redirect(url_for("innlegg", id=innleggID))
-        return redirect('/')
+        return redirect(url_for("innlegg", id=innlegg_ID))
     else:
         kommentarID = request.args.get('kommentarID')
         with myDB() as db:
@@ -380,8 +379,9 @@ def redigerKommentar() -> 'html':
             form = RedigerKommentar(request.form)
             form.kommentarID.data = kommentarObj.kommentar_ID
             form.kommentar.data = kommentarObj.kommentar
+            form.innlegg_ID.data = kommentarObj.innlegg_ID
         return render_template('redigerKommentar.html', form=form)
-        # return render_template('redigerKommentar.html', form=form, innleggData=innleggData)
+        # return render_template('redigerKommentar.html', form=form, innlegg_ID=form.innleggID.data)
 
 @app.route('/search', methods=["GET", "POST"])
 def search() -> 'html':
