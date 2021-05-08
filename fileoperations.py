@@ -49,7 +49,7 @@ class fileDB:
             print(err)
         return result
 
-    def slettVedlegg(self, id):
+    def slettAlleVedlegg(self, id):
         try:
             self.cursor.execute("SELECT vedlegg_ID FROM vedlegg WHERE innlegg_ID = (%s)", (id,))
             allVedlegg = self.cursor.fetchall()
@@ -57,6 +57,13 @@ class fileDB:
                 vedleggID = vedlegg[0]
                 self.cursor.execute("DELETE FROM vedlegg WHERE innlegg_ID = (%s) AND vedlegg_ID = (%s)",
                                     (id, vedleggID))
+        except mysql.connector.Error as err:
+            print(err)
+
+    def slettVedlegg(self, id, vedleggID):
+        try:
+            self.cursor.execute("DELETE FROM vedlegg WHERE innlegg_ID = (%s) and vedlegg_ID = (%s)",
+                                (id, vedleggID))
         except mysql.connector.Error as err:
             print(err)
 
@@ -86,7 +93,7 @@ class fileDB:
 
     def slettInnlegg(self, id):
         try:
-            self.slettVedlegg(id)
+            self.slettAlleVedlegg(id)
             self.slettTags(id)
             self.slettKommentarer(id)
             self.cursor.execute("DELETE FROM innlegg WHERE innlegg_ID = (%s)", (id,))

@@ -20,7 +20,7 @@ app = Flask(__name__, template_folder='templates')
 
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg', 'zip'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg'}
 
 app.secret_key = secrets.token_urlsafe(16)
 csrf = CSRFProtect()
@@ -229,9 +229,9 @@ def upload_file(id):
         with fileDB() as db:
             db.addVedlegg(attachment)
 
-        return redirect(url_for('forside', _external=True))
+        return redirect(url_for('innlegg', id=id, _external=True))
     else:
-        return redirect(url_for('forside', _external=True))
+        return redirect(url_for('forside', id=id, _external=True))
 
 @app.route('/download/<id>')
 def download_file(id):
@@ -246,6 +246,14 @@ def download_file(id):
         response.headers.set(
         'Content-Disposition', 'inline', filename = attachment.fil_navn)
         return response
+
+@app.route('/delete/<id>/<vedleggID>')
+def delete_file(id, vedleggID):
+
+    with fileDB() as filedb:
+        filedb.slettVedlegg(id, vedleggID)
+    return redirect(url_for('innlegg', id=id))
+
 
 @app.route('/bekreftSletting', methods=["GET", "POST"])
 @login_required
