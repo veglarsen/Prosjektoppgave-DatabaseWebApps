@@ -25,7 +25,7 @@ class myDB:
 
     def selectBlogg(self):
         try:
-            self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel, eier FROM blogg""")
+            self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel, eier FROM blogg ORDER BY blogg_ID""")
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -59,7 +59,7 @@ class myDB:
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress,
                                 tittel, eier FROM innlegg inner join blogg 
-                                on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s)""", (id,))
+                                on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s) order by dato desc""", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -71,7 +71,7 @@ class myDB:
             tittel, eier, tag_navn FROM innlegg 
                                    inner join blogg on innlegg.blogg_ID = blogg.blogg_ID
                                    inner join tag_innlegg on innlegg.innlegg_id = tag_innlegg.innlegg_innlegg_ID 
-                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s)""", (tag,))
+                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s) order by dato desc""", (tag,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -171,7 +171,7 @@ class myDB:
 
     def kommentarer(self, id):
         try:
-            self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s)", (id,))
+            self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s) order by dato desc", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -283,7 +283,7 @@ class myDB:
                                    join blogg on innlegg.blogg_ID = blogg.blogg_ID
                                    join tag_innlegg on innlegg.innlegg_ID = tag_innlegg.innlegg_innlegg_ID
                                    WHERE (tittel LIKE %s OR innlegg LIKE %s OR ingress LIKE %s) 
-                                   and tag_tag_ID = %s''',("%" + search + "%", "%" + search + "%", "%" + search + "%", tag_ID, ))
+                                   and tag_tag_ID = %s order by dato desc''',("%" + search + "%", "%" + search + "%", "%" + search + "%", tag_ID, ))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -292,7 +292,7 @@ class myDB:
     def search(self, search):
         try:
             self.cursor.execute('''SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress, tittel, eier FROM 
-                                innlegg join blogg on innlegg.blogg_ID = blogg.blogg_ID WHERE tittel LIKE %s OR innlegg LIKE %s OR ingress LIKE %s''',
+                                innlegg join blogg on innlegg.blogg_ID = blogg.blogg_ID WHERE tittel LIKE %s OR innlegg LIKE %s OR ingress LIKE %s order by dato desc''',
                                 ("%" + search + "%", "%" + search + "%", "%" + search + "%",))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
