@@ -301,7 +301,7 @@ def redigerInnlegg() -> 'html':
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
             # result = db.redigerInnlegg(redigertInnlegg)
-            db.redigerInnlegg(redigertInnlegg)
+            db.redigerInnlegg(redigertInnlegg)                  #
             oldTagID = db.selectTags(id)
             innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
@@ -355,13 +355,13 @@ def redigerInnlegg() -> 'html':
         with myDB() as db:
             innlegget = db.selectEtInnlegg(id)
             innleggObj = Innlegg(*innlegget)
-            form = RedigerInnleggForm(request.form)
+            # form = RedigerInnleggForm(request.form)
+            # tags = db.selectTag()
+            # form.tag.choices = [(tag[0], tag[1]) for tag in tags]
             form.id.data = innleggObj.innlegg_ID
             form.tittel.data = innleggObj.tittel
             form.ingress.data = innleggObj.ingress
             form.innlegg.data = innleggObj.innlegg
-            tags = db.selectTags(id)
-            form.tag.data = tags
 
 
             if id:
