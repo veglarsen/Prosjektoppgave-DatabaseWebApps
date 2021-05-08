@@ -71,7 +71,7 @@ class myDB:
             tittel, eier, tag_navn FROM innlegg 
                                    inner join blogg on innlegg.blogg_ID = blogg.blogg_ID
                                    inner join tag_innlegg on innlegg.innlegg_id = tag_innlegg.innlegg_innlegg_ID 
-                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s)""", (tag,))
+                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s) order by dato desc""", (tag,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -170,7 +170,7 @@ class myDB:
 
     def kommentarer(self, id):
         try:
-            self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s)", (id,))
+            self.cursor.execute("SELECT * FROM kommentar where innlegg_ID = (%s) order by dato desc", (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
