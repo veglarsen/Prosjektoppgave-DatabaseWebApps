@@ -7,7 +7,6 @@ from database import myDB
 
 with myDB() as db:
     selectTag = db.selectTag()
-    print(selectTag)
    # selectUser = db.selectBruker()
 
 

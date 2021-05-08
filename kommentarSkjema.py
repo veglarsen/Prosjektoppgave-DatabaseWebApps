@@ -10,7 +10,6 @@ class NyKommentar(Form):
 
 class RedigerKommentar(Form):
     kommentarID = HiddenField()
-    innleggID = HiddenField()
+    innlegg_ID = HiddenField()
     kommentar = StringField('Kommentar: ', validators=[DataRequired(), Length(max=200)])
-    # bruker = HiddenField()
     submit = SubmitField('Endre')

@@ -42,10 +42,6 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <p>{{ form.submit() }}</p>
             </form>
-    <form style="display: inline" action="{{ url_for('forside') }}" method="get">
-        <button>Avbryt</button>
-    </form>
-
-    <a href="{{ url_for('innlegg') }}"><button class="btn btn-primary">Avbryt</button></a>
+        <a href="{{ url_for('blogg') }}?id={{ form.bloggID.data }}"><button class="btn btn-primary">Avbryt</button></a>
     </div>
 {% endblock %}

@@ -17,10 +17,15 @@
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
+            <div>
+                {{ form.innlegg_ID }}
+                {% for error in form.innlegg_ID.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
             <p>{{ form.submit() }}</p>
         </form>
-{#        <input type="hidden" name="innleggID" value="{{ innleggData.innlegg_ID }}"/>#}
-        <a href="{{ url_for('innlegg') }}">
+        <a href="{{ url_for('innlegg') }}?id={{ form.innlegg_ID.data }}">
             <button class="btn btn-primary">Avbryt</button>
         </a>
     </div>
