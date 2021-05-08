@@ -45,6 +45,9 @@ def forside() -> 'html':
     redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()
+        tags = db.selectTag()
+        searchForm.tag.choices = [(tag[0], tag[1]) for tag in tags]
+
         if result is None:
             return render_template('error.html',
                                    msg='Invalid parameter')
@@ -199,15 +202,15 @@ def brukerEndre() -> 'html':
         return render_template('brukerEndre.html',
                                form=form)
 
-@app.route('/upload_page/<id>', methods=["GET", "POST"])
-def upload_page(id) -> 'html':
-    with fileDB() as db:
-        result = db.selectAllVedlegg(id)
-        if result:
-            alleVedlegg = [Vedlegg(*x) for x in result]
-            return render_template('upload.html', attachments=alleVedlegg)
-        else:
-            return render_template('upload.html', attachments=None, innlegg_id=id)
+# @app.route('/upload_page/<id>', methods=["GET", "POST"])
+# def upload_page(id) -> 'html':
+#     with fileDB() as db:
+#         result = db.selectAllVedlegg(id)
+#         if result:
+#             alleVedlegg = [Vedlegg(*x) for x in result]
+#             return render_template('upload.html', attachments=alleVedlegg)
+#         else:
+#             return render_template('upload.html', attachments=None, innlegg_id=id)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -292,8 +295,11 @@ def slettInnlegg() -> 'html':
 @login_required
 def redigerInnlegg() -> 'html':
     form = RedigerInnleggForm(request.form)
+    with myDB() as db:
+        tags = db.selectTag()
+    form.tag.choices = [(tag[0], tag[1]) for tag in tags]
+
     if request.method == "POST" and form.validate():
-        # tegs = form.tegs.data
         id = request.form['id']
         tittel = form.tittel.data
         ingress = form.ingress.data
@@ -301,13 +307,15 @@ def redigerInnlegg() -> 'html':
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
             # result = db.redigerInnlegg(redigertInnlegg)
-            db.redigerInnlegg(redigertInnlegg)
+            db.redigerInnlegg(redigertInnlegg)                  #
             oldTagID = db.selectTags(id)
             innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
+
             if tag_tag_ID == []:
                 tag_tag_ID = [1];
             innlegg_blogg_ID = db.currentBloggID(id)
+
             if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
                 tag_tag_ID = oldTagID[0]
                 tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
@@ -317,11 +325,13 @@ def redigerInnlegg() -> 'html':
                     tagInnlegg = (tag, tag, innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
                 # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+
             elif len(tag_tag_ID) == len(oldTagID):
                 for i in range(0, len(tag_tag_ID)):
                     oldTag = oldTagID[i]
                     tagInnlegg = (tag_tag_ID[i], oldTag[0], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
+
             elif len(tag_tag_ID) < len(oldTagID):
                 for i in range(0, len(oldTagID) - (len(oldTagID) - len(tag_tag_ID))):
                     oldTag = oldTagID[i]
@@ -349,13 +359,13 @@ def redigerInnlegg() -> 'html':
         with myDB() as db:
             innlegget = db.selectEtInnlegg(id)
             innleggObj = Innlegg(*innlegget)
-            form = RedigerInnleggForm(request.form)
+            # form = RedigerInnleggForm(request.form)
+            # tags = db.selectTag()
+            # form.tag.choices = [(tag[0], tag[1]) for tag in tags]
             form.id.data = innleggObj.innlegg_ID
             form.tittel.data = innleggObj.tittel
             form.ingress.data = innleggObj.ingress
             form.innlegg.data = innleggObj.innlegg
-            tags = db.selectTags(id)
-            form.tag.data = tags
 
             if id:
                 with fileDB() as filedb:
@@ -368,7 +378,10 @@ def redigerInnlegg() -> 'html':
 
 @app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
 def tegneNyttInnlegg() -> 'html':
+    with myDB() as db:
+        tags = db.selectTag();
     form = NyttInnlegg()
+    form.tag.choices = [(tag[0], tag[1]) for tag in tags]
     form.bloggID.data = request.args.get('id')
     # with fileDB() as db:
     #     result = db.selectAllVedlegg()
@@ -393,7 +406,7 @@ def nyttInnlegg() -> 'html':
 
         with myDB() as db:
             lastID = db.nyttInnlegg(nyttInnlegg, tag, newTag)
-            return redirect(url_for('upload_page', id=lastID))
+            return redirect(url_for('redigerInnlegg', id=lastID))
 
             db.nyttInnlegg(nyttInnlegg, tag, newTag)
         return redirect('/')
@@ -440,6 +453,14 @@ def redigerKommentar() -> 'html':
             form.innlegg_ID.data = kommentarObj.innlegg_ID
         return render_template('redigerKommentar.html', form=form)
         # return render_template('redigerKommentar.html', form=form, innlegg_ID=form.innleggID.data)
+
+@app.route('/slettKommentar', methods=["GET", "POST"])
+def slettKommentar() -> 'html':
+    id = request.args.get('id')
+    innleggID = request.args.get('innleggID')
+    with myDB() as db:
+        db.slettKommentar(id)
+    return redirect(url_for("innlegg", id=innleggID))
 
 @app.route('/search', methods=["GET", "POST"])
 def search() -> 'html':

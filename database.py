@@ -209,6 +209,18 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
+    def slettKommentar(self, id):
+        try:
+            # sql1 = '''DELETE
+            # FROM
+            #     kommentar
+            # WHERE
+            #     kommentar_ID = (%s)
+            # '''
+            self.cursor.execute("DELETE FROM kommentar WHERE kommentar_ID = (%s)", (id,))
+        except mysql.connector.Error as err:
+            print(err)
+
     def selectBruker(self, bruker_navn):
         try:
             self.cursor.execute("SELECT * FROM bruker where bruker = (%s)", (bruker_navn,))
