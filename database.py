@@ -243,11 +243,7 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-
-
-
-
-    def brukerEndre(self, bruker):  # kanskje tillate å endre brukernavn
+    def brukerEndre(self, bruker):
         try:
             sql1 = '''UPDATE 
                 bruker 

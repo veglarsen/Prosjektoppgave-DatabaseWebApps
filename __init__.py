@@ -445,7 +445,7 @@ def redigerKommentar() -> 'html':
 def search() -> 'html':
     searchForm = SearchForm()
 
-    if request.method == "GET" and searchForm.validate():
+    if request.method == "GET":
         searchKeyWord = request.args.get('searchField')
         searchTag = request.args.get('tag')
         with myDB() as db:
@@ -464,12 +464,9 @@ def search() -> 'html':
             return render_template('error.html',
                                    msg='Invalid parameter')
         else:
+            return render_template('blogg.html', innleggData=innleggData, searchForm=searchForm)
+    return render_template('error.html', msg='Invalid parameter')
 
-
-            # blogg_navn = innleggData[0].blogg_navn
-            # blogg_ID = innleggData[0].blogg_ID
-
-            return render_template('blogg.html', innleggData=innleggData, searchForm=searchForm)   #, blogg_ID=blogg_ID, blogg_navn=blogg_navn
 @login_required
 @app.route('/nyBlogg', methods=["GET", "POST"])
 def nyBlogg() -> 'html':
