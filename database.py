@@ -257,7 +257,7 @@ class myDB:
 
     def selectTag(self):
         try:
-            self.cursor.execute('''SELECT CAST(tag_ID as char) as tag_ID, tag_navn from tag;''')
+            self.cursor.execute('''SELECT CAST(tag_ID as char) as tag_ID, tag_navn from tag order by tag_navn;''')
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
