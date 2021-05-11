@@ -1,5 +1,4 @@
 import secrets
-from datetime import date
 
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
@@ -17,8 +16,6 @@ from kommentarSkjema import NyKommentar, RedigerKommentar
 app = Flask(__name__, template_folder='templates')
 
 
-
-
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg'}
 
@@ -28,6 +25,8 @@ csrf.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user_dict = session['bruker']
@@ -40,7 +39,7 @@ def unauthorized_callback():
        return redirect(url_for('login'))
 
 @app.route('/')
-def forside() -> 'html':
+def forside():
     searchForm = SearchForm(request.form)
     redirect('/login')
     with myDB() as db:
@@ -56,7 +55,7 @@ def forside() -> 'html':
             return render_template('index.html', bloggObjektene=bloggObjektene, searchForm=searchForm)
 
 @app.route('/blogg')
-def blogg() -> 'html':
+def blogg():
     with myDB() as db:
         is_owner = False
 
@@ -79,7 +78,7 @@ def blogg() -> 'html':
             return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID, blogg_navn=blogg_navn)
 
 @app.route('/innlegg')
-def innlegg() -> 'html':
+def innlegg():
     with myDB() as db:
         id = request.args.get('id')
         db.incrementTreff(id)
@@ -105,7 +104,7 @@ def innlegg() -> 'html':
             return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg, tagData=tagData, form=form)
 
 @app.route('/tagInnlegg')
-def tagInnlegg() -> 'html':
+def tagInnlegg():
     with myDB() as db:
         tag = request.args.get('tag')
         result = db.selectAlleInnleggTag(tag)
@@ -122,7 +121,7 @@ def tagInnlegg() -> 'html':
 
 # @app.route('/login', methods=["GET", "POST"])
 @app.route('/loggInn', methods=["GET", "POST"])
-def login() -> 'html':
+def login():
     form = loggInn(request.form)
     if request.method == "POST" and form.validate():
         pass
@@ -153,20 +152,20 @@ def login() -> 'html':
 
 @app.route('/admin', methods=["GET", "POST"])
 @login_required
-def admin() -> 'html':
+def admin():
     return redirect('/')
 
     # return render_template('admin.html', the_title="Bestkyttet side", user=current_user.bruker)
                                                                 # login required
 @app.route('/logout', methods=["GET", "POST"])
 @login_required
-def logout() -> 'html':
+def logout():
     logout_user()
     return redirect('/')
 
 
 @app.route('/nyBruker', methods=["GET", "POST"])
-def nyBruker() -> 'html':
+def nyBruker():
     form = NyBrukerSkjema(request.form)
     if request.method == "POST" and form.validate():
 
@@ -186,7 +185,7 @@ def nyBruker() -> 'html':
 
 @app.route('/brukerEndre', methods=["GET", "POST"])
 @login_required
-def brukerEndre() -> 'html':
+def brukerEndre():
     form = BrukerSkjema(request.form)
     if request.method == "POST" and form.validate():
 
@@ -237,7 +236,8 @@ def download_file(id):
     with fileDB() as db:
         attachment = Vedlegg(*db.getVedlegg(id))
     if attachment is None:
-            pass
+        return render_template('error.html',
+                               msg='No files')
     else:
         response = make_response(attachment.fil_data)
         response.headers.set('Content-Type', attachment.fil_type)
@@ -256,7 +256,7 @@ def delete_file(id, vedleggID):
 
 @app.route('/bekreftSletting', methods=["GET", "POST"])
 @login_required
-def bekreftSletting() -> 'html':
+def bekreftSletting():
     id = request.args.get('id')
     if not id:
         return render_template('error.html', msg='Invalid parameter')
@@ -271,7 +271,7 @@ def bekreftSletting() -> 'html':
 
 @app.route('/slettInnlegg', methods=["GET", "POST"])
 @login_required
-def slettInnlegg() -> 'html':
+def slettInnlegg():
     if request.method == "POST":
         id = request.form['id']
         blogg_id = request.form['blogg_id']
@@ -284,7 +284,7 @@ def slettInnlegg() -> 'html':
 
 @app.route('/redigerInnlegg', methods=["GET", "POST"])
 @login_required
-def redigerInnlegg() -> 'html':
+def redigerInnlegg():
     form = RedigerInnleggForm(request.form)
     with myDB() as db:
         tags = db.selectTag()
@@ -313,15 +313,14 @@ def redigerInnlegg() -> 'html':
 
             # Hvis ingen tag er valgt, velger tag 1 (udef.)
             if tag_tag_ID == []:
-                tag_tag_ID = [1];
+                tag_tag_ID = [1]
             innlegg_blogg_ID = db.currentBloggID(id)
 
             # Hvis innlegget har en tag fra før, beholde forrige tag
             if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
                 tag_tag_ID = oldTagID[0]
-                tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
+                # tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
                 for tag in tag_tag_ID:
-                    # db.updateTagInnlegg(tag, innlegg_innlegg_ID, innlegg_blogg_ID)
                     tagInnlegg = (tag, tag, innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
 
@@ -381,9 +380,9 @@ def redigerInnlegg() -> 'html':
             return render_template('redigerInnlegg.html', form=form)
 
 @app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
-def tegneNyttInnlegg() -> 'html':
+def tegneNyttInnlegg():
     with myDB() as db:
-        tags = db.selectTag();
+        tags = db.selectTag()
     form = NyttInnlegg()
     form.tag.choices = [(tag[0], tag[1]) for tag in tags]
     form.bloggID.data = request.args.get('id')
@@ -395,14 +394,13 @@ def tegneNyttInnlegg() -> 'html':
 
 @app.route('/add', methods=["GET", "POST"])
 @login_required
-def nyttInnlegg() -> 'html':
+def nyttInnlegg():
     form = NyttInnlegg(request.form)
     with myDB() as db:
         tags = db.selectTag()
     form.tag.choices = [(tag[0], tag[1]) for tag in tags]
 
     if request.method == "POST" and form.validate():
-        # tror ikke innleggID er nødvendig
         bloggID = form.bloggID.data
         tittel = form.tittel.data
         ingress = form.ingress.data
@@ -416,14 +414,12 @@ def nyttInnlegg() -> 'html':
             lastID = db.nyttInnlegg(nyttInnlegg, tag, newTag)
             return redirect(url_for('redigerInnlegg', id=lastID, _external=True))
 
-            # db.nyttInnlegg(nyttInnlegg, tag, newTag)
-        return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
 
 @app.route('/nyKommentar', methods=["GET", "POST"])
 @login_required
-def nyKommentar() -> 'html':
+def nyKommentar():
     form = NyKommentar(request.form)
     if request.method == "POST" and form.validate():
         innleggID = form.innleggID.data
@@ -438,7 +434,7 @@ def nyKommentar() -> 'html':
 
 @app.route('/redigerKommentar', methods=["GET", "POST"])
 @login_required
-def redigerKommentar() -> 'html':
+def redigerKommentar():
     form = RedigerKommentar(request.form)
     if request.method == "POST" and form.validate():
         # bruker = current_user.bruker
@@ -463,7 +459,7 @@ def redigerKommentar() -> 'html':
         # return render_template('redigerKommentar.html', form=form, innlegg_ID=form.innleggID.data)
 
 @app.route('/slettKommentar', methods=["GET", "POST"])
-def slettKommentar() -> 'html':
+def slettKommentar():
     id = request.args.get('id')
     innleggID = request.args.get('innleggID')
     with myDB() as db:
@@ -471,7 +467,7 @@ def slettKommentar() -> 'html':
     return redirect(url_for("innlegg", id=innleggID, _external=True))
 
 @app.route('/search', methods=["GET", "POST"])
-def search() -> 'html':
+def search():
     searchForm = SearchForm()
 
     if request.method == "GET":
@@ -498,7 +494,7 @@ def search() -> 'html':
 
 @login_required
 @app.route('/nyBlogg', methods=["GET", "POST"])
-def nyBlogg() -> 'html':
+def nyBlogg():
     form = NyBlogg(request.form)
     if request.method == "POST" and form.validate():
         eier = current_user.bruker
@@ -512,7 +508,7 @@ def nyBlogg() -> 'html':
 
 @login_required
 @app.route('/bekreftSlettingBlogg', methods=["GET", "POST"])
-def bekreftSlettingBlogg() -> 'html':
+def bekreftSlettingBlogg():
     id = request.args.get('id')
     if not id:
         return render_template('error.html', msg='Invalid parameter')
@@ -527,7 +523,7 @@ def bekreftSlettingBlogg() -> 'html':
 
 @app.route('/slettBlogg', methods=["GET", "POST"])
 @login_required
-def slettBlogg() -> 'html':
+def slettBlogg():
     if request.method == "POST":
         id = request.form['blogg_ID']
         with fileDB() as db:

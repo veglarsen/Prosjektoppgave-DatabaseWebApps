@@ -107,10 +107,8 @@ class myDB:
     def validate_tag_navn(self, tag_navn):
         with myDB() as db:
             listTag = db.selectTag()
-            print(listTag)
             for x in listTag:
                 if tag_navn == x[1]:
-                    print(f'Brukernavet {tag_navn} er allerede i bruk')
                     raise ValidationError(message="Brukernavn er allerede i bruk")
 
     def boolean_validate_tag_navn(self, tag_navn):
