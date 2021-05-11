@@ -21,7 +21,8 @@
                     <span style="color: #ff0000;">[{{ error }}]</span>
                 {% endfor %}
             </div>
-            <p>{{ form.submit() }}</p>
+            <input type=submit value="Logg Inn">
+{#            <p>{{ form.submit() }}</p>#}
             <a href="{{ url_for('nyBruker') }}">Ny Bruker</a>
         </form>
     </div>

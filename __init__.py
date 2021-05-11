@@ -136,13 +136,13 @@ def login() -> 'html':
             if brukeren != None:
                 aktuellBruker = Bruker(*brukeren)
                 if Bruker.check_password(aktuellBruker, passord):
-                    print("Passordet er korrekt")
+                    # print("Passordet er korrekt")
                     aktuellBruker.is_authenticated = True
                     login_user(aktuellBruker)
                     session['bruker'] = aktuellBruker.__dict__
-                    print(session['bruker'])
-                    print(current_user.bruker)
-                    print(aktuellBruker.is_authenticated)
+                    # print(session['bruker'])
+                    # print(current_user.bruker)
+                    # print(aktuellBruker.is_authenticated)
                     return redirect('/admin')
                 else:
                     return render_template('loggInn.html', form=form)
@@ -202,15 +202,6 @@ def brukerEndre() -> 'html':
         return render_template('brukerEndre.html',
                                form=form)
 
-# @app.route('/upload_page/<id>', methods=["GET", "POST"])
-# def upload_page(id) -> 'html':
-#     with fileDB() as db:
-#         result = db.selectAllVedlegg(id)
-#         if result:
-#             alleVedlegg = [Vedlegg(*x) for x in result]
-#             return render_template('upload.html', attachments=alleVedlegg)
-#         else:
-#             return render_template('upload.html', attachments=None, innlegg_id=id)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -260,7 +251,7 @@ def delete_file(id, vedleggID):
 
     with fileDB() as filedb:
         filedb.slettVedlegg(id, vedleggID)
-    return redirect(url_for('innlegg', id=id))
+    return redirect(url_for('innlegg', id=id, _external=True))
 
 
 @app.route('/bekreftSletting', methods=["GET", "POST"])
@@ -286,9 +277,9 @@ def slettInnlegg() -> 'html':
         blogg_id = request.form['blogg_id']
         with fileDB() as db:
             db.slettInnlegg(id)
-        return redirect(url_for('blogg', id=blogg_id))
+        return redirect(url_for('blogg', id=blogg_id, _external=True))
 
-    return redirect(url_for('forside'))
+    return redirect(url_for('forside', _external=True))
 
 
 @app.route('/redigerInnlegg', methods=["GET", "POST"])
@@ -301,17 +292,18 @@ def redigerInnlegg() -> 'html':
 
     if request.method == "POST" and form.validate():
         id = request.form['id']
+        innlegg_innlegg_ID = id
         tittel = form.tittel.data
         ingress = form.ingress.data
         innlegg = form.innlegg.data
         nytag = form.newTag.data
+
 
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
             db.redigerInnlegg(redigertInnlegg)
 
             oldTagID = db.selectTags(id)
-            innlegg_innlegg_ID = id
             tag_tag_ID = form.tag.data
 
             if db.boolean_validate_tag_navn(nytag) and nytag !='':
@@ -328,12 +320,10 @@ def redigerInnlegg() -> 'html':
             if len(tag_tag_ID) == 0 and len(oldTagID) == 1:
                 tag_tag_ID = oldTagID[0]
                 tagInnlegg = (tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
-                # db.updateTagInnlegg(tagInnlegg)
                 for tag in tag_tag_ID:
                     # db.updateTagInnlegg(tag, innlegg_innlegg_ID, innlegg_blogg_ID)
                     tagInnlegg = (tag, tag, innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.updateTagInnlegg(tagInnlegg)
-                # db.updateTagInnlegg(tag_tag_ID, innlegg_innlegg_ID, innlegg_blogg_ID)
 
             # Hvis innlegget har like mange nye tags som gamle tags, oppdaterer til nye tags
             elif len(tag_tag_ID) == len(oldTagID):
@@ -365,9 +355,11 @@ def redigerInnlegg() -> 'html':
                     tagInnlegg = (tag_tag_ID[j], innlegg_innlegg_ID, innlegg_blogg_ID[0])
                     db.addTagToInnlegg(tagInnlegg)
 
-        return redirect(url_for("innlegg", id=innlegg_innlegg_ID))
+        return redirect(url_for("innlegg", id=innlegg_innlegg_ID, _external=True))
     else:
         id = request.args.get('id')
+        if not id:
+            id = request.form['id']
         with myDB() as db:
             innlegget = db.selectEtInnlegg(id)
             innleggObj = Innlegg(*innlegget)
@@ -405,6 +397,10 @@ def tegneNyttInnlegg() -> 'html':
 @login_required
 def nyttInnlegg() -> 'html':
     form = NyttInnlegg(request.form)
+    with myDB() as db:
+        tags = db.selectTag()
+    form.tag.choices = [(tag[0], tag[1]) for tag in tags]
+
     if request.method == "POST" and form.validate():
         # tror ikke innleggID er nødvendig
         bloggID = form.bloggID.data
@@ -418,9 +414,9 @@ def nyttInnlegg() -> 'html':
 
         with myDB() as db:
             lastID = db.nyttInnlegg(nyttInnlegg, tag, newTag)
-            return redirect(url_for('redigerInnlegg', id=lastID))
+            return redirect(url_for('redigerInnlegg', id=lastID, _external=True))
 
-            db.nyttInnlegg(nyttInnlegg, tag, newTag)
+            # db.nyttInnlegg(nyttInnlegg, tag, newTag)
         return redirect('/')
     else:
         return render_template('nyttInnlegg.html', form=form)
@@ -436,7 +432,7 @@ def nyKommentar() -> 'html':
         kommentarSQL = (innleggID, innleggID, bruker, kommentar)
         with myDB() as db:
             db.nyKommentar(kommentarSQL)
-        return redirect(url_for("innlegg", id=innleggID))
+        return redirect(url_for("innlegg", id=innleggID, _external=True))
     else:
         return render_template('index.html', form=form)
 
@@ -452,7 +448,7 @@ def redigerKommentar() -> 'html':
         redigertKommentar = (kommentar, kommentarID)
         with myDB() as db:
             db.redigerKommentar(redigertKommentar)
-        return redirect(url_for("innlegg", id=innlegg_ID))
+        return redirect(url_for("innlegg", id=innlegg_ID, _external=True))
     else:
         kommentarID = request.args.get('kommentarID')
         with myDB() as db:
@@ -472,7 +468,7 @@ def slettKommentar() -> 'html':
     innleggID = request.args.get('innleggID')
     with myDB() as db:
         db.slettKommentar(id)
-    return redirect(url_for("innlegg", id=innleggID))
+    return redirect(url_for("innlegg", id=innleggID, _external=True))
 
 @app.route('/search', methods=["GET", "POST"])
 def search() -> 'html':
@@ -492,7 +488,7 @@ def search() -> 'html':
                 result = db.search(searchKeyWord)
                 innleggData = [Innlegg(*x) for x in result]
             elif (searchKeyWord == "" and searchTag == None):
-                return redirect(url_for("forside"))
+                return redirect(url_for("forside", _external=True))
         if result is None:
             return render_template('error.html',
                                    msg='Invalid parameter')
@@ -509,7 +505,9 @@ def nyBlogg() -> 'html':
         blogg_navn = form.blogg_navn.data
         with myDB() as db:
             db.newBlogg(blogg_navn, eier)
-        return redirect(url_for(forside))
+            newBlogID = db.getLastAddedBlogg()
+
+        return redirect(url_for('blogg', id=newBlogID, _external=True))
     return render_template('nyBlogg.html', form=form)
 
 @login_required
@@ -536,7 +534,7 @@ def slettBlogg() -> 'html':
             db.slettBlogg(id)
     else:
         print("test")
-    return redirect(url_for('forside'))
+    return redirect(url_for('forside', _external=True))
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -26,19 +26,17 @@ class loggInn(Form):
 
 
 class NyBrukerSkjema(Form):
-    brukernavn = StringField('Username: ', validators=[InputRequired(message='Brukernavn må spesifiseres'), Length(min=3, max=20, message='Brukernavn må være minst 3 tegn og maks 20 tegn')])
-    fornavn = StringField('First name: ', validators=[InputRequired(message='Fornavn må spesifiseres'), Length(min=3, max=20)])
-    etternavn = StringField('Last name: ', validators=[InputRequired(message='Etternavn må spesifiseres'), Length(min=3, max=20)])
-    password = PasswordField('New Password: ', validators=[InputRequired(), validators.EqualTo('pwconfirm', message='Passordene må være identiske')])
-    pwconfirm = PasswordField('Repeat Password')
-    eMail = EmailField('E-mail Address: ', validators=[InputRequired(message='Epost adresse må spesifiseres'), Email(message='En gyldig epost adresse må brukes'), Length(min=3, max=120)])
+    brukernavn = StringField('Brukernavn: ', validators=[InputRequired(message='Brukernavn må spesifiseres'), Length(min=3, max=20, message='Brukernavn må være minst 3 tegn og maks 20 tegn')])
+    fornavn = StringField('Fornavn: ', validators=[InputRequired(message='Fornavn må spesifiseres'), Length(min=3, max=20)])
+    etternavn = StringField('Etternavn: ', validators=[InputRequired(message='Etternavn må spesifiseres'), Length(min=3, max=20)])
+    password = PasswordField('Skriv inn passord: ', validators=[InputRequired(), validators.EqualTo('pwconfirm', message='Passordene må være identiske')])
+    pwconfirm = PasswordField('Gjenta passordet')
+    eMail = EmailField('E-post adresse: ', validators=[InputRequired(message='Epost adresse må spesifiseres'), Email(message='En gyldig epost adresse må brukes'), Length(min=3, max=120)])
 
     def validate_brukernavn(self, brukernavn):
         with myDB() as db:
             listUsernames = db.selectAllBrukernavn()
-            print(listUsernames)
             if brukernavn.data in str(listUsernames):
-                print(f'Brukernavet {brukernavn.data} er allerede i bruk')
                 raise ValidationError(message="Brukernavn er allerede i bruk")
 
     submit = SubmitField('Submit form')

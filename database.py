@@ -122,6 +122,7 @@ class myDB:
                 else:
                     return True
 
+
     def nyttInnlegg(self, nyttInnlegg, tag, newTag):
         try:
             sql1 = '''INSERT INTO innlegg (innlegg_ID, blogg_ID, tittel, ingress, innlegg, treff)
@@ -178,6 +179,13 @@ class myDB:
             # self.cursor.execute(sql1, blogg, )
         except mysql.connector.Error as err:
             print(err)
+
+    def getLastAddedBlogg(self):
+        try:
+            result = self.cursor.lastrowid
+        except mysql.connector.Error as err:
+            print(err)
+        return result
 
     def incrementTreff(self, id):
         try:
@@ -301,6 +309,7 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
     def searchAndTag(self, search, tag_ID):
         try:
             self.cursor.execute('''SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress, tittel, eier FROM innlegg 

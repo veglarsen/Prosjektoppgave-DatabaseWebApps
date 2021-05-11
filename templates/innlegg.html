@@ -4,7 +4,7 @@
     <table>
         <tbody>
             <tr>
-            {% if is_owner == True %}ø
+            {% if is_owner == True %}
                 <a href="{{ url_for('bekreftSletting') }}?id={{ innleggData.innlegg_ID }}">
                         Slett innlegg
                     </a><br>
@@ -20,12 +20,13 @@
                             <p>{{ innleggData.innlegg }}</p>
                             <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
                         </a>
-                        TAGS:
+                        <p>TAGS:
                         {%  for tag in tagData %}
                         <a href="{{ url_for('tagInnlegg') }}?tag={{ tag.tag_ID }}">
                                 {{tag.tag_navn + " ," }}
                         </a>
                         {% endfor %}
+                        </p>
                     </tr>
                 {% for kommentar in kommentarData %}
                     <td>
