@@ -1,5 +1,4 @@
 import secrets
-from datetime import date
 
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
@@ -16,9 +15,7 @@ from kommentarSkjema import NyKommentar, RedigerKommentar
 
 app = Flask(__name__, template_folder='templates')
 
-
-
-
+app.config["SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS"] = True
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'ogg'}
 
@@ -28,16 +25,21 @@ csrf.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user_dict = session['bruker']
-    bruker = Bruker(user_dict['id'], user_dict['bruker'], user_dict['etternavn'], user_dict['fornavn'],  user_dict['passwordHash'],  user_dict['eMail'])
+    bruker = Bruker(user_dict['id'], user_dict['bruker'], user_dict['etternavn'], user_dict['fornavn'],
+                    user_dict['passwordHash'], user_dict['eMail'])
     Bruker.isauthenticated = user_dict['is_authenticated']
     return bruker
 
+
 @login_manager.unauthorized_handler
 def unauthorized_callback():
-       return redirect(url_for('login'))
+    return redirect(url_for('login'))
+
 
 @app.route('/')
 def forside() -> 'html':
@@ -53,7 +55,8 @@ def forside() -> 'html':
                                    msg='Invalid parameter')
         else:
             bloggObjektene = [Blogg(*x) for x in result]
-            return render_template('index.html', bloggObjektene=bloggObjektene)     #, searchForm=searchForm
+            return render_template('index.html', bloggObjektene=bloggObjektene)  # , searchForm=searchForm
+
 
 @app.route('/blogg')
 def blogg() -> 'html':
@@ -76,7 +79,9 @@ def blogg() -> 'html':
             blogg_navn = bloggDataUt.blogg_navn
             blogg_ID = bloggDataUt.blogg_ID
 
-            return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID, blogg_navn=blogg_navn)
+            return render_template('blogg.html', innleggData=innleggData, is_owner=is_owner, blogg_ID=blogg_ID,
+                                   blogg_navn=blogg_navn)
+
 
 @app.route('/innlegg')
 def innlegg() -> 'html':
@@ -106,7 +111,10 @@ def innlegg() -> 'html':
                 result = filedb.selectAllVedlegg(id)
                 alleVedlegg = [Vedlegg(*x) for x in result]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, bruker=current_bruker,blogg_navn=blogg_navn, attachments=alleVedlegg, tagData=tagData, form=form)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData,
+                                   is_owner=is_owner, bruker=current_bruker, blogg_navn=blogg_navn,
+                                   attachments=alleVedlegg, tagData=tagData, form=form)
+
 
 @app.route('/tagInnlegg')
 def tagInnlegg() -> 'html':
@@ -155,10 +163,12 @@ def login() -> 'html':
     else:
         return render_template('loggInn.html', form=form)
 
+
 @app.route('/admin', methods=["GET", "POST"])
 @login_required
 def admin() -> 'html':
     return redirect('/')
+
 
 @app.route('/logout', methods=["GET", "POST"])
 @login_required
@@ -207,7 +217,8 @@ def brukerEndre() -> 'html':
 
 def allowed_file(filename):
     return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/uploadfile/<id>', methods=['GET', 'POST'])
 def upload_file(id):
@@ -234,23 +245,24 @@ def upload_file(id):
     else:
         return redirect(url_for('forside', id=id, _external=True))
 
+
 @app.route('/download/<id>')
 def download_file(id):
     with fileDB() as db:
         attachment = Vedlegg(*db.getVedlegg(id))
     if attachment is None:
-            pass
+        pass
     else:
         response = make_response(attachment.fil_data)
         response.headers.set('Content-Type', attachment.fil_type)
         response.headers.set('Content-Length', attachment.size)
         response.headers.set(
-        'Content-Disposition', 'inline', filename = attachment.fil_navn)
+            'Content-Disposition', 'inline', filename=attachment.fil_navn)
         return response
+
 
 @app.route('/delete/<id>/<vedleggID>')
 def delete_file(id, vedleggID):
-
     with fileDB() as filedb:
         filedb.slettVedlegg(id, vedleggID)
     return redirect(url_for('innlegg', id=id, _external=True))
@@ -270,6 +282,7 @@ def bekreftSletting() -> 'html':
             else:
                 innlegget = Innlegg(*innlegget)
                 return render_template('bekreftSletting.html', innlegg=innlegget)
+
 
 @app.route('/slettInnlegg', methods=["GET", "POST"])
 @login_required
@@ -300,7 +313,6 @@ def redigerInnlegg() -> 'html':
         innlegg = form.innlegg.data
         nytag = form.newTag.data
 
-
         redigertInnlegg = (innlegg, tittel, ingress, id)
         with myDB() as db:
             db.redigerInnlegg(redigertInnlegg)
@@ -308,7 +320,7 @@ def redigerInnlegg() -> 'html':
             oldTagID = db.selectTags(id)
             tag_tag_ID = form.tag.data
 
-            if db.boolean_validate_tag_navn(nytag) and nytag !='':
+            if db.boolean_validate_tag_navn(nytag) and nytag != '':
                 db.createNewTag(nytag)
                 nytagID = db.getLastAddedTagID()
                 tag_tag_ID.append(nytagID)
@@ -382,6 +394,7 @@ def redigerInnlegg() -> 'html':
 
             return render_template('redigerInnlegg.html', form=form)
 
+
 @app.route('/tegneNyttInnlegg', methods=["GET", "POST"])
 def tegneNyttInnlegg() -> 'html':
     with myDB() as db:
@@ -423,6 +436,7 @@ def nyttInnlegg() -> 'html':
     else:
         return render_template('nyttInnlegg.html', form=form)
 
+
 @app.route('/nyKommentar', methods=["GET", "POST"])
 @login_required
 def nyKommentar() -> 'html':
@@ -438,6 +452,7 @@ def nyKommentar() -> 'html':
     else:
         return render_template('index.html', form=form)
 
+
 @app.route('/redigerKommentar', methods=["GET", "POST"])
 @login_required
 def redigerKommentar() -> 'html':
@@ -447,7 +462,7 @@ def redigerKommentar() -> 'html':
     if request.method == "POST" and form.validate():
         # bruker = current_user.bruker
         with myDB() as db:
-            innlegg_ID = form.innlegg_ID.data # henter blank str
+            innlegg_ID = form.innlegg_ID.data  # henter blank str
             kommentarID = request.form['kommentarID']
             blogg = db.selectEnBloggFromInnlegg(innlegg_ID)
             blogg = Blogg(*blogg)
@@ -476,6 +491,7 @@ def redigerKommentar() -> 'html':
         return render_template('redigerKommentar.html', form=form)
         # return render_template('redigerKommentar.html', form=form, innlegg_ID=form.innleggID.data)
 
+
 @app.route('/slettKommentar', methods=["GET", "POST"])
 @login_required
 def slettKommentar() -> 'html':
@@ -498,6 +514,7 @@ def slettKommentar() -> 'html':
 
     return redirect(url_for("innlegg", id=innleggID, _external=True))
 
+
 @app.route('/search', methods=["GET", "POST"])
 def search() -> 'html':
     searchForm = SearchForm()
@@ -506,10 +523,10 @@ def search() -> 'html':
         searchKeyWord = request.args.get('searchField')
         searchTag = request.args.get('tag')
         with myDB() as db:
-            if(searchKeyWord != "" and searchTag != None):
+            if (searchKeyWord != "" and searchTag != None):
                 result = db.searchAndTag(searchKeyWord, searchTag)
                 innleggData = [Innlegg(*x) for x in result]
-            elif(searchKeyWord == "" and searchTag != None):
+            elif (searchKeyWord == "" and searchTag != None):
                 result = db.selectAlleInnleggTag(searchTag)
                 innleggData = [InnleggTag(*x) for x in result]
             elif (searchKeyWord != "" and searchTag == None):
@@ -524,6 +541,7 @@ def search() -> 'html':
             return render_template('blogg.html', innleggData=innleggData, searchForm=searchForm)
     return render_template('error.html', msg='Invalid parameter')
 
+
 @login_required
 @app.route('/nyBlogg', methods=["GET", "POST"])
 def nyBlogg() -> 'html':
@@ -537,6 +555,7 @@ def nyBlogg() -> 'html':
 
         return redirect(url_for('blogg', id=newBlogID, _external=True))
     return render_template('nyBlogg.html', form=form)
+
 
 @login_required
 @app.route('/bekreftSlettingBlogg', methods=["GET", "POST"])
@@ -553,6 +572,7 @@ def bekreftSlettingBlogg() -> 'html':
                 blogg2 = Blogg(*blogg)
                 return render_template('bekreftSlettingBlogg.html', blogg=blogg2)
 
+
 @app.route('/slettBlogg', methods=["GET", "POST"])
 @login_required
 def slettBlogg() -> 'html':
@@ -563,6 +583,7 @@ def slettBlogg() -> 'html':
     else:
         print("test")
     return redirect(url_for('forside', _external=True))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

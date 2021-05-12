@@ -14,13 +14,15 @@ class NyttInnlegg(Form):
     bloggID = HiddenField()
     submit = SubmitField('Legg til')
 
+
 class SearchForm(Form):
     searchField = StringField('Søk i alle innlegg', validators=[Length(max=20)])  # validator!
     tag = SelectMultipleField(u'Tag: ', choices=[])
     submit = SubmitField('SØK')
 
+
 class RedigerInnleggForm(Form):
-    tittel = StringField('Tittel', validators=[DataRequired(), Length(max=20)])               #REDIGER LENGDEN
+    tittel = StringField('Tittel', validators=[DataRequired(), Length(max=20)])  # REDIGER LENGDEN
     ingress = StringField('Ingress', validators=[DataRequired(), Length(max=50)])
     innlegg = TextAreaField('Innlegg Tekst', validators=[DataRequired(), Length(max=250)])
     id = HiddenField()
@@ -35,6 +37,7 @@ class RedigerInnleggForm(Form):
     #         listTag = db.selectAllBrukernavn()
     #         if brukernavn.data in str(listUsernames):
     #             raise ValidationError(message="Brukernavn er allerede i bruk")
+
 
 class NyBlogg(Form):
     blogg_navn = StringField('Blogg Navn: ', validators=[DataRequired(), Length(max=32)])

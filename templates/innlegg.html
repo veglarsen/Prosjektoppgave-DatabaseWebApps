@@ -3,67 +3,70 @@
     <header><h1>{{ blogg_navn }}</h1></header>
     <table>
         <tbody>
-            <tr>
+        <tr>
             {% if is_owner == True %}
                 <a href="{{ url_for('bekreftSletting') }}?id={{ innleggData.innlegg_ID }}">
-                        Slett innlegg
-                    </a><br>
+                    Slett innlegg
+                </a><br>
                 <a href="{{ url_for('redigerInnlegg') }}?id={{ innleggData.innlegg_ID }}">
-                        Rediger innlegg
-                    </a><br>
+                    Rediger innlegg
+                </a><br>
             {% endif %}
 
-                    <tr>
-                        <a href="{{ url_for('innlegg') }}?id={{ innleggData.innlegg_ID }}">
-                            <h4>{{ innleggData.tittel }}</h4>
-                            <h5>{{ innleggData.ingress }}</h5>
-                            <p>{{ innleggData.innlegg }}</p>
-                            <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
-                        </a>
-                        <p>TAGS:
-                        {%  for tag in tagData %}
-                        <a href="{{ url_for('tagInnlegg') }}?tag={{ tag.tag_ID }}">
-                                {{tag.tag_navn + " ," }}
-                        </a>
-                        {% endfor %}
-                        </p>
-                    </tr>
-                {% for kommentar in kommentarData %}
-                    <td>
-                        <h5>{{ kommentar.bruker }}</h5>
-                        <h3>{{ kommentar.kommentar }}</h3>
-                        <p>{{ kommentar.dato }}</p>
-                        {% if bruker == kommentar.bruker or is_owner %}
-                            <a href="{{ url_for('redigerKommentar') }}?kommentarID={{ kommentar.kommentar_ID }}">
-                                Rediger</a>
-                        {% endif %}
-                    </td>
+        <tr>
+            <a href="{{ url_for('innlegg') }}?id={{ innleggData.innlegg_ID }}">
+                <h4>{{ innleggData.tittel }}</h4>
+                <h5>{{ innleggData.ingress }}</h5>
+                <p>{{ innleggData.innlegg }}</p>
+                <p>Dato: {{ innleggData.dato }} Treff: {{ innleggData.treff }} </p>
+            </a>
+            <p>TAGS:
+                {% for tag in tagData %}
+                    <a href="{{ url_for('tagInnlegg') }}?tag={{ tag.tag_ID }}">
+                        {{ tag.tag_navn + " ," }}
+                    </a>
                 {% endfor %}
-                {%if attachments %}
-		            <div id="filliste">
-                        <ul>
-                            {% for attachment in attachments %}
-                                {% if attachment.fil_type == 'image/jpeg' or  attachment.fil_type == 'image/pjpeg' or attachment.fil_type == 'image/png' or attachment.fil_type == 'image/gif'%}
-                                  <a href="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}">
-                                      <img src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" width="10%"/></a>
-                                {% elif attachment.fil_type == 'video/mp4' or attachment.fil_type == 'video/webm' or attachment.fil_type == 'video/ogg' %}
-                                    <video width="25%" height="100%" controls>
-                                        <source src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" type="{{attachment.fil_type}}">
-                                    </video>
-                                {% else %}
-                                    <li>
-                                        {{attachment.fil_navn}}&nbsp;<a href="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}">{{attachment.fil_navn}}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
+            </p>
+        </tr>
+        {% for kommentar in kommentarData %}
+            <td>
+                <h5>{{ kommentar.bruker }}</h5>
+                <h3>{{ kommentar.kommentar }}</h3>
+                <p>{{ kommentar.dato }}</p>
+                {% if bruker == kommentar.bruker or is_owner %}
+                    <a href="{{ url_for('redigerKommentar') }}?kommentarID={{ kommentar.kommentar_ID }}">
+                        Rediger</a>
                 {% endif %}
-            </tr>
+            </td>
+        {% endfor %}
+        {% if attachments %}
+            <div id="filliste">
+                <ul>
+                    {% for attachment in attachments %}
+                        {% if attachment.fil_type == 'image/jpeg' or  attachment.fil_type == 'image/pjpeg' or attachment.fil_type == 'image/png' or attachment.fil_type == 'image/gif' %}
+                            <a href="{{ url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}">
+                                <img src="{{ url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}"
+                                     width="10%"/></a>
+                        {% elif attachment.fil_type == 'video/mp4' or attachment.fil_type == 'video/webm' or attachment.fil_type == 'video/ogg' %}
+                            <video width="25%" height="100%" controls>
+                                <source src="{{ url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}"
+                                        type="{{ attachment.fil_type }}">
+                            </video>
+                        {% else %}
+                            <li>
+                                {{ attachment.fil_navn }}&nbsp;<a
+                                    href="{{ url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}">{{ attachment.fil_navn }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        </tr>
         </tbody>
     </table>
-     {% if current_user.isauthenticated == True %}
-        <div class = "container">
+    {% if current_user.isauthenticated == True %}
+        <div class="container">
             <h5>Ny kommentar</h5>
 
             <form action="{{ url_for('nyKommentar') }}" method="post">
@@ -79,5 +82,5 @@
                 <p>{{ form.submit() }}</p>
             </form>
         </div>
-     {% endif %}
+    {% endif %}
 {% endblock %}

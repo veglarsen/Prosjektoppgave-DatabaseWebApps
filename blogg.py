@@ -6,6 +6,7 @@ class Blogg:
         self.blogg_ID = blogg_ID
         self.eier = eier
 
+
 class Innlegg:
 
     # construct / attributes
@@ -19,6 +20,7 @@ class Innlegg:
         self.ingress = ingress
         self.tittel = tittel
         self.eier = eier
+
 
 class InnleggTag:
 
@@ -35,6 +37,7 @@ class InnleggTag:
         self.eier = eier
         self.tag_navn = tag_navn
 
+
 class Kommentar:
 
     # construct / attributes
@@ -46,6 +49,7 @@ class Kommentar:
         self.kommentar = kommentar
         self.dato = dato
 
+
 class Vedlegg:
 
     # construct / attributes
@@ -56,6 +60,7 @@ class Vedlegg:
         self.fil_data = fil_data
         self.size = size
         self.innlegg_ID = innlegg_ID
+
 
 # class Bruker():
 #
@@ -73,7 +78,6 @@ class Vedlegg:
 class Tag():
 
     # construct / attributes
-    def __init__(self, tag_ID, tag_navn,):
+    def __init__(self, tag_ID, tag_navn, ):
         self.tag_ID = tag_ID
         self.tag_navn = tag_navn
-

@@ -25,7 +25,7 @@
             </div>
             <p>{{ form.submit() }}</p>
         </form>
-        <a href="{{ url_for('slettKommentar', id= form.kommentarID.data , innleggID= form.innlegg_ID.data  )}}">Slett</a>
+        <a href="{{ url_for('slettKommentar', id= form.kommentarID.data , innleggID= form.innlegg_ID.data  ) }}">Slett</a>
         <a href="{{ url_for('innlegg') }}?id={{ form.innlegg_ID.data }}">
             <button class="btn btn-primary">Avbryt</button>
         </a>

@@ -2,8 +2,8 @@
 {% block body %}
     <div class="container">
         <h2>Lag ny bruker</h2>
-        <form action="{{ url_for('nyBruker')}}" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <form action="{{ url_for('nyBruker') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
                 {{ form.brukernavn.label }}<br>
                 {{ form.brukernavn(size=32) }}<br>
@@ -46,7 +46,7 @@
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </div>
-{#            <p>{{ form.submit() }}</p>#}
+            {#            <p>{{ form.submit() }}</p>#}
             <input type=submit value="Lag ny bruker">
         </form>
     </div>

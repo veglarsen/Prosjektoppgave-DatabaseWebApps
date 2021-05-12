@@ -2,6 +2,7 @@ import mysql.connector
 from database import myDB
 from blogg import Innlegg
 
+
 class fileDB:
 
     def __init__(self) -> None:

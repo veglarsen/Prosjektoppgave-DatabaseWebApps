@@ -3,29 +3,29 @@
     <header><h1>Blogg oversikt</h1></header>
     <table>
         <thead>
-            <tr>
-                <th><h2>Blogg tittel</h2></th>
+        <tr>
+            <th><h2>Blogg tittel</h2></th>
         </thead>
         <tbody>
-{#            <form method="get" action="{{ url_for('search') }}">#}
-{#                <div>#}
-{#                    {{ searchForm.searchField.label }}<br>#}
-{#                    {{ searchForm.searchField(size=50) }}<br>#}
-{#                    {% for error in searchForm.searchField.errors %}#}
-{#                        <span style="color: red;">[{{ error }}]</span>#}
-{#                    {% endfor %}#}
-{#                </div>#}
-{#                <div>#}
-{#                    {{ searchForm.tag.label }}<br>#}
-{#                    {{ searchForm.tag(size=10) }}<br>#}
-{#                    {%  for error in searchForm.tag.errors %}#}
-{#                    <span style="color: red;">[{{ error }}]</span>#}
-{#                    {% endfor %}#}
-{#                </div>#}
-{#                <p>{{ searchForm.submit() }}</p>#}
-{#            </form>#}
+        <form method="get" action="{{ url_for('search') }}">
+            <div>
+                {{ searchForm.searchField.label }}<br>
+                {{ searchForm.searchField(size=50) }}<br>
+                {% for error in searchForm.searchField.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ searchForm.tag.label }}<br>
+                {{ searchForm.tag(size=10) }}<br>
+                {% for error in searchForm.tag.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <p>{{ searchForm.submit() }}</p>
+        </form>
 
-            {% for blogg in bloggObjektene %}
+        {% for blogg in bloggObjektene %}
             <tr>
                 <td>
                     <a href="{{ url_for('blogg') }}?id={{ blogg.blogg_ID }}">
@@ -34,7 +34,7 @@
 
                 </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
 {% endblock %}

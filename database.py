@@ -16,7 +16,6 @@ class myDB:
         self.cursor = self.conn.cursor(prepared=True)
         return self
 
-
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.conn.commit()
         self.cursor.close()
@@ -24,7 +23,7 @@ class myDB:
 
     def newBlogg(self, blogg_navn, eier):
         try:
-            self.cursor.execute("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""", (eier, blogg_navn, ))
+            self.cursor.execute("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""", (eier, blogg_navn,))
             # sql1 = ("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""")
             # self.cursor.execute(sql1, blogg, )
         except mysql.connector.Error as err:
@@ -37,7 +36,6 @@ class myDB:
             print(err)
         return result
 
-
     def selectBlogg(self):
         try:
             self.cursor.execute("""SELECT blogg_navn, blogg_ID as tittel, eier FROM blogg ORDER BY blogg_ID""")
@@ -48,7 +46,7 @@ class myDB:
 
     def selectEnBlogg(self, id):
         try:
-            self.cursor.execute("""SELECT blogg_navn, blogg_ID, eier FROM blogg where blogg_ID = %s""", (id, ))
+            self.cursor.execute("""SELECT blogg_navn, blogg_ID, eier FROM blogg where blogg_ID = %s""", (id,))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)
@@ -72,10 +70,10 @@ class myDB:
 
     def redigerInnlegg(self, redigerInnlegg):
         try:
-           sql1 = ('''UPDATE innlegg
+            sql1 = ('''UPDATE innlegg
                                     SET innlegg = (%s), innlegg.tittel = (%s), innlegg.ingress = (%s)
                                 WHERE innlegg.innlegg_ID = (%s)''')
-           result = self.cursor.execute(sql1, redigerInnlegg)
+            result = self.cursor.execute(sql1, redigerInnlegg)
         except mysql.connector.Error as err:
             print(err)
         return result
@@ -91,7 +89,8 @@ class myDB:
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress,
                                 tittel, eier FROM innlegg inner join blogg 
-                                on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s) order by dato desc""", (id,))
+                                on innlegg.blogg_ID = blogg.blogg_ID where blogg.blogg_ID = (%s) order by dato desc""",
+                                (id,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -103,18 +102,18 @@ class myDB:
             tittel, eier, tag_navn FROM innlegg 
                                    inner join blogg on innlegg.blogg_ID = blogg.blogg_ID
                                    inner join tag_innlegg on innlegg.innlegg_id = tag_innlegg.innlegg_innlegg_ID 
-                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s) order by dato desc""", (tag,))
+                                   JOIN tag ON tag_innlegg.tag_tag_ID = tag.tag_ID where tag_tag_ID = (%s) order by dato desc""",
+                                (tag,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
         return result
 
-
     def selectEtInnlegg(self, id):
         try:
             self.cursor.execute("""SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress, 
                                 tittel, eier FROM innlegg inner join blogg 
-                                on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id, ))
+                                on innlegg.blogg_ID = blogg.blogg_ID where innlegg.innlegg_id = (%s)""", (id,))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)
@@ -122,7 +121,9 @@ class myDB:
 
     def selectEnKommentar(self, id):
         try:
-            self.cursor.execute("""SELECT kommentar_id, innlegg_id, blogg_id, bruker, kommentar, dato FROM kommentar where kommentar_id = (%s)""", (id,))
+            self.cursor.execute(
+                """SELECT kommentar_id, innlegg_id, blogg_id, bruker, kommentar, dato FROM kommentar where kommentar_id = (%s)""",
+                (id,))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)
@@ -159,7 +160,7 @@ class myDB:
 
             elif newTag != " " and sjekk == False:
                 # sql1 = '''INSERT INTO tag (tag_navn) VALUES (%s)'''
-                self.cursor.execute('''INSERT INTO tag (tag_navn) VALUES (%s)''', (newTag, ))
+                self.cursor.execute('''INSERT INTO tag (tag_navn) VALUES (%s)''', (newTag,))
                 # self.cursor.execute(sql1, newTag)
 
                 tag_ID = self.cursor.lastrowid
@@ -179,7 +180,9 @@ class myDB:
 
     def incrementTreff(self, id):
         try:
-            self.cursor.execute('UPDATE innlegg SET treff = (SELECT treff FROM innlegg where innlegg_ID=(%s)) + 1 WHERE innlegg_ID = (%s)', (id, id))
+            self.cursor.execute(
+                'UPDATE innlegg SET treff = (SELECT treff FROM innlegg where innlegg_ID=(%s)) + 1 WHERE innlegg_ID = (%s)',
+                (id, id))
         except mysql.connector.Error as err:
             print(err)
 
@@ -204,7 +207,7 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-    def redigerKommentar(self, kommentar): # fiks at dato oppdateres
+    def redigerKommentar(self, kommentar):  # fiks at dato oppdateres
         try:
             sql1 = '''UPDATE
                 kommentar
@@ -233,7 +236,7 @@ class myDB:
             self.cursor.execute("SELECT * FROM bruker where bruker = (%s)", (bruker_navn,))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
-                print(err)
+            print(err)
         return result
 
     def selectAllBrukernavn(self):
@@ -274,14 +277,14 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-
     def searchAndTag(self, search, tag_ID):
         try:
             self.cursor.execute('''SELECT blogg_navn, innlegg_id, innlegg.blogg_ID, innlegg, dato, treff, ingress, tittel, eier FROM innlegg 
                                    join blogg on innlegg.blogg_ID = blogg.blogg_ID
                                    join tag_innlegg on innlegg.innlegg_ID = tag_innlegg.innlegg_innlegg_ID
                                    WHERE (tittel LIKE %s OR innlegg LIKE %s OR ingress LIKE %s) 
-                                   and tag_tag_ID = %s order by dato desc''',("%" + search + "%", "%" + search + "%", "%" + search + "%", tag_ID, ))
+                                   and tag_tag_ID = %s order by dato desc''',
+                                ("%" + search + "%", "%" + search + "%", "%" + search + "%", tag_ID,))
             result = self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(err)
@@ -296,8 +299,6 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
-
-
 
     def updateTagInnlegg(self, tagInnlegg):
         try:
@@ -343,7 +344,6 @@ class myDB:
             print(err)
         return result
 
-
     def selectTag(self):
         try:
             self.cursor.execute('''SELECT CAST(tag_ID as char) as tag_ID, tag_navn from tag order by tag_navn;''')
@@ -382,9 +382,12 @@ class myDB:
                     return False
                 else:
                     return True
+
     def selectEnBloggFromInnlegg(self, innlegg_ID):
         try:
-            self.cursor.execute("""SELECT blogg_navn, blogg.blogg_ID, eier FROM blogg inner join innlegg on blogg.blogg_ID = innlegg.blogg_ID where innlegg_ID = %s""", (innlegg_ID, ))
+            self.cursor.execute(
+                """SELECT blogg_navn, blogg.blogg_ID, eier FROM blogg inner join innlegg on blogg.blogg_ID = innlegg.blogg_ID where innlegg_ID = %s""",
+                (innlegg_ID,))
             result = self.cursor.fetchone()
         except mysql.connector.Error as err:
             print(err)

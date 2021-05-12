@@ -3,22 +3,23 @@
     <header><h1>{{ blogg_navn }}</h1></header>
     <table>
         <tbody>
-            {% if is_owner == True %}
-                <a href="{{ url_for('tegneNyttInnlegg') }}?id={{ blogg_ID }}"> Nytt innlegg </a><br>
-                <a href="{{ url_for('bekreftSlettingBlogg') }}?id={{ blogg_ID }}"> Slett blogg </a><br>
-            {% endif %}
+        {% if is_owner == True %}
+            <a href="{{ url_for('tegneNyttInnlegg') }}?id={{ blogg_ID }}"> Nytt innlegg </a><br>
+            <a href="{{ url_for('bekreftSlettingBlogg') }}?id={{ blogg_ID }}"> Slett blogg </a><br>
+        {% endif %}
 
-            {% for innlegg in innleggData %}
-                <tr>
-                    <td>
-                        <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
-                            <h2>{{ innlegg.tittel }}</h2>
-                            <h5>{{ innlegg.ingress }}</h5>
-                            <p><h5>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </h5></p><!-- Innlegg tittel/Ingress? -->
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
+        {% for innlegg in innleggData %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('innlegg') }}?id={{ innlegg.innlegg_ID }}">
+                        <h2>{{ innlegg.tittel }}</h2>
+                        <h5>{{ innlegg.ingress }}</h5>
+                        <p><h5>Dato: {{ innlegg.dato }} Treff: {{ innlegg.treff }} </h5></p>
+                        <!-- Innlegg tittel/Ingress? -->
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 {% endblock %}

@@ -1,10 +1,11 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import myDB
 
+
 class Bruker():
 
     # construct / attributes
-    def __init__(self,id, bruker, etternavn, fornavn, passord, eMail):
+    def __init__(self, id, bruker, etternavn, fornavn, passord, eMail):
         self.id = id
         self.bruker = bruker
         self.etternavn = etternavn
@@ -23,12 +24,12 @@ class Bruker():
             return True
         else:
             return False
+
     def is_owner_kommentar(self, bruker_navn, kommentar_eier):
         if bruker_navn == kommentar_eier:
             return True
         else:
             return False
-
 
     def __str__(self):
         return f'Id: {self.id}\n' + \
