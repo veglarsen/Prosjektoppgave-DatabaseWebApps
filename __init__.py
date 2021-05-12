@@ -43,19 +43,19 @@ def unauthorized_callback():
 
 @app.route('/')
 def forside() -> 'html':
-    # searchForm = SearchForm(request.form)
+    searchForm = SearchForm(request.form)
     # redirect('/login')
     with myDB() as db:
         result = db.selectBlogg()
-        # tags = db.selectTag()
-        # searchForm.tag.choices = [(tag[0], tag[1]) for tag in tags]
+        tags = db.selectTag()
+        searchForm.tag.choices = [(tag[0], tag[1]) for tag in tags]
 
         if result is None:
             return render_template('error.html',
                                    msg='Invalid parameter')
         else:
             bloggObjektene = [Blogg(*x) for x in result]
-            return render_template('index.html', bloggObjektene=bloggObjektene)  # , searchForm=searchForm
+            return render_template('index.html', bloggObjektene=bloggObjektene, searchForm=searchForm)
 
 
 @app.route('/blogg')
@@ -155,7 +155,7 @@ def login() -> 'html':
                     # print(session['bruker'])
                     # print(current_user.bruker)
                     # print(aktuellBruker.is_authenticated)
-                    return redirect('/admin')
+                    return redirect(url_for('forside'))
                 else:
                     return render_template('loggInn.html', form=form)
             else:
