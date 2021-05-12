@@ -160,8 +160,6 @@ def login() -> 'html':
 def admin() -> 'html':
     return redirect('/')
 
-    # return render_template('admin.html', the_title="Bestkyttet side", user=current_user.bruker)
-                                                                # login required
 @app.route('/logout', methods=["GET", "POST"])
 @login_required
 def logout() -> 'html':
