@@ -90,15 +90,16 @@ def innlegg() -> 'html':
         else:
             is_owner = False
             with myDB() as db:
+                current_bruker = None
                 kommentar = db.kommentarer(id)
                 kommentarData = [Kommentar(*x) for x in kommentar]
                 # kommentar = db.selectEnKommentar(id)
                 # kommentar = Kommentar(*kommentar)
-                current_bruker = current_user.bruker
                 innleggData = Innlegg(*db.selectEtInnlegg(id))
                 tag = db.selectTags(id)
                 tagData = [Tag(*x) for x in tag]
             if current_user.is_authenticated:
+                current_bruker = current_user.bruker
                 is_owner = Bruker.is_owner(current_bruker, current_bruker, innleggData.eier)
 
             with fileDB() as filedb:
