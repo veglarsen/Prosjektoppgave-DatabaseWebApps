@@ -28,24 +28,14 @@
                         {% endfor %}
                         </p>
                     </tr>
-                {% for kommentar in kommentarData %}
-                    <td>
-                        <h5>{{ kommentar.bruker }}</h5>
-                        <h3>{{ kommentar.kommentar }}</h3>
-                        <p>{{ kommentar.dato }}</p>
-                        {% if current_user.isauthenticated == True %}
-                         <a href="{{ url_for('redigerKommentar') }}?kommentarID={{ kommentar.kommentar_ID }}">
-                             Rediger</a>
-                        {% endif %}
-                    </td>
-                {% endfor %}
-                {%if attachments %}
+
+            {%if attachments %}
 		            <div id="filliste">
                         <ul>
                             {% for attachment in attachments %}
                                 {% if attachment.fil_type == 'image/jpeg' or  attachment.fil_type == 'image/pjpeg' or attachment.fil_type == 'image/png' or attachment.fil_type == 'image/gif'%}
                                   <a href="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True) }}">
-                                      <img src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" width="10%"/></a>
+                                      <img src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" class="img-responsive" style="width: 30%"/></a>
                                 {% elif attachment.fil_type == 'video/mp4' or attachment.fil_type == 'video/webm' or attachment.fil_type == 'video/ogg' %}
                                     <video width="25%" height="100%" controls>
                                         <source src="{{url_for('download_file', id=attachment.vedlegg_ID, _external=True)}}" type="{{attachment.fil_type}}">
@@ -59,6 +49,23 @@
                         </ul>
                     </div>
                 {% endif %}
+
+                <div class="container">
+                    <div class="row">
+
+                        {% for kommentar in kommentarData %}
+                            <div class="col-md-2">
+                                <h6>{{ kommentar.bruker }}</h6>
+                                <h6>{{ kommentar.kommentar }}</h6>
+                                <p>{{ kommentar.dato }}</p>
+                                {% if current_user.isauthenticated == True %}
+                                 <a href="{{ url_for('redigerKommentar') }}?kommentarID={{ kommentar.kommentar_ID }}">
+                                     Rediger</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </tr>
         </tbody>
     </table>
