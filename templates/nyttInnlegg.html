@@ -24,20 +24,6 @@
                         <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-                <div>
-                    {{ form.tag.label }}<br>
-                    {{ form.tag(size=10) }}<br>
-                    {%  for error in form.tag.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </div>
-             <div>
-                    {{ form.newTag.label }}<br>
-                    {{ form.newTag(size=10) }}<br>
-                    {%  for error in form.newTag.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </div>
                 <input type="hidden" name="bloggID" value="{{ form.bloggID.data }}" />
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <p>{{ form.submit() }}</p>
