@@ -90,19 +90,22 @@ def innlegg() -> 'html':
         else:
             is_owner = False
             with myDB() as db:
+                kommentar = db.kommentarer(id)
+                kommentarData = [Kommentar(*x) for x in kommentar]
+                # kommentar = db.selectEnKommentar(id)
+                # kommentar = Kommentar(*kommentar)
+                current_bruker = current_user.bruker
                 innleggData = Innlegg(*db.selectEtInnlegg(id))
                 tag = db.selectTags(id)
                 tagData = [Tag(*x) for x in tag]
             if current_user.is_authenticated:
-                is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, innleggData.eier)
-            with myDB() as db:
-                kommentar = db.kommentarer(id)
-                kommentarData = [Kommentar(*x) for x in kommentar]
+                is_owner = Bruker.is_owner(current_bruker, current_bruker, innleggData.eier)
+
             with fileDB() as filedb:
                 result = filedb.selectAllVedlegg(id)
                 alleVedlegg = [Vedlegg(*x) for x in result]
                 blogg_navn = innleggData.blogg_navn
-            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, blogg_navn=blogg_navn, attachments=alleVedlegg, tagData=tagData, form=form)
+            return render_template('innlegg.html', innleggData=innleggData, kommentarData=kommentarData, is_owner=is_owner, bruker=current_bruker,blogg_navn=blogg_navn, attachments=alleVedlegg, tagData=tagData, form=form)
 
 @app.route('/tagInnlegg')
 def tagInnlegg() -> 'html':
@@ -439,15 +442,27 @@ def nyKommentar() -> 'html':
 @app.route('/redigerKommentar', methods=["GET", "POST"])
 @login_required
 def redigerKommentar() -> 'html':
+    is_owner = False
+    is_owner_kommentar = False
     form = RedigerKommentar(request.form)
     if request.method == "POST" and form.validate():
         # bruker = current_user.bruker
-        innlegg_ID = form.innlegg_ID.data # henter blank str
-        kommentarID = request.form['kommentarID']
-        kommentar = form.kommentar.data
-        redigertKommentar = (kommentar, kommentarID)
         with myDB() as db:
-            db.redigerKommentar(redigertKommentar)
+            innlegg_ID = form.innlegg_ID.data # henter blank str
+            kommentarID = request.form['kommentarID']
+            blogg = db.selectEnBloggFromInnlegg(innlegg_ID)
+            blogg = Blogg(*blogg)
+            kommentar = db.selectEnKommentar(kommentarID)
+            kommentar = Kommentar(*kommentar)
+            kommentar_eier = kommentar.bruker
+        if current_user.is_authenticated:
+            is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, blogg.eier)
+            is_owner_kommentar = Bruker.is_owner_kommentar(current_user.bruker, current_user.bruker, kommentar_eier)
+        if is_owner or is_owner_kommentar:
+            kommentar = form.kommentar.data
+            redigertKommentar = (kommentar, kommentarID)
+            with myDB() as db:
+                db.redigerKommentar(redigertKommentar)
         return redirect(url_for("innlegg", id=innlegg_ID, _external=True))
     else:
         kommentarID = request.args.get('kommentarID')
@@ -463,11 +478,25 @@ def redigerKommentar() -> 'html':
         # return render_template('redigerKommentar.html', form=form, innlegg_ID=form.innleggID.data)
 
 @app.route('/slettKommentar', methods=["GET", "POST"])
+@login_required
 def slettKommentar() -> 'html':
+    is_owner = False
+    is_owner_kommentar = False
     id = request.args.get('id')
     innleggID = request.args.get('innleggID')
     with myDB() as db:
-        db.slettKommentar(id)
+        blogg = db.selectEnBloggFromInnlegg(innleggID)
+        blogg = Blogg(*blogg)
+        kommentar = db.selectEnKommentar(id)
+        kommentar = Kommentar(*kommentar)
+        kommentar_eier = kommentar.bruker
+    if current_user.is_authenticated:
+        is_owner = Bruker.is_owner(current_user.bruker, current_user.bruker, blogg.eier)
+        is_owner_kommentar = Bruker.is_owner_kommentar(current_user.bruker, current_user.bruker, kommentar_eier)
+    if is_owner or is_owner_kommentar:
+        with myDB() as db:
+            db.slettKommentar(id)
+
     return redirect(url_for("innlegg", id=innleggID, _external=True))
 
 @app.route('/search', methods=["GET", "POST"])

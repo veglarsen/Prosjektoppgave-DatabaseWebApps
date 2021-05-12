@@ -23,6 +23,12 @@ class Bruker():
             return True
         else:
             return False
+    def is_owner_kommentar(self, bruker_navn, kommentar_eier):
+        if bruker_navn == kommentar_eier:
+            return True
+        else:
+            return False
+
 
     def __str__(self):
         return f'Id: {self.id}\n' + \

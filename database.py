@@ -381,3 +381,10 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+    def selectEnBloggFromInnlegg(self, innlegg_ID):
+        try:
+            self.cursor.execute("""SELECT blogg_navn, blogg.blogg_ID, eier FROM blogg inner join innlegg on blogg.blogg_ID = innlegg.blogg_ID where innlegg_ID = %s""", (innlegg_ID, ))
+            result = self.cursor.fetchone()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
