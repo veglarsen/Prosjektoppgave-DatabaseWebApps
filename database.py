@@ -14,7 +14,6 @@ class myDB:
     def __enter__(self) -> 'cursor':
         self.conn = mysql.connector.connect(**self.configuration)
         self.cursor = self.conn.cursor(prepared=True)
-        # sjekk om prepared og buffered kan leve sammen
         return self
 
 
@@ -22,6 +21,22 @@ class myDB:
         self.conn.commit()
         self.cursor.close()
         self.conn.close
+
+    def newBlogg(self, blogg_navn, eier):
+        try:
+            self.cursor.execute("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""", (eier, blogg_navn, ))
+            # sql1 = ("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""")
+            # self.cursor.execute(sql1, blogg, )
+        except mysql.connector.Error as err:
+            print(err)
+
+    def getLastAddedBlogg(self):
+        try:
+            result = self.cursor.lastrowid
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
 
     def selectBlogg(self):
         try:
@@ -51,6 +66,23 @@ class myDB:
         try:
             self.cursor.execute("""SELECT blogg_ID from innlegg WHERE innlegg_ID = (%s)""", (id,))
             result = self.cursor.fetchone()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
+    def redigerInnlegg(self, redigerInnlegg):
+        try:
+           sql1 = ('''UPDATE innlegg
+                                    SET innlegg = (%s), innlegg.tittel = (%s), innlegg.ingress = (%s)
+                                WHERE innlegg.innlegg_ID = (%s)''')
+           result = self.cursor.execute(sql1, redigerInnlegg)
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
+    def getLastAddedInnleggID(self):
+        try:
+            result = self.cursor.lastrowid
         except mysql.connector.Error as err:
             print(err)
         return result
@@ -87,14 +119,6 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
-    def selectTags(self, innlegg_ID):
-        try:
-            self.cursor.execute("""SELECT tag_ID, tag_navn FROM tag_innlegg inner join tag on tag_tag_ID = tag.tag_ID 
-                                where innlegg_innlegg_ID = (%s)""", (innlegg_ID,))
-            result = self.cursor.fetchall()
-        except mysql.connector.Error as err:
-            print(err)
-        return result
 
     def selectEnKommentar(self, id):
         try:
@@ -103,25 +127,6 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
-
-    def validate_tag_navn(self, tag_navn):
-        with myDB() as db:
-            listTag = db.selectTag()
-            print(listTag)
-            for x in listTag:
-                if tag_navn == x[1]:
-                    print(f'Brukernavet {tag_navn} er allerede i bruk')
-                    raise ValidationError(message="Brukernavn er allerede i bruk")
-
-    def boolean_validate_tag_navn(self, tag_navn):
-        with myDB() as db:
-            listTag = db.selectTag()
-            for x in listTag:
-                if tag_navn == x[1]:
-                    return False
-                else:
-                    return True
-
 
     def nyttInnlegg(self, nyttInnlegg, tag, newTag):
         try:
@@ -171,21 +176,6 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return innlegg_ID
-
-    def newBlogg(self, blogg_navn, eier):
-        try:
-            self.cursor.execute("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""", (eier, blogg_navn, ))
-            # sql1 = ("""INSERT INTO blogg(eier, blogg_navn) VALUES (%s, %s)""")
-            # self.cursor.execute(sql1, blogg, )
-        except mysql.connector.Error as err:
-            print(err)
-
-    def getLastAddedBlogg(self):
-        try:
-            result = self.cursor.lastrowid
-        except mysql.connector.Error as err:
-            print(err)
-        return result
 
     def incrementTreff(self, id):
         try:
@@ -284,31 +274,6 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
-    def selectTag(self):
-        try:
-            self.cursor.execute('''SELECT CAST(tag_ID as char) as tag_ID, tag_navn from tag order by tag_navn;''')
-            result = self.cursor.fetchall()
-        except mysql.connector.Error as err:
-            print(err)
-        return result
-
-
-    def redigerInnlegg(self, redigerInnlegg):
-        try:
-           sql1 = ('''UPDATE innlegg
-                                    SET innlegg = (%s), innlegg.tittel = (%s), innlegg.ingress = (%s)
-                                WHERE innlegg.innlegg_ID = (%s)''')
-           result = self.cursor.execute(sql1, redigerInnlegg)
-        except mysql.connector.Error as err:
-            print(err)
-        return result
-
-    def getLastAddedInnleggID(self):
-        try:
-            result = self.cursor.lastrowid
-        except mysql.connector.Error as err:
-            print(err)
-        return result
 
     def searchAndTag(self, search, tag_ID):
         try:
@@ -369,6 +334,24 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
 
+    def selectTags(self, innlegg_ID):
+        try:
+            self.cursor.execute("""SELECT tag_ID, tag_navn FROM tag_innlegg inner join tag on tag_tag_ID = tag.tag_ID 
+                                where innlegg_innlegg_ID = (%s)""", (innlegg_ID,))
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
+
+    def selectTag(self):
+        try:
+            self.cursor.execute('''SELECT CAST(tag_ID as char) as tag_ID, tag_navn from tag order by tag_navn;''')
+            result = self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(err)
+        return result
+
     def createNewTag(self, nytag):
         try:
             self.cursor.execute("INSERT INTO tag (tag_ID, tag_navn) VALUES (NULL, (%s))", (nytag,))
@@ -381,6 +364,24 @@ class myDB:
         except mysql.connector.Error as err:
             print(err)
         return result
+
+    def validate_tag_navn(self, tag_navn):
+        with myDB() as db:
+            listTag = db.selectTag()
+            print(listTag)
+            for x in listTag:
+                if tag_navn == x[1]:
+                    print(f'Brukernavet {tag_navn} er allerede i bruk')
+                    raise ValidationError(message="Brukernavn er allerede i bruk")
+
+    def boolean_validate_tag_navn(self, tag_navn):
+        with myDB() as db:
+            listTag = db.selectTag()
+            for x in listTag:
+                if tag_navn == x[1]:
+                    return False
+                else:
+                    return True
     def selectEnBloggFromInnlegg(self, innlegg_ID):
         try:
             self.cursor.execute("""SELECT blogg_navn, blogg.blogg_ID, eier FROM blogg inner join innlegg on blogg.blogg_ID = innlegg.blogg_ID where innlegg_ID = %s""", (innlegg_ID, ))
